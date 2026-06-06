@@ -488,9 +488,10 @@ table tr:hover td { background: var(--row-hover); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbby779Le10gVi4dNArL64LL0DYV0zl1zoHiv9fCzQjzeUFaVYiBDAiTYiZboEVPg_FKv/exec";
+// Tautan Jembatan API Cloud yang Baru & Sehat
+const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycby8Gqw1CzNjQufMdpq3OaqTLTkiVMuAKJ_mgFDk5MeSHdTf-4qw71rRsyvL5GnYTPD6/exec";
 
-let state = { absensi: [], staf: [], jabatang: [], darkMode: false };
+let state = { absensi: [], staf: [], jabatan: [], darkMode: false };
 let chartIncome = null, chartMedical = null;
 
 // ===================== CORE LOADER (DIRECT SHEETS) =====================
@@ -501,7 +502,7 @@ async function fetchDataCloud() {
       const dataCloud = await respon.json();
       state.absensi = dataCloud.absensi || [];
       state.staf = dataCloud.staf || [];
-      if(dataCloud.jabatan && dataCloud.jabatan.length > 0) state.jabatan = dataCloud.jabatan;
+      state.jabatan = dataCloud.jabatan || [];
       toast("Sinkronisasi Cloud Sheets sukses!");
       refreshAllViews();
     }
@@ -595,7 +596,7 @@ async function simpanAbsensiCloud() {
     durasi: durasiFmt, treatment: penanganan, pemasukan, weekKey: weekKey(tanggal)
   };
 
-  toast("Mengirim log ke Google Sheets...", "error");
+  toast("Mengirim log ke Google Sheets...", "success");
   try {
     await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     toast("Sukses masuk Sheets!");
@@ -609,9 +610,9 @@ async function simpanAbsensiCloud() {
 async function saveBulkStafCloud() {
   const parsed = parseBulkLines().filter(p => p.ok);
   if(!parsed.length) { toast('Tidak ada data valid', 'error'); return; }
-  toast("Mendaftarkan anggota ke Cloud...", "error");
+  toast("Mendaftarkan anggota ke Cloud...", "success");
   for(let p of parsed) {
-    const payload = { action: "addStaf", id: "STAF-"+Date.now(), nama: p.nama, jabatanId: p.jabatanNama };
+    const payload = { action: "addStaf", id: "STAF-"+Date.now() + Math.random().toString(36).slice(2,5), nama: p.nama, jabatanId: p.jabatanNama };
     await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
   }
   closeModal('modal-bulk');
@@ -657,7 +658,7 @@ function refreshAllViews() {
     const jabObj = state.jabatan.find(j => j.nama.toUpperCase() === s.jabatanId.toUpperCase());
     const baseRate = jabObj ? jabObj.gaji : 300;
     return `<tr>
-      <td>${i+1}</td><td><strong>${s.nama}</strong></td><td><span class="badge badge-purple">${s.jabatanId}</span></td><td class="mono">${fmtMoney(baseRate)}</td><td>${logStaf.length}</td><td class="mono">${Math.floor(hours)}j ${mins%60}m</td><td class="mono"><strong>${fmtMoney(hours * baseRate)}</strong></td>
+      <td>${i+1}</td><td><strong>${s.nama}</strong></td><td><span class="badge badge-purple">${s.jabatanId}</span></td><td class="mono">${fmtMoney(baseRate)}</td><td>${logStaf.length}</td><td class="mono">${hours.toFixed(2)}j</td><td class="mono"><strong>${fmtMoney(hours * baseRate)}</strong></td>
     </tr>`;
   }).join('');
 
@@ -704,14 +705,17 @@ function getExportRekapData(wk, bonusPct) {
   data.forEach(a => {
     if (!byStaf[a.stafId]) byStaf[a.stafId] = { duty:0, menit:0, penanganan:0, pemasukan:0 };
     byStaf[a.stafId].duty++;
-    byStaf[a.stafId].menit += calcMinutes(a.masuk, a.keluar);
+    if (a.durasi && a.durasi.includes(':')) {
+      const [j, m] = a.durasi.split(':').map(Number);
+      byStaf[a.stafId].menit += (j * 60) + m;
+    }
     byStaf[a.stafId].penanganan += (a.treatment||0);
     byStaf[a.stafId].pemasukan += (a.pemasukan||0);
   });
   return Object.entries(byStaf).map(([sid,r]) => {
     const s = state.staf.find(x => x.nama.toLowerCase() === sid.toLowerCase());
-    const jabObj = s ? state.jabatan.find(j => j.id == s.jabatanId) : null;
-    const rate = jabObj ? jabObj.gaji : 300;
+    const rateRaw = s ? state.jabatan.find(j => j.nama.toUpperCase() === s.jabatanId.toUpperCase()) : null;
+    const rate = rateRaw ? rateRaw.gaji : 300;
     const jamDes = parseFloat((r.menit/60).toFixed(2));
     const gPokok = jamDes * rate;
     const bonus = jamDes > 10 ? Math.round(gPokok * (bonusPct/100)) : 0;
@@ -733,7 +737,6 @@ function renderExportPreview() {
 }
 
 function generateReportHTML(wkLabel, trs) {
-  // Ambil snapshot Base64 gambar grafik dari objek Chart.js aktif
   const imgPemasukanBase64 = chartIncome ? chartIncome.toBase64Image() : '';
   const imgPasienBase64 = chartMedical ? chartMedical.toBase64Image() : '';
 
@@ -783,7 +786,7 @@ function exportPDF() {
   
   const htmlFull = generateReportHTML(weekLabel(wk), trs);
   const win = window.open('','_blank'); win.document.write(htmlFull); win.document.close();
-  setTimeout(() => { win.print(); }, 500); // Beri sedikit jeda agar gambar Base64 ter-render sempurna
+  setTimeout(() => { win.print(); }, 500);
 }
 
 function exportWord() {
