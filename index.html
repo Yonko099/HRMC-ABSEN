@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v2.0 - Full Report Cloud Edition</title>
+<title>HRMC Dashboard v2.5 - Full Executive Cloud Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -47,7 +47,6 @@
 html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; background: var(--bg); color: var(--text); }
 button { cursor: pointer; font-family: inherit; }
 input, select, textarea { font-family: inherit; }
-a { text-decoration: none; color: inherit; }
 
 /* ── LAYOUT ── */
 .layout { display: flex; height: 100vh; overflow: hidden; }
@@ -66,18 +65,15 @@ a { text-decoration: none; color: inherit; }
 .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 16px; color: #777; font-size: 12.5px; font-weight: 500; transition: all 0.15s; cursor: pointer; border-left: 2px solid transparent; }
 .nav-item:hover { background: rgba(255,255,255,0.05); color: #ccc; }
 .nav-item.active { background: rgba(192,57,43,0.18); color: #fff; border-left-color: var(--red); font-weight: 700; }
-.nav-item svg { flex-shrink: 0; opacity: 0.8; }
-.nav-item.active svg { opacity: 1; }
-.sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 .version-badge { display: inline-block; background: rgba(192,57,43,0.2); color: #c0392b; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.5px; }
+.sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11px; color:#555;}
 
 /* ── TOPBAR ── */
 .topbar-title h1 { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .topbar-title p { font-size: 10.5px; color: var(--text3); }
 .topbar-meta { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .meta-chip { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text2); background: var(--bg); padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-weight: 500; }
-.toggle-wrap { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text2); }
-.toggle { width: 34px; height: 18px; background: #444; border-radius: 9px; position: relative; cursor: pointer; transition: background 0.2s; }
+.toggle { width: 34px; height: 18px; background: #444; border-radius: 9px; position: relative; cursor: pointer; }
 .toggle.on { background: var(--red); }
 .toggle::after { content: ''; width: 14px; height: 14px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
 .toggle.on::after { left: 18px; }
@@ -93,734 +89,848 @@ a { text-decoration: none; color: inherit; }
 .card-body { padding: 16px; }
 
 /* ── STAT CARDS ── */
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-.stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
-.stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.06; }
-.stat-card.c-blue::before { background: #3b82f6; }
-.stat-card.c-orange::before { background: #f97316; }
-.stat-card.c-green::before { background: #22c55e; }
-.stat-card.c-purple::before { background: #a855f7; }
-.stat-card.c-red::before { background: var(--red); }
-.stat-card.c-amber::before { background: #f59e0b; }
-.stat-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.stat-icon.blue { background: rgba(59,130,246,0.12); color: #3b82f6; }
-.stat-icon.orange { background: rgba(249,115,22,0.12); color: #f97316; }
-.stat-icon.green { background: rgba(34,197,94,0.12); color: #22c55e; }
-.stat-icon.purple { background: rgba(168,85,247,0.12); color: #a855f7; }
-.stat-icon.red { background: rgba(192,57,43,0.12); color: var(--red); }
-.stat-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
-.stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
-.stat-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.stat-icon { font-size: 18px; margin-bottom: 4px; }
+.stat-label { font-size: 9.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
+.stat-value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
 .stat-sub { font-size: 10.5px; color: var(--text3); }
 
 /* ── FORMS ── */
-.form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
 .form-group { flex: 1; min-width: 120px; }
 .form-group.w2 { flex: 2; }
-.form-group label { display: block; font-size: 10.5px; color: var(--text2); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
-.form-control { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-size: 13px; transition: border-color 0.15s, box-shadow 0.15s; }
-.form-control:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px var(--red-bg); }
-.input-group { display: flex; gap: 6px; }
-.spinner-wrap { display: flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--input-bg); }
-.spinner-wrap input { flex: 1; border: none; background: transparent; padding: 7px 10px; color: var(--text); font-size: 13px; text-align: center; font-family: 'JetBrains Mono', monospace; }
-.spinner-wrap input:focus { outline: none; }
-.spinner-btns { display: flex; flex-direction: column; }
-.spinner-btns button { background: var(--bg2); border: none; border-left: 1px solid var(--border); color: var(--text2); padding: 0 8px; font-size: 9px; flex: 1; }
+.form-group label { display: block; font-size: 10.5px; color: var(--text2); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
+.form-control { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-size: 13px; }
+.form-control:focus { outline: none; border-color: var(--red); }
+.input-tab-wrap { display: flex; gap: 4px; background: var(--bg2); padding: 3px; border-radius: 8px; margin-bottom: 12px; width: fit-content; }
+.input-tab { padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: transparent; color: var(--text2); }
+.input-tab.active { background: var(--card); color: var(--red); box-shadow: var(--shadow); }
 
 /* ── DATE NAV ── */
-.date-nav { display: flex; align-items: center; gap: 6px; }
-.date-nav-btn { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 7px; padding: 6px 10px; font-size: 13px; color: var(--text2); }
-.date-nav-btn.today { background: var(--red); color: #fff; border-color: var(--red-dark); font-size: 11px; font-weight: 700; padding: 6px 12px; }
+.date-nav { display: flex; align-items: center; gap: 4px; }
+.date-nav-btn { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 12px; color: var(--text2); }
 
 /* ── BUTTONS ── */
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700; border: none; transition: all 0.15s; white-space: nowrap; }
 .btn-primary { background: var(--red); color: #fff; }
-.btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,0.35); }
+.btn-primary:hover { background: var(--red-dark); }
 .btn-secondary { background: var(--bg2); color: var(--text); border: 1.5px solid var(--border); }
-.btn-secondary:hover { border-color: var(--red); color: var(--red); }
-.btn-icon { background: transparent; border: none; padding: 5px 7px; color: var(--text3); font-size: 14px; border-radius: 6px; }
+.btn-icon { background: transparent; border: none; padding: 4px 6px; color: var(--text3); border-radius: 6px; }
 .btn-icon:hover { background: var(--bg2); color: var(--red); }
-.btn-add { background: var(--red); border: none; border-radius: 8px; width: 34px; height: 34px; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-/* ── TOTAL BOX ── */
-.total-box { background: var(--bg); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 14px; border: 1.5px solid var(--border); flex-wrap: wrap; }
-.total-lbl { font-size: 9.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
-.total-val { font-size: 26px; font-weight: 800; color: var(--red-light); display: flex; align-items: center; gap: 3px; }
-.total-val input { width: 120px; font-size: 22px; font-weight: 800; color: var(--red-light); background: transparent; border: none; border-bottom: 2px solid var(--red-light); padding: 2px 4px; outline: none; font-family: 'JetBrains Mono', monospace; }
-.form-note { font-size: 10.5px; color: var(--text3); margin-top: 6px; }
-
-/* ── TABLES ── */
+/* ── TABLES & LISTS ── */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
-table th { background: var(--table-head); padding: 9px 10px; font-size: 10px; font-weight: 800; color: var(--red); text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+table th { background: var(--table-head); padding: 9px 10px; font-size: 10px; font-weight: 800; color: var(--red); text-align: left; border-bottom: 2px solid var(--border); text-transform: uppercase; }
 table td { padding: 9px 10px; font-size: 12px; color: var(--text2); border-bottom: 1px solid var(--border); }
 table tr:hover td { background: var(--row-hover); }
 .mono { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; }
 
+/* ── STAFF LIST INLINE EDIT ── */
+.staff-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red-bg); display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 13px; font-weight: 800; border: 2px solid rgba(192,57,43,0.2); }
+.staff-info { flex: 1; min-width: 0; }
+.staff-name-display { font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.12s; }
+.staff-name-display:hover { background: var(--bg2); color: var(--red); }
+.staff-name-input { font-size: 13px; font-weight: 700; color: var(--text); background: var(--input-bg); border: 1.5px solid var(--red); border-radius: 6px; padding: 2px 8px; outline: none; width: 100%; max-width: 200px; }
+
+.org-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; margin-bottom: 6px; background: var(--card); }
+.org-rank { width: 26px; height: 26px; border-radius: 50%; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.org-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--text); }
+
 /* ── BADGES ── */
-.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
 .badge-red { background: rgba(192,57,43,0.12); color: var(--red); }
 .badge-blue { background: rgba(59,130,246,0.12); color: #2563eb; }
-.badge-green { background: rgba(34,197,94,0.12); color: #16a34a; }
-.badge-amber { background: rgba(245,158,11,0.12); color: #d97706; }
 .badge-purple { background: rgba(168,85,247,0.12); color: #9333ea; }
+.badge-green { background: rgba(34,197,94,0.12); color: #16a34a; }
 
-/* ── SEARCH ── */
-.search-box { display: flex; align-items: center; gap: 6px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 5px 10px; }
-.search-box input { background: transparent; border: none; color: var(--text); font-size: 12px; width: 150px; }
-.search-box input:focus { outline: none; }
-
-/* ── STAFF ── */
-.staff-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red-bg); display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 13px; font-weight: 800; flex-shrink: 0; border: 2px solid rgba(192,57,43,0.2); }
-.staff-info { flex: 1; min-width: 0; }
-.staff-name-display { font-size: 13px; font-weight: 700; color: var(--text); cursor: text; }
-.staff-role { font-size: 11px; color: var(--text3); margin-top: 1px; }
-
-/* ── ORG ── */
-.org-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; margin-bottom: 6px; background: var(--card); }
-.org-rank { width: 26px; height: 26px; border-radius: 50%; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.org-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--text); }
-.org-gaji { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; font-weight:600; }
-.org-count { font-size: 11px; color: var(--text3); }
-
-/* ── CHART ── */
+.total-box { background: var(--bg); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 14px; border: 1.5px solid var(--border); flex-wrap: wrap; }
 .chart-wrap { position: relative; height: 200px; }
 
-/* ── MODALS ── */
+/* ── MODALS & TOAST ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--card); border-radius: 14px; border: 1.5px solid var(--border); padding: 22px; width: 440px; max-width: 96vw; box-shadow: var(--shadow-lg); }
 .modal-lg { width: 540px; }
 .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .modal-header h3 { font-size: 15px; font-weight: 800; color: var(--text); }
-.modal-close { background: transparent; border: none; color: var(--text3); font-size: 18px; cursor: pointer; }
+.modal-close { background: transparent; border: none; color: var(--text3); font-size: 18px; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
 
-/* ── TOAST ── */
 .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: #1f2937; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-weight: 600; border-left: 3px solid #4b5563; }
+.toast { background: #1f2937; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border-left: 3px solid #4b5563; }
 .toast.success { background: #14532d; border-left-color: #22c55e; }
 .toast.error { background: #7f1d1d; border-left-color: #ef4444; }
 
-/* ── REKAP ── */
-.rekap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.rekap-stat { background: var(--bg2); border-radius: 10px; padding: 13px; text-align: center; border: 1.5px solid var(--border); }
-.rekap-stat .r-lbl { font-size: 9.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; margin-bottom: 4px; }
-.rekap-stat .r-val { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
-.rekap-stat .r-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
-
-.export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-export { display: flex; align-items: center; gap: 9px; padding: 11px 20px; border-radius: 9px; font-size: 13px; font-weight: 700; border: 2px solid var(--border); background: var(--card); color: var(--text); }
-
-.bulk-textarea { width: 100%; height: 200px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 12px; color: var(--text); font-size: 13px; line-height: 1.8; resize: vertical; font-family: 'JetBrains Mono', monospace; }
-.bulk-jabatan-ref { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.bulk-jabatan-chip { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 20px; padding: 2px 10px; font-size: 11px; color: var(--text2); font-weight: 600; cursor: pointer; }
-.bulk-preview-list { border: 1.5px solid var(--border); border-radius: 9px; overflow: hidden; max-height: 170px; overflow-y: auto; margin-top: 10px; }
+.bulk-textarea { width: 100%; height: 160px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 12px; color: var(--text); font-size: 13px; font-family: 'JetBrains Mono', monospace; resize: vertical; }
+.bulk-preview-list { border: 1.5px solid var(--border); border-radius: 9px; overflow: hidden; max-height: 140px; overflow-y: auto; margin-top: 10px; }
 .bulk-preview-row { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
-.bulk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: #22c55e; }
-.bulk-count-badge { display: inline-flex; align-items: center; background: var(--red-bg); color: var(--red); border: 1px solid rgba(192,57,43,0.25); border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
-
-.gaji-settings { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.bonus-info { background: var(--bg2); border-radius: 8px; padding: 8px 14px; font-size: 11.5px; color: var(--text2); border: 1px solid var(--border); }
-.bonus-info strong { color: var(--red); }
 
 @media (max-width: 900px) { .sidebar { width: 0; min-width: 0; overflow: hidden; } }
-@media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr 1fr; } .rekap-grid { grid-template-columns: repeat(2, 1fr); } .form-row { flex-direction: column; } }
 </style>
 </head>
 <body data-theme="light">
 
 <div class="layout">
 
-<aside class="sidebar">
-  <div class="logo-area">
-    <div class="logo-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M10 12h4"/></svg>
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-name">HRMC CORE</div>
+        <div class="logo-sub">HAPPINESS ROLEPLAY<br>MEDICAL CENTER</div>
+      </div>
     </div>
-    <div>
-      <div class="logo-name">HRMC</div>
-      <div class="logo-sub">HAPPINESS ROLEPLAY<br>MEDICAL CENTER</div>
+    <div class="nav-section">
+      <div class="nav-label">Utama</div>
+      <div class="nav-item active" onclick="goPage('dashboard')"> Dashboard </div>
+      <div class="nav-item" onclick="goPage('anggota')"> Data Anggota </div>
+      <div class="nav-item" onclick="goPage('absensi')"> Absensi Duty </div>
     </div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">Utama</div>
-    <div class="nav-item active" onclick="goPage('dashboard')"> Dashboard </div>
-    <div class="nav-item" onclick="goPage('anggota')"> Data Anggota </div>
-    <div class="nav-item" onclick="goPage('absensi')"> Absensi Duty </div>
-    <div class="nav-item" onclick="goPage('rekap')"> Rekap Mingguan </div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">Pengelolaan</div>
-    <div class="nav-item" onclick="goPage('jabatan')"> Struktur Jabatan </div>
-    <div class="nav-item" onclick="goPage('gaji')"> Perhitungan Gaji </div>
-    <div class="nav-item" onclick="goPage('export')"> Export Laporan </div>
-  </div>
-  <div class="sidebar-bottom">
-    <div class="version-badge">v2.0</div>
-    <div class="sidebar-quote">"We Care, We Heal,<br>We're HRMC."</div>
-  </div>
-</aside>
+    <div class="nav-section">
+      <div class="nav-label">Pengelolaan</div>
+      <div class="nav-item" onclick="goPage('jabatan')"> Struktur Jabatan </div>
+      <div class="nav-item" onclick="goPage('gaji')"> Perhitungan Gaji </div>
+      <div class="nav-item" onclick="goPage('export')"> Export Laporan </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="version-badge">v2.5</div>
+      <div>"We Care, We Heal, We're HRMC."</div>
+    </div>
+  </aside>
 
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-title">
-      <h1>HRMC DASHBOARD</h1>
-      <p>Happiness Roleplay Medical Center</p>
-    </div>
-    <div class="topbar-meta">
-      <div class="meta-chip"><span id="top-date">-</span></div>
-      <div class="meta-chip"><span id="top-clock">-</span></div>
-      <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()">🔄 Sinkron Cloud</button>
-      <div class="toggle-wrap">
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">
+        <h1>HRMC INDUSTRIAL CONTROL</h1>
+        <p>Los Santos Medical Cloud Service</p>
+      </div>
+      <div class="topbar-meta">
+        <div class="meta-chip"><span id="top-date">-</span></div>
+        <div class="meta-chip"><span id="top-clock">-</span></div>
+        <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()">🔄 Sync Cloud</button>
         <div class="toggle" id="darkToggle" onclick="toggleDark()"></div>
       </div>
     </div>
-  </div>
 
-  <div class="page-content">
+    <div class="page-content">
 
-    <div class="page active" id="page-dashboard">
-      <div class="stat-grid">
-        <div class="stat-card c-blue">
-          <div class="stat-icon blue">👥</div>
-          <div class="stat-label">Total Anggota</div>
-          <div class="stat-value" id="d-total-anggota">0</div>
-          <div class="stat-sub">Anggota terdaftar</div>
-        </div>
-        <div class="stat-card c-orange">
-          <div class="stat-icon orange">🕒</div>
-          <div class="stat-label">Duty Hari Ini</div>
-          <div class="stat-value" id="d-total-duty">0</div>
-          <div class="stat-sub">Sesi duty</div>
-        </div>
-        <div class="stat-card c-amber">
-          <div class="stat-icon amber">🚑</div>
-          <div class="stat-label">Penanganan Pasien</div>
-          <div class="stat-value" id="d-total-penanganan">0</div>
-          <div class="stat-sub">Hari ini</div>
-        </div>
-        <div class="stat-card c-green">
-          <div class="stat-icon green">💰</div>
-          <div class="stat-label">Total Pemasukan</div>
-          <div class="stat-value" id="d-total-pemasukan">$0</div>
-          <div class="stat-sub">Hari ini</div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="card">
-          <div class="card-header"><h3>Pemasukan Harian</h3></div>
-          <div class="card-body"><div class="chart-wrap"><canvas id="chart-pemasukan"></canvas></div></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h3>Penanganan Pasien</h3></div>
-          <div class="card-body"><div class="chart-wrap"><canvas id="chart-penanganan"></canvas></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="page" id="page-anggota">
-      <div class="card">
-        <div class="card-header">
-          <h3>Daftar Anggota Aktif</h3>
-          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
-            <button class="btn btn-secondary btn-sm" onclick="openBulkModal()">Tambah Sekaligus</button>
+      <!-- ═══ PAGE 1: DASHBOARD MONITORING ═══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Total Anggota</div>
+            <div class="stat-value" id="d-total-anggota">0</div>
+            <div class="stat-sub">Staf Terdaftar</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🕒</div>
+            <div class="stat-label">Duty Minggu Ini</div>
+            <div class="stat-value" id="d-total-duty">0</div>
+            <div class="stat-sub">Sesi Operasional</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⌛</div>
+            <div class="stat-label">Total Jam Kerja</div>
+            <div class="stat-value" id="d-total-jam">0j</div>
+            <div class="stat-sub">Jam Kerja Kolektif</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🚑</div>
+            <div class="stat-label">Pasien Ditangani</div>
+            <div class="stat-value" id="d-total-penanganan">0</div>
+            <div class="stat-sub font-note">Kasus Medis</div>
+          </div>
+          <div class="stat-card" style="border-left: 3px solid #16a34a;">
+            <div class="stat-icon">💰</div>
+            <div class="stat-label">Total Pemasukan</div>
+            <div class="stat-value" id="d-total-pemasukan">$0</div>
+            <div class="stat-sub">Kas Hospital</div>
+          </div>
+          <div class="stat-card" style="border-left: 3px solid #e74c3c;">
+            <div class="stat-icon">💸</div>
+            <div class="stat-label">Estimasi Gaji</div>
+            <div class="stat-value" id="d-total-gaji">$0</div>
+            <div class="stat-sub">Payroll Minggu Ini</div>
           </div>
         </div>
-        <div class="card-body" style="max-height:540px;overflow-y:auto;">
-          <div id="anggota-list"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="card">
+            <div class="card-header"><h3>Tren Sesi & Penanganan Pasien Harian</h3></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-operasional"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Finansial Cashflow (Pemasukan vs Pengeluaran Gaji)</h3></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-cashflow"></canvas></div></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+          <div class="card">
+            <div class="card-header"><h3>Top 7 Aktivitas Anggota (Durasi Kerja Terlama)</h3></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-top-staf"></canvas></div></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="page" id="page-absensi">
-      <div class="card">
-        <div class="card-header"><h3>Input Absensi Duty (Kirim ke Cloud)</h3></div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
-          <div class="form-row">
-            <div class="form-group w2">
-              <label>Nama Anggota</label>
-              <select class="form-control" id="ab-nama"></select>
+      <!-- ═══ PAGE 2: SISTEM PENGELOLAAN ANGGOTA ═══ -->
+      <div class="page" id="page-anggota">
+        <div class="card">
+          <div class="card-header">
+            <h3>Daftar Anggota Aktif & Inline Editor</h3>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary btn-sm" onclick="openBulkModal()">📥 Bulk Add (Tambah Sekaligus)</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddStafModal()">➕ Tambah Tunggal</button>
             </div>
-            <div class="form-group">
-              <label>Tanggal</label>
-              <div class="date-nav">
-                <input type="date" class="form-control" id="ab-tanggal" oninput="onAbTanggal()">
+          </div>
+          <div class="card-body">
+            <p style="font-size:11px; color:var(--text3); margin-bottom:10px;">💡 <b>Tips Kontrol:</b> Klik langsung pada susunan nama staf di bawah untuk mengedit nama secara instan (*Inline Edit) lalu tekan Enter.</p>
+            <div id="anggota-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE 3: MANAJEMEN ABSENSI DUTY ═══ -->
+      <div class="page" id="page-absensi">
+        <div class="card">
+          <div class="card-header"><h3>Pusat Input Log Operasional</h3></div>
+          <div class="card-body">
+            <div class="input-tab-wrap">
+              <button class="input-tab active" id="tab-quick" onclick="switchForm('quick')">⚡ Quick Input</button>
+              <button class="input-tab" id="tab-full" onclick="switchForm('full')">📋 Full Input (Detail Mode)</button>
+            </div>
+
+            <!-- Form Quick Input -->
+            <div id="form-quick-container">
+              <div class="form-row">
+                <div class="form-group w2">
+                  <label>Nama Anggota</label>
+                  <select class="form-control" id="q-nama"></select>
+                </div>
+                <div class="form-group">
+                  <label>Durasi Langsung (Jam)</label>
+                  <input type="number" class="form-control" id="q-jam-langsung" placeholder="Contoh: 3" min="1">
+                </div>
+                <div class="form-group">
+                  <label>Pasien</label>
+                  <input type="number" class="form-control" id="q-pasien" value="0">
+                </div>
+                <div class="form-group">
+                  <label>Pemasukan Hospital ($)</label>
+                  <input type="number" class="form-control" id="q-pemasukan" value="0">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="simpanAbsensiCloud('quick')">Kirim Quick Log</button>
+            </div>
+
+            <!-- Form Full Input -->
+            <div id="form-full-container" style="display:none;">
+              <div class="form-row">
+                <div class="form-group w2">
+                  <label>Nama Anggota</label>
+                  <select class="form-control" id="f-nama"></select>
+                </div>
+                <div class="form-group">
+                  <label>Tanggal Kerja</label>
+                  <div class="date-nav">
+                    <button class="date-nav-btn" onclick="adjustDate(-1)">◀</button>
+                    <input type="date" class="form-control" id="f-tanggal" oninput="onDateChange()">
+                    <button class="date-nav-btn" onclick="adjustDate(1)">▶</button>
+                  </div>
+                </div>
+                <div class="form-group" style="max-width:90px;">
+                  <label>Hari</label>
+                  <input type="text" class="form-control" id="f-hari" readonly>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Jam Masuk (HH:MM)</label>
+                  <input type="text" class="form-control" id="f-masuk" placeholder="08:00" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label>Jam Keluar (HH:MM)</label>
+                  <input type="text" class="form-control" id="f-keluar" placeholder="13:30" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label>Auto Hitung Durasi</label>
+                  <input type="text" class="form-control" id="f-durasi-display" readonly placeholder="Otomatis">
+                </div>
+                <div class="form-group">
+                  <label>Kasus Pasien</label>
+                  <input type="number" class="form-control" id="f-pasien" value="0">
+                </div>
+                <div class="form-group">
+                  <label>Pemasukan ($)</label>
+                  <input type="number" class="form-control" id="f-pemasukan" value="0">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="simpanAbsensiCloud('full')">Kirim Full Log</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Log Histori Absensi</h3>
+            <select class="form-control" id="ab-filter-week" style="width:230px;" onchange="renderAbsensiTable()"></select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tanggal</th><th>Hari</th><th>Masuk</th><th>Keluar</th><th>Durasi</th><th>Pasien</th><th>Pemasukan</th><th>Aksi</th></tr></thead>
+              <tbody id="absensi-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE 4: STRUKTUR JABATAN & MATRIX ═══ -->
+      <div class="page" id="page-jabatan">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="card">
+            <div class="card-header"><h3>Matrix Urutan Jabatan & Tarif Per Jam</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Hierarki</th><th>Nama Jabatan</th><th>Upah Pokok / Jam</th></tr></thead>
+                <tbody id="jabatan-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Bagan Visual Struktur Organisasi (Orgtree)</h3></div>
+            <div class="card-body" id="org-preview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE 5: PERHITUNGAN GAJI DESIMAL & PAYROLL ═══ -->
+      <div class="page" id="page-gaji">
+        <div class="card">
+          <div class="card-header">
+            <h3>Rangkuman Payroll & Bonus Pelayanan</h3>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <label style="font-size:11px; font-weight:bold;">Set Bonus (%):</label>
+              <input type="number" class="form-control" id="matrix-bonus-pct" value="10" style="width:70px;" oninput="refreshAllViews()">
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="bonus-info">
+              💡 <b>Aturan Bisnis:</b> Insentif bonus pelayanan otomatis aktif jika total jam kerja staf dalam seminggu **&gt; 10 Jam**. Perhitungan jam kerja dikonversi murni ke desimal (contoh: 30 menit = 0.50 jam).
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Sesi</th><th>Total Durasi</th><th>Jam Desimal</th><th>Gaji Pokok</th><th>Bonus</th><th>Total Gaji Final</th></tr></thead>
+              <tbody id="gaji-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE 6: EXPORT CENTER CENTER ═══ -->
+      <div class="page" id="page-export">
+        <div class="card">
+          <div class="card-header"><h3>Gerbang Ekspor Dokumen</h3></div>
+          <div class="card-body">
+            <div style="display:flex; gap:10px; align-items:flex-end; margin-bottom:15px;">
+              <div class="form-group">
+                <label>Pilih Periode Mingguan</label>
+                <select class="form-control" id="export-week" style="width:260px;" onchange="renderExportPreview()"></select>
               </div>
             </div>
-            <div class="form-group" style="flex:0 0 100px;">
-              <label>Hari</label>
-              <input type="text" class="form-control" id="ab-hari" readonly>
+            <div class="export-btns">
+              <button class="btn-export" style="border-color:#e74c3c; color:#e74c3c;" onclick="exportDocument('pdf')">📄 Export PDF Resmi</button>
+              <button class="btn-export" style="border-color:#3b82f6; color:#3b82f6;" onclick="exportDocument('word')">📝 Export Word (.doc)</button>
+              <button class="btn-export" style="border-color:#16a34a; color:#16a34a;" onclick="exportExcelCompact()">📊 Export CSV Ringkas</button>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Jam Masuk (HH:MM)</label>
-              <input type="text" class="form-control" id="ab-masuk" placeholder="07:00" maxlength="5">
-            </div>
-            <div class="form-group">
-              <label>Jam Keluar (HH:MM)</label>
-              <input type="text" class="form-control" id="ab-keluar" placeholder="12:00" maxlength="5">
-            </div>
-            <div class="form-group">
-              <label>Durasi Duty</label>
-              <input type="text" class="form-control" id="ab-durasi" readonly placeholder="Otomatis">
-            </div>
-            <div class="form-group">
-              <label>Penanganan Pasien</label>
-              <input type="number" id="ab-penanganan" class="form-control" value="0" min="0">
-            </div>
-          </div>
-          <div class="total-box">
-            <div>
-              <div class="total-lbl">Pemasukan ($)</div>
-              <input type="number" id="ab-pemasukan" class="form-control" value="0" min="0" style="width:130px; font-size:18px; font-weight:bold; color:var(--red-light);">
-            </div>
-            <div style="flex:1;display:flex;justify-content:flex-end;">
-              <button class="btn btn-primary" onclick="simpanAbsensiCloud()">Kirim ke Google Sheets</button>
-            </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Preview Lembar Penggajian</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif</th><th>Total Jam</th><th>Jam Desimal</th><th>Pasien</th><th>Pemasukan</th><th>Bonus</th><th>Total Hak Gaji</th></tr></thead>
+              <tbody id="export-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header"><h3>Semua Data Absensi</h3></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tanggal</th><th>Hari</th><th>Masuk</th><th>Keluar</th><th>Durasi</th><th>Pasien</th><th>Pemasukan</th></tr></thead>
-            <tbody id="absensi-tbody"></tbody>
-          </table>
-        </div>
-      </div>
     </div>
-
-    <div class="page" id="page-rekap">
-      <div class="rekap-grid" id="rekap-stats"></div>
-      <div class="card">
-        <div class="card-header"><h3>Detail Mingguan Per Anggota</h3></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Total Duty</th><th>Total Jam</th><th>Pasien</th><th>Pemasukan</th></tr></thead>
-            <tbody id="rekap-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="page" id="page-jabatan">
-      <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
-        <div class="card" style="flex:1;min-width:300px;">
-          <div class="card-header"><h3>Struktur Jabatan</h3></div>
-          <div class="card-body" id="jabatan-list"></div>
-        </div>
-        <div class="card" style="flex:1;min-width:300px;">
-          <div class="card-header"><h3>Bagan Organisasi</h3></div>
-          <div class="card-body" id="org-preview"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="page" id="page-gaji">
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Gaji Dasar/Jam</th><th>Total Sesi</th><th>Total Jam</th><th>Total Gaji Final</th></tr></thead>
-            <tbody id="gaji-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="page" id="page-export">
-      <div class="card">
-        <div class="card-header"><h3>Export Laporan Mingguan</h3></div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
-          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-            <div class="form-group" style="flex:0 0 auto;">
-              <label>Pilih Periode</label>
-              <select class="form-control" id="export-week" style="width:260px;" onchange="renderExportPreview()"></select>
-            </div>
-            <div class="form-group" style="flex:0 0 auto;">
-              <label>Bonus (%)</label>
-              <input type="number" class="form-control" id="export-bonus-pct" value="10" min="0" max="100" style="width:80px;" oninput="renderExportPreview()">
-            </div>
-          </div>
-          <div class="export-btns">
-            <button class="btn-export" onclick="exportPDF()">Export PDF</button>
-            <button class="btn-export" onclick="exportExcel()">Export CSV</button>
-            <button class="btn-export" onclick="exportWord()">Export Word (HTML)</button>
-          </div>
-          <div class="form-note">* PDF & Word: Export dokumen lengkap termasuk grafik statistik harian.</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3>Preview Data Export (Rangkuman Payroll Per Anggota)</h3></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan</th><th>Bonus</th><th>Total Gaji</th></tr></thead>
-            <tbody id="export-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
-</div>
 
+<!-- ═══════════════ MODAL AREA ═══════════════ -->
 <div class="modal-overlay" id="modal-bulk">
   <div class="modal modal-lg">
     <div class="modal-header">
-      <h3>Tambah Anggota Sekaligus</h3>
+      <h3>Bulk Input Anggota Baru (Format: Nama,nama)</h3>
       <button class="modal-close" onclick="closeModal('modal-bulk')">✕</button>
     </div>
+    <div style="font-size:11px; color:var(--text3); margin-bottom:8px;">Masukkan data dengan format `Nama Staf | Nama Jabatan` dipisahkan baris baru. Contoh:<br><b>Zhagi | NURSE<br>Mirae | COAS</b></div>
     <textarea class="bulk-textarea" id="bulk-textarea" placeholder="Zhagi | NURSE&#10;Mirae | COAS" oninput="onBulkInput()"></textarea>
     <div id="bulk-preview-wrap" style="display:none;"><div class="bulk-preview-list" id="bulk-preview-list"></div></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-bulk')">Batal</button>
-      <button class="btn btn-primary" onclick="saveBulkStafCloud()">Simpan Ke Cloud Sheets</button>
+      <button class="btn btn-primary" onclick="saveBulkStafCloud()">Eksekusi Inject Cloud</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-single">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Tambah Staf Baru</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-single')">✕</button>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Nama Lengkap Anggota</label>
+      <input type="text" class="form-control" id="s-single-nama" placeholder="Contoh: Zhagi Medical">
+    </div>
+    <div class="form-group">
+      <label>Penempatan Jabatan</label>
+      <select class="form-control" id="s-single-jabatan"></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-single')">Batal</button>
+      <button class="btn btn-primary" onclick="saveSingleStafCloud()">Simpan Anggota</button>
     </div>
   </div>
 </div>
 
 <div class="toast-wrap" id="toast-wrap"></div>
 
+<!-- ═══════════════ JAVASCRIPT CORE CONTROL ═══════════════ -->
 <script>
-// Tautan Jembatan API Cloud yang Baru & Sehat
 const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycby8Gqw1CzNjQufMdpq3OaqTLTkiVMuAKJ_mgFDk5MeSHdTf-4qw71rRsyvL5GnYTPD6/exec";
 
-let state = { absensi: [], staf: [], jabatan: [], darkMode: false };
-let chartIncome = null, chartMedical = null;
+let state = { absensi: [], staf: [], jabatan: [], darkMode: false, activeFormMode: 'quick' };
+let chartOps = null, chartFlow = null, chartTop = null;
 
-// ===================== CORE LOADER (DIRECT SHEETS) =====================
+// ===================== SERVER KONEKSI CORE =====================
 async function fetchDataCloud() {
   try {
     const respon = await fetch(URL_API_SPREADSHEET);
     if (respon.ok) {
-      const dataCloud = await respon.json();
-      state.absensi = dataCloud.absensi || [];
-      state.staf = dataCloud.staf || [];
-      state.jabatan = dataCloud.jabatan || [];
-      toast("Sinkronisasi Cloud Sheets sukses!");
+      const res = await respon.json();
+      state.absensi = res.absensi || [];
+      state.staf = res.staf || [];
+      state.jabatan = res.jabatan || [];
+      toast("Sinkronisasi Database Cloud Sukses!", "success");
       refreshAllViews();
     }
-  } catch (error) {
-    toast("Gagal memuat database Google Sheets", "error");
+  } catch (e) {
+    toast("Koneksi Google Sheets Terputus/Gagal!", "error");
   }
 }
 
-function goPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name)?.classList.add('active');
-  if(name === 'dashboard') refreshAllViews();
-  if(name === 'export') { populateWeekSelect('export-week'); renderExportPreview(); }
-}
-
-// ===================== LOGIC UTILS =====================
-function uid() { return "ABS-" + Date.now(); }
-function todayISO() { return new Date().toISOString().slice(0,10); }
-function hariFromISO(iso) { return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(iso).getDay()]; }
-function fmtDate(iso) { return new Date(iso).toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' }); }
-function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
-
-function weekKey(iso) {
-  const d = new Date(iso); const day = d.getDay();
-  const sun = new Date(d); sun.setDate(d.getDate() - day);
-  const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
-  return sun.toISOString().slice(0,10) + '_' + sat.toISOString().slice(0,10);
-}
-function currentWeekKey() { return weekKey(todayISO()); }
-function weekLabel(key) {
-  if(!key || !key.includes('_')) return '-';
-  const [a,b] = key.split('_'); return fmtDate(a) + ' — ' + fmtDate(b);
-}
-function allWeeks() {
-  const wks = {};
-  state.absensi.forEach(a => { if (a.tanggal) wks[weekKey(a.tanggal)] = true; });
-  wks[currentWeekKey()] = true;
-  return Object.keys(wks).sort().reverse();
-}
-function populateWeekSelect(id) {
-  const el = document.getElementById(id); if (!el) return;
-  el.innerHTML = allWeeks().map(w => `<option value="${w}">${weekLabel(w)}</option>`).join('');
-}
-
-function calcMinutes(masuk, keluar) {
-  if (!masuk || !keluar || !masuk.includes(':') || !keluar.includes(':')) return 0;
-  const [h1,m1] = masuk.split(':').map(Number);
-  const [h2,m2] = keluar.split(':').map(Number);
-  let mins = (h2*60+m2)-(h1*60+m1); if (mins < 0) mins += 1440;
-  return mins;
-}
-
-function applyTimeMask(id) {
-  document.getElementById(id)?.addEventListener('input', function() {
-    let v = this.value.replace(/\D/g,'');
-    if (v.length > 4) v = v.slice(0,4);
-    if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2);
-    this.value = v;
-    const m = document.getElementById('ab-masuk').value;
-    const k = document.getElementById('ab-keluar').value;
-    const mins = calcMinutes(m, k);
-    document.getElementById('ab-durasi').value = mins > 0 ? Math.floor(mins/60) + 'j ' + (mins%60) + 'm' : '';
-  });
-}
-
-function onAbTanggal() {
-  const t = document.getElementById('ab-tanggal');
-  if (t) document.getElementById('ab-hari').value = hariFromISO(t.value);
-}
-
-// ===================== OPERATION CLOUD WRITE (POST) =====================
-async function simpanAbsensiCloud() {
-  const stafId = document.getElementById('ab-nama').value;
-  const tanggal = document.getElementById('ab-tanggal').value;
-  const masuk = document.getElementById('ab-masuk').value;
-  const keluar = document.getElementById('ab-keluar').value;
-  const penanganan = parseInt(document.getElementById('ab-penanganan').value) || 0;
-  const pemasukan = parseFloat(document.getElementById('ab-pemasukan').value) || 0;
-
-  if (!stafId || !tanggal || !masuk || !keluar) { toast('Lengkapi form absensi!', 'error'); return; }
-
-  const mins = calcMinutes(masuk, keluar);
-  const durasiFmt = String(Math.floor(mins/60)).padStart(2,'0') + ":" + String(mins%60).padStart(2,'0');
-  const selectedStaf = state.staf.find(s => s.id === stafId);
-
-  const payload = {
-    action: "addAbsen", id: uid(),
-    stafId: selectedStaf ? selectedStaf.nama : stafId,
-    jabatan: selectedStaf ? selectedStaf.jabatanId : "NURSE",
-    tanggal: tanggal, hari: hariFromISO(tanggal), masuk, keluar,
-    durasi: durasiFmt, treatment: penanganan, pemasukan, weekKey: weekKey(tanggal)
-  };
-
-  toast("Mengirim log ke Google Sheets...", "success");
-  try {
-    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-    toast("Sukses masuk Sheets!");
-    document.getElementById('ab-masuk').value = '';
-    document.getElementById('ab-keluar').value = '';
-    document.getElementById('ab-pemasukan').value = 0;
-    fetchDataCloud();
-  } catch (e) { toast("Gagal terkoneksi cloud", "error"); }
-}
-
-async function saveBulkStafCloud() {
-  const parsed = parseBulkLines().filter(p => p.ok);
-  if(!parsed.length) { toast('Tidak ada data valid', 'error'); return; }
-  toast("Mendaftarkan anggota ke Cloud...", "success");
-  for(let p of parsed) {
-    const payload = { action: "addStaf", id: "STAF-"+Date.now() + Math.random().toString(36).slice(2,5), nama: p.nama, jabatanId: p.jabatanNama };
-    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-  }
-  closeModal('modal-bulk');
-  fetchDataCloud();
-}
-
-// ===================== ENGINE VIEW RENDERER =====================
 function refreshAllViews() {
-  const today = todayISO();
-  const todayData = state.absensi.filter(a => a.tanggal.split('T')[0] === today);
+  const currentWk = currentWeekKey();
+  const weekData = state.absensi.filter(a => a.weekKey === currentWk);
+  const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value || 10) / 100;
 
+  // 1. Hitung Statistik Real-Time Dashboard
   document.getElementById('d-total-anggota').textContent = state.staf.length;
-  document.getElementById('d-total-duty').textContent = todayData.length;
-  document.getElementById('d-total-penanganan').textContent = todayData.reduce((s,a)=>s+a.treatment,0);
-  document.getElementById('d-total-pemasukan').textContent = fmtMoney(todayData.reduce((s,a)=>s+a.pemasukan,0));
+  document.getElementById('d-total-duty').textContent = weekData.length;
+  document.getElementById('d-total-penanganan').textContent = weekData.reduce((s,a)=>s+a.treatment, 0);
+  document.getElementById('d-total-pemasukan').textContent = fmtMoney(weekData.reduce((s,a)=>s+a.pemasukan, 0));
 
-  document.getElementById('ab-nama').innerHTML = state.staf.map(s => `<option value="${s.id}">${s.nama}</option>`).join('') || '<option value="">-- Daftarkan Anggota Dahulu --</option>';
+  let totalMinutesWeek = 0;
+  weekData.forEach(a => { totalMinutesWeek += parseDurasiToMinutes(a.durasi); });
+  document.getElementById('d-total-jam').textContent = Math.floor(totalMinutesWeek/60) + "j " + (totalMinutesWeek%60) + "m";
 
-  document.getElementById('absensi-tbody').innerHTML = state.absensi.map((a,i) => `
-    <tr>
-      <td>${i+1}</td><td><b>${a.stafId}</b></td><td><span class="badge badge-red">${a.jabatan}</span></td>
-      <td class="mono">${fmtDate(a.tanggal)}</td><td>${a.hari}</td><td class="mono">${a.masuk}</td><td class="mono">${a.keluar}</td><td class="mono">${a.durasi}</td><td>${a.treatment}</td><td class="mono"><strong>${fmtMoney(a.pemasukan)}</strong></td>
-    </tr>`).join('');
+  // Kalkulasi Estimasi Pengeluaran Gaji Real-Time di Dashboard
+  let totalGajiEst = 0;
+  const mapStafGaji = {};
+  weekData.forEach(a => {
+    if(!mapStafGaji[a.stafId.toLowerCase()]) mapStafGaji[a.stafId.toLowerCase()] = 0;
+    mapStafGaji[a.stafId.toLowerCase()] += parseDurasiToMinutes(a.durasi);
+  });
+  Object.entries(mapStafGaji).forEach(([namaStaf, totalMins]) => {
+    const sObj = state.staf.find(s => s.nama.toLowerCase() === namaStaf);
+    const jObj = sObj ? state.jabatan.find(j => j.nama.toUpperCase() === sObj.jabatanId.toUpperCase()) : null;
+    const rate = jObj ? jObj.gaji : 300;
+    const decimalHours = totalMins / 60;
+    const gPokok = decimalHours * rate;
+    totalGajiEst += gPokok + (decimalHours > 10 ? (gPokok * bonusPct) : 0);
+  });
+  document.getElementById('d-total-gaji').textContent = fmtMoney(totalGajiEst);
 
+  // 2. Render Dropdown Pilihan Nama Form Absensi
+  const selectOpts = state.staf.map(s => `<option value="${s.id}">${s.nama} [${s.jabatanId}]</option>`).join('') || '<option value="">-- Kosong --</option>';
+  document.getElementById('q-nama').innerHTML = selectOpts;
+  document.getElementById('f-nama').innerHTML = selectOpts;
+  document.getElementById('s-single-jabatan').innerHTML = state.jabatan.map(j => `<option value="${j.nama}">${j.nama}</option>`).join('');
+
+  // 3. Render Struktur Jabatan & Bagan Organisasi
+  document.getElementById('jabatan-tbody').innerHTML = state.jabatan.map((j, i) => `
+    <tr><td><b>#${i+1}</b></td><td><span class="badge badge-purple">${j.nama}</span></td><td class="mono font-weight-bold" style="color:#16a34a;">${fmtMoney(j.gaji)}/jam</td></tr>`).join('');
+
+  document.getElementById('org-preview').innerHTML = state.jabatan.map(j => `
+    <div style="background:var(--bg2); border-radius:8px; padding:8px 12px; border-left:3px solid var(--red); margin-bottom:5px;">
+      <div style="font-size:12px; font-weight:800; display:flex; justify-content:space-between;"><span>${j.nama}</span><span class="mono">${fmtMoney(j.gaji)}/j</span></div>
+      <div style="font-size:11px; color:var(--text3); margin-top:2px;">${state.staf.filter(s=>s.jabatanId.toUpperCase()===j.nama.toUpperCase()).map(s=>s.nama).join(', ') || '(Tidak ada pejabat aktif)'}</div>
+    </div>`).join('');
+
+  // 4. Render Daftar Anggota Aktif & Fitur Inline Edit
   document.getElementById('anggota-list').innerHTML = state.staf.map(s => `
     <div class="staff-item">
       <div class="avatar">${s.nama.charAt(0).toUpperCase()}</div>
-      <div class="staff-info"><span class="staff-name-display">${s.nama}</span><div class="staff-role"><span class="badge badge-blue">${s.jabatanId}</span></div></div>
+      <div class="staff-info">
+        <span class="staff-name-display" id="inline-${s.id}" onclick="triggerInlineEdit('${s.id}', '${s.nama}')">${s.nama}</span>
+        <div class="staff-role"><span class="badge badge-blue">${s.jabatanId}</span></div>
+      </div>
+      <button class="btn-icon" style="color:#e74c3c;" onclick="deleteStafCloud('${s.id}', '${s.nama}')">🗑️</button>
     </div>`).join('');
 
-  document.getElementById('rekap-tbody').innerHTML = state.staf.map((s,i) => {
-    const logStaf = state.absensi.filter(a => a.stafId.toLowerCase() === s.nama.toLowerCase());
-    let mins = 0; logStaf.forEach(a => { if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); mins += (j*60)+m; } });
-    return `<tr>
-      <td>${i+1}</td><td><strong>${s.nama}</strong></td><td><span class="badge badge-red">${s.jabatanId}</span></td><td>${logStaf.length}</td><td class="mono">${Math.floor(mins/60)}j ${mins%60}m</td><td>${logStaf.reduce((x,y)=>x+y.treatment,0)}</td><td class="mono"><strong>${fmtMoney(logStaf.reduce((x,y)=>x+y.pemasukan,0))}</strong></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('gaji-tbody').innerHTML = state.staf.map((s,i) => {
-    const logStaf = state.absensi.filter(a => a.stafId.toLowerCase() === s.nama.toLowerCase());
-    let mins = 0; logStaf.forEach(a => { if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); mins += (j*60)+m; } });
-    const hours = mins / 60;
-    const jabObj = state.jabatan.find(j => j.nama.toUpperCase() === s.jabatanId.toUpperCase());
-    const baseRate = jabObj ? jabObj.gaji : 300;
-    return `<tr>
-      <td>${i+1}</td><td><strong>${s.nama}</strong></td><td><span class="badge badge-purple">${s.jabatanId}</span></td><td class="mono">${fmtMoney(baseRate)}</td><td>${logStaf.length}</td><td class="mono">${hours.toFixed(2)}j</td><td class="mono"><strong>${fmtMoney(hours * baseRate)}</strong></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('jabatan-list').innerHTML = state.jabatan.map((j,i) => `
-    <div class="org-item"><div class="org-rank">${i+1}</div><div class="org-name">${j.nama}</div><div class="org-gaji">${fmtMoney(j.gaji)}/j</div><div class="org-count">${state.staf.filter(s=>s.jabatanId.toUpperCase()===j.nama.toUpperCase()).length} org</div></div>`).join('');
-
-  document.getElementById('org-preview').innerHTML = state.jabatan.map(j => `
-    <div style="background:var(--bg2); border-radius:9px; padding:10px 14px; border-left:3px solid var(--red); margin-bottom:6px;">
-      <div style="font-size:12px; font-weight:800;">${j.nama} - ${fmtMoney(j.gaji)}/j</div>
-      <div style="font-size:11px; color:var(--text3); margin-top:2px;">${state.staf.filter(s=>s.jabatanId.toUpperCase()===j.nama.toUpperCase()).map(s=>s.nama).join(', ') || '(kosong)'}</div>
-    </div>`).join('');
-
-  renderCharts();
-}
-
-function renderCharts() {
-  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-  const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
-
+  // 5. Perhitungan Gaji Desimal & Payroll Form View
+  const rekapPayrollAllTime = {};
   state.absensi.forEach(a => {
+    if(!rekapPayrollAllTime[a.stafId.toLowerCase()]) rekapPayrollAllTime[a.stafId.toLowerCase()] = { sesi: 0, menit: 0 };
+    rekapPayrollAllTime[a.stafId.toLowerCase()].sesi++;
+    rekapPayrollAllTime[a.stafId.toLowerCase()].menit += parseDurasiToMinutes(a.durasi);
+  });
+  document.getElementById('gaji-tbody').innerHTML = state.staf.map((s, i) => {
+    const dataLog = rekapPayrollAllTime[s.nama.toLowerCase()] || { sesi: 0, menit: 0 };
+    const jObj = state.jabatan.find(j => j.nama.toUpperCase() === s.jabatanId.toUpperCase());
+    const rate = jObj ? jObj.gaji : 300;
+    const jamDesimal = parseFloat((dataLog.menit / 60).toFixed(2));
+    const gPokok = jamDesimal * rate;
+    const bonus = jamDesimal > 10 ? Math.round(gPokok * bonusPct) : 0;
+    return `<tr>
+      <td>${i+1}</td><td><strong>${s.nama}</strong></td><td><span class="badge badge-purple">${s.jabatanId}</span></td>
+      <td class="mono">${fmtMoney(rate)}/j</td><td>${dataLog.sesi} Sesi</td><td class="mono">${Math.floor(dataLog.menit/60)}j ${dataLog.menit%60}m</td>
+      <td class="mono font-weight-bold">${jamDesimal}</td><td class="mono">${fmtMoney(gPokok)}</td><td class="mono text-success">${bonus > 0 ? '+' + fmtMoney(bonus) : '-'}</td>
+      <td class="mono" style="color:var(--red-light); font-weight:800;">${fmtMoney(gPokok + bonus)}</td>
+    </tr>`;
+  }).join('');
+
+  populateWeekSelect('ab-filter-week');
+  renderAbsensiTable();
+  buildChartsEngine();
+}
+
+// ===================== TRACKING ABSENSI LOG ENGINE =====================
+function renderAbsensiTable() {
+  const wkFilter = document.getElementById('ab-filter-week').value;
+  let dataDisplay = [...state.absensi].sort((a,b)=> b.tanggal.localeCompare(a.tanggal));
+  if(wkFilter && wkFilter !== 'all') dataDisplay = dataDisplay.filter(a => a.weekKey === wkFilter);
+
+  document.getElementById('absensi-tbody').innerHTML = dataDisplay.map((a, i) => `
+    <tr>
+      <td>${i+1}</td><td><b>${a.stafId}</b></td><td><span class="badge badge-red">${a.jabatan}</span></td>
+      <td class="mono">${fmtDate(a.tanggal)}</td><td>${a.hari}</td><td class="mono">${a.masuk}</td><td class="mono">${a.keluar}</td>
+      <td class="mono font-weight-bold">${a.durasi}</td><td>${a.treatment} Pasien</td><td class="mono" style="color:#16a34a;"><strong>${fmtMoney(a.pemasukan)}</strong></td>
+      <td><button class="btn-icon" style="color:#e74c3c;" onclick="deleteAbsenCloud('${a.id}')">🗑️</button></td>
+    </tr>`).join('') || '<tr><td colspan="11" style="text-align:center; color:var(--text3); padding:20px;">Belum ada log operasional minggu ini.</td></tr>';
+}
+
+// ===================== FORM INTERACTION WORKFLOW =====================
+function switchForm(mode) {
+  state.activeFormMode = mode;
+  document.getElementById('tab-quick').classList.toggle('active', mode === 'quick');
+  document.getElementById('tab-full').classList.toggle('active', mode === 'full');
+  document.getElementById('form-quick-container').style.display = mode === 'quick' ? 'block' : 'none';
+  document.getElementById('form-full-container').style.display = mode === 'full' ? 'block' : 'none';
+}
+
+function adjustDate(days) {
+  const inp = document.getElementById('f-tanggal');
+  const d = new Date(inp.value || todayISO());
+  d.setDate(d.getDate() + days);
+  inp.value = d.toISOString().slice(0,10);
+  onDateChange();
+}
+
+function onDateChange() {
+  document.getElementById('f-hari').value = hariFromISO(document.getElementById('f-tanggal').value);
+}
+
+// ===================== OPERATION INLINE EDITOR =====================
+function triggerInlineEdit(id, currentName) {
+  const container = document.getElementById(`inline-${id}`);
+  if(!container || container.querySelector('input')) return;
+  
+  const input = document.createElement('input');
+  input.className = "staff-name-input";
+  input.value = currentName;
+  container.innerHTML = '';
+  container.appendChild(input);
+  input.focus();
+  input.select();
+
+  const commitInlineChange = async () => {
+    const valBaru = input.value.trim();
+    if(!valBaru || valBaru === currentName) { container.textContent = currentName; return; }
+    
+    container.textContent = valBaru;
+    toast("Menyimpan revisi nama ke Cloud...", "success");
+    const payload = { action: "editStafNama", id: id, namaBaru: valBaru };
+    try {
+      await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+      fetchDataCloud();
+    } catch(e) { toast("Gagal sinkron nama!", "error"); }
+  };
+
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') commitInlineChange(); if(e.key === 'Escape') container.textContent = currentName; });
+  input.addEventListener('blur', commitInlineChange);
+}
+
+// ===================== OPERATIONS SINKRON WRITE CLOUD =====================
+async function simpanAbsensiCloud(type) {
+  let payload = { action: "addAbsen", id: uid() };
+  if (type === 'quick') {
+    const sId = document.getElementById('q-nama').value;
+    const jam = parseInt(document.getElementById('q-jam-langsung').value) || 0;
+    if(!sId || jam <= 0) { toast("Lengkapi form quick input!", "error"); return; }
+    const sObj = state.staf.find(s => s.id === sId);
+    payload.stafId = sObj ? sObj.nama : "Staf Umum";
+    payload.jabatan = sObj ? sObj.jabatanId : "NURSE";
+    payload.tanggal = todayISO();
+    payload.hari = hariFromISO(payload.tanggal);
+    payload.masuk = "00:00";
+    payload.keluar = String(jam).padStart(2,'0') + ":00";
+    payload.durasi = String(jam).padStart(2,'0') + ":00";
+    payload.treatment = parseInt(document.getElementById('q-pasien').value) || 0;
+    payload.pemasukan = parseFloat(document.getElementById('q-pemasukan').value) || 0;
+    payload.weekKey = weekKey(payload.tanggal);
+  } else {
+    const sId = document.getElementById('f-nama').value;
+    const tgl = document.getElementById('f-tanggal').value;
+    const m = document.getElementById('f-masuk').value;
+    const k = document.getElementById('f-keluar').value;
+    if(!sId || !tgl || !m || !k) { toast("Lengkapi parameter full input!", "error"); return; }
+    const sObj = state.staf.find(s => s.id === sId);
+    const mins = calcMinutes(m, k);
+    payload.stafId = sObj ? sObj.nama : "Staf Umum";
+    payload.jabatan = sObj ? sObj.jabatanId : "NURSE";
+    payload.tanggal = tgl;
+    payload.hari = hariFromISO(tgl);
+    payload.masuk = m; payload.keluar = k;
+    payload.durasi = String(Math.floor(mins/60)).padStart(2,'0') + ":" + String(mins%60).padStart(2,'0');
+    payload.treatment = parseInt(document.getElementById('f-pasien').value) || 0;
+    payload.pemasukan = parseFloat(document.getElementById('f-pemasukan').value) || 0;
+    payload.weekKey = weekKey(tgl);
+  }
+
+  toast("Mengirim lembar absensi ke Google Sheets...", "success");
+  try {
+    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+    toast("Absensi Berhasil Masuk Cloud Database!");
+    fetchDataCloud();
+  } catch (e) { toast("Gagal menembak server Sheets!", "error"); }
+}
+
+async function saveSingleStafCloud() {
+  const nm = document.getElementById('s-single-nama').value.trim();
+  const jb = document.getElementById('s-single-jabatan').value;
+  if(!nm) { toast("Nama staf tidak boleh kosong!", "error"); return; }
+  
+  const payload = { action: "addStaf", id: "STAF-" + Date.now(), nama: nm, jabatanId: jb };
+  closeModal('modal-add-single');
+  toast("Mendaftarkan staf tunggal ke Cloud...", "success");
+  try {
+    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+    fetchDataCloud();
+  } catch(e) { toast("Gagal mendaftarkan staf!", "error"); }
+}
+
+async function saveBulkStafCloud() {
+  const parsed = parseBulkLines();
+  if(!parsed.length) { toast("Format teks tidak valid!", "error"); return; }
+  closeModal('modal-bulk');
+  toast(`Menginjeksi ${parsed.length} Anggota Baru Ke Google Sheets...`, "success");
+  for (let p of parsed) {
+    const payload = { action: "addStaf", id: "STAF-" + Math.random().toString(36).slice(2, 7).toUpperCase(), nama: p.nama, jabatanId: p.jabatanNama };
+    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+  }
+  fetchDataCloud();
+}
+
+async function deleteAbsenCloud(id) {
+  if(!confirm("Yakin ingin menghapus log absensi ini dari cloud secara permanen?")) return;
+  toast("Menghapus baris log dari Sheets...", "success");
+  try {
+    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "deleteAbsen", id: id }) });
+    fetchDataCloud();
+  } catch(e) { toast("Gagal menghapus!", "error"); }
+}
+
+async function deleteStafCloud(id, nama) {
+  if(!confirm(`Hapus anggota ${nama} dari daftar dinas aktif?`)) return;
+  toast("Menghapus database staf...", "success");
+  try {
+    await fetch(URL_API_SPREADSHEET, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "deleteStaf", id: id }) });
+    fetchDataCloud();
+  } catch(e) { toast("Gagal menghapus staf!", "error"); }
+}
+
+// ===================== ENGINE VISUALISASI ANALITIK CHART =====================
+function buildChartsEngine() {
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const dataDuty = Array(7).fill(0), dataPasien = Array(7).fill(0), dataIncome = Array(7).fill(0), dataCostGaji = Array(7).fill(0);
+  const currentWk = currentWeekKey();
+  const currentWeekLogs = state.absensi.filter(a => a.weekKey === currentWk);
+
+  currentWeekLogs.forEach(a => {
     const idx = days.indexOf(a.hari);
-    if(idx !== -1) { incomeByDay[idx] += a.pemasukan; penangananByDay[idx] += a.treatment; }
+    if(idx !== -1) {
+      dataDuty[idx]++;
+      dataPasien[idx] += (a.treatment || 0);
+      dataIncome[idx] += (a.pemasukan || 0);
+      
+      const sObj = state.staf.find(s => s.nama.toLowerCase() === a.stafId.toLowerCase());
+      const jObj = sObj ? state.jabatan.find(j => j.nama.toUpperCase() === sObj.jabatanId.toUpperCase()) : null;
+      const rate = jObj ? jObj.gaji : 300;
+      dataCostGaji[idx] += (parseDurasiToMinutes(a.durasi) / 60) * rate;
+    }
   });
 
-  if (chartIncome) chartIncome.destroy();
-  chartIncome = new Chart(document.getElementById('chart-pemasukan'), { 
-    type:'line', 
-    data:{ labels:days, datasets:[{label:'Pemasukan ($)',data:incomeByDay,borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.1)',fill:true,tension:0.3}] }, 
-    options:{ responsive:true, maintainAspectRatio:false, animation: false } 
+  const mapTopRank = {};
+  currentWeekLogs.forEach(a => {
+    if(!mapTopRank[a.stafId]) mapTopRank[a.stafId] = 0;
+    mapTopRank[a.stafId] += parseDurasiToMinutes(a.durasi) / 60;
+  });
+  const sortedRank = Object.entries(mapTopRank).sort((a,b)=>b[1]-a[1]).slice(0, 7);
+  const labelsTopStaf = sortedRank.map(x => x[0].split(' ')[0]);
+  const valuesTopStaf = sortedRank.map(x => parseFloat(x[1].toFixed(2)));
+
+  // Render Chart 1: Sesi & Penanganan
+  if(chartOps) chartOps.destroy();
+  chartOps = new Chart(document.getElementById('chart-operasional'), {
+    type: 'bar',
+    data: { labels: days, datasets: [
+      { label: 'Sesi Duty', data: dataDuty, backgroundColor: 'rgba(192,57,43,0.75)', borderRadius: 4 },
+      { label: 'Kasus Pasien', data: dataPasien, backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 4 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false }
   });
 
-  if (chartMedical) chartMedical.destroy();
-  chartMedical = new Chart(document.getElementById('chart-penanganan'), { 
-    type:'bar', 
-    data:{ labels:days, datasets:[{label:'Kasus Pasien',data:penangananByDay,backgroundColor:'#3b82f6'}] }, 
-    options:{ responsive:true, maintainAspectRatio:false, animation: false } 
+  // Render Chart 2: Cashflow
+  if(chartFlow) chartFlow.destroy();
+  chartFlow = new Chart(document.getElementById('chart-cashflow'), {
+    type: 'line',
+    data: { labels: days, datasets: [
+      { label: 'Pemasukan Hospital', data: dataIncome, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.05)', fill: true, tension: 0.2 },
+      { label: 'Pengeluaran Gaji', data: dataCostGaji, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.05)', fill: true, tension: 0.2 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  // Render Chart 3: Top 7 Aktivitas
+  if(chartTop) chartTop.destroy();
+  chartTop = new Chart(document.getElementById('chart-top-staf'), {
+    type: 'bar',
+    data: { labels: labelsTopStaf.length ? labelsTopStaf : ['Belum ada data'], datasets: [{ label: 'Akumulasi Jam Kerja (Desimal)', data: valuesTopStaf.length ? valuesTopStaf : [0], backgroundColor: 'rgba(168,85,247,0.8)', borderRadius: 5 }]},
+    options: { responsive: true, maintainAspectRatio: false }
   });
 }
 
-// ===================== EXPORT & EXPORT GRAPHICS GENERATOR =====================
+// ===================== DOKUMEN GENERATOR & EXPORT CENTER =====================
 function getExportRekapData(wk, bonusPct) {
   const data = state.absensi.filter(a => !wk || wk==='all' ? true : a.weekKey === wk);
   const byStaf = {};
   data.forEach(a => {
-    if (!byStaf[a.stafId]) byStaf[a.stafId] = { duty:0, menit:0, penanganan:0, pemasukan:0 };
-    byStaf[a.stafId].duty++;
-    if (a.durasi && a.durasi.includes(':')) {
-      const [j, m] = a.durasi.split(':').map(Number);
-      byStaf[a.stafId].menit += (j * 60) + m;
-    }
-    byStaf[a.stafId].penanganan += (a.treatment||0);
-    byStaf[a.stafId].pemasukan += (a.pemasukan||0);
+    if (!byStaf[a.stafId.toLowerCase()]) byStaf[a.stafId.toLowerCase()] = { nama: a.stafId, duty:0, menit:0, penanganan:0, pemasukan:0 };
+    byStaf[a.stafId.toLowerCase()].duty++;
+    byStaf[a.stafId.toLowerCase()].menit += parseDurasiToMinutes(a.durasi);
+    byStaf[a.stafId.toLowerCase()].penanganan += (a.treatment||0);
+    byStaf[a.stafId.toLowerCase()].pemasukan += (a.pemasukan||0);
   });
-  return Object.entries(byStaf).map(([sid,r]) => {
-    const s = state.staf.find(x => x.nama.toLowerCase() === sid.toLowerCase());
+  return Object.values(byStaf).map(r => {
+    const s = state.staf.find(x => x.nama.toLowerCase() === r.nama.toLowerCase());
     const rateRaw = s ? state.jabatan.find(j => j.nama.toUpperCase() === s.jabatanId.toUpperCase()) : null;
     const rate = rateRaw ? rateRaw.gaji : 300;
     const jamDes = parseFloat((r.menit/60).toFixed(2));
     const gPokok = jamDes * rate;
     const bonus = jamDes > 10 ? Math.round(gPokok * (bonusPct/100)) : 0;
-    return { nama: sid, jabatan: s ? s.jabatanId : 'NURSE', tarif: rate, duty: r.duty, jam: Math.floor(r.menit/60) + 'j ' + (r.menit%60) + 'm', jamDes, penanganan: r.penanganan, pemasukan: r.pemasukan, bonus, totalGaji: gPokok + bonus };
+    return { nama: r.nama, jabatan: s ? s.jabatanId : 'NURSE', tarif: rate, duty: r.duty, jam: Math.floor(r.menit/60) + 'j ' + (r.menit%60) + 'm', jamDes, penanganan: r.penanganan, pemasukan: r.pemasukan, bonus, totalGaji: gPokok + bonus };
   });
 }
 
 function renderExportPreview() {
   const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
-  const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
+  const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value || 10);
   const rows = getExportRekapData(wk, bonusPct);
-  const tbody = document.getElementById('export-tbody'); if (!tbody) return;
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
-  tbody.innerHTML = rows.map((r,i) => `<tr>
-    <td>${i+1}</td><td><strong>${r.nama}</strong></td><td><span class="badge badge-red">${r.jabatan}</span></td>
-    <td class="mono">${fmtMoney(r.tarif)}/j</td><td style="text-align:center;">${r.duty}</td><td class="mono">${r.jam}</td><td class="mono">${r.jamDes}</td>
-    <td style="text-align:center;">${r.penanganan}</td><td class="mono">${fmtMoney(r.pemasukan)}</td><td class="mono">${r.bonus>0?'+'+fmtMoney(r.bonus):'-'}</td><td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(r.totalGaji)}</strong></td>
-  </tr>`).join('');
+  
+  document.getElementById('export-tbody').innerHTML = rows.map((r, i) => `
+    <tr>
+      <td>${i+1}</td><td><strong>${r.nama}</strong></td><td><span class="badge badge-purple">${r.jabatan}</span></td>
+      <td class="mono">${fmtMoney(r.tarif)}</td><td>${r.duty} Sesi</td><td class="mono">${r.jam}</td><td class="mono">${r.jamDes}</td>
+      <td>${r.penanganan} Cases</td><td class="mono">${fmtMoney(r.pemasukan)}</td><td class="mono text-success">${r.bonus>0?'+'+fmtMoney(r.bonus):'-'}</td>
+      <td class="mono" style="color:var(--red-light); font-weight:800;">${fmtMoney(r.totalGaji)}</td>
+    </tr>`).join('') || '<tr><td colspan="10" style="text-align:center; padding:20px;">Tidak ada data operasional pada minggu terpilih.</td></tr>';
 }
 
-function generateReportHTML(wkLabel, trs) {
-  const imgPemasukanBase64 = chartIncome ? chartIncome.toBase64Image() : '';
-  const imgPasienBase64 = chartMedical ? chartMedical.toBase64Image() : '';
+function exportDocument(format) {
+  const wk = document.getElementById('export-week').value;
+  const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value || 10);
+  const rows = getExportRekapData(wk, bonusPct);
+  const imgOps64 = chartOps ? chartOps.toBase64Image() : '';
+  const imgFlow64 = chartFlow ? chartFlow.toBase64Image() : '';
 
-  return `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC</title><style>
-    body{font-family:sans-serif;padding:30px;color:#111;background:#fff;}
-    h2{color:#c0392b;margin:0;font-size:22px;letter-spacing:0.5px;}
-    .meta{font-size:12px;color:#555;margin:6px 0 25px;border-bottom:2px solid #c0392b;padding-bottom:8px;}
-    .section-title { font-size:14px; font-weight:bold; color:#111; margin:20px 0 10px; text-transform:uppercase; letter-spacing:0.5px;}
-    .chart-container-report { display: flex; gap: 15px; margin-bottom: 25px; }
-    .chart-box-report { flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; background:#fefefe; }
-    .chart-box-report img { max-width: 100%; height: auto; max-height: 180px; }
-    table{width:100%;border-collapse:collapse;font-size:11px;margin-top:5px;}
-    th{background:#c0392b;color:#fff;padding:10px 6px;text-align:left;text-transform:uppercase;font-size:10px;}
-    td{padding:9px 6px;border-bottom:1px solid #eee;color:#333;}
-    tr:nth-child(even){background:#f9f9f9;}
-    .footer{margin-top:40px;font-size:11px;color:#888;text-align:center;border-top:1px dashed #ccc;padding-top:12px;}
+  const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><b>${r.nama}</b></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan}</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><b>$${r.totalGaji}</b></td></tr>`).join('');
+  const reportHTML = `<!DOCTYPE html><html><head><style>
+    body{font-family:sans-serif; padding:25px; color:#111;}
+    h2{color:#c0392b; margin:0 0 5px;}
+    table{width:100%; border-collapse:collapse; font-size:11px; margin-top:15px;}
+    th{background:#c0392b; color:#fff; padding:8px; text-align:left; text-transform:uppercase;}
+    td{padding:8px; border-bottom:1px solid #ddd;}
+    .img-wrap{display:flex; gap:10px; margin:15px 0;}
+    .box{flex:1; border:1px solid #ccc; padding:10px; text-align:center; border-radius:6px;}
+    .box img{max-width:100%; height:auto; max-height:160px;}
   </style></head><body>
-    <h2>REKAPITULASI LAPORAN MINGGUAN & PAYROLL — HRMC</h2>
-    <div class="meta">Periode Operasional: ${wkLabel} &nbsp;|&nbsp; Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</div>
-    
-    <div class="section-title">📊 Visualisasi Grafik Statistik Mingguan</div>
-    <div class="chart-container-report">
-      <div class="chart-box-report">
-        <div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#c0392b;">Grafik Finansial Pemasukan ($)</div>
-        <img src="${imgPemasukanBase64}" />
-      </div>
-      <div class="chart-box-report">
-        <div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#3b82f6;">Grafik Operasional Kasus Pasien</div>
-        <img src="${imgPasienBase64}" />
-      </div>
+    <h2>HRMC OFFICIAL WEEKLY PAYROLL & ANALYTICS REPORT</h2>
+    <div style="font-size:12px; color:#666; padding-bottom:10px; border-bottom:2px solid #c0392b;">Periode Log: ${weekLabel(wk)} | Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</div>
+    <h4 style="margin:15px 0 5px; text-transform:uppercase;">📊 Infografis Analitik Harian Rumah Sakit</h4>
+    <div class="img-wrap">
+      <div class="box"><b style="font-size:11px; color:#c0392b;">Tren Grafik Beban Sesi & Kasus Pasien</b><br><img src="${imgOps64}"/></div>
+      <div class="box"><b style="font-size:11px; color:#16a34a;">Grafik Pemetaan Kas Cashflow Finansial</b><br><img src="${imgFlow64}"/></div>
     </div>
-
-    <div class="section-title">📋 Tabel Rincian Hak Gaji Anggota</div>
-    <table>
-      <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Total Hak Gaji</th></tr></thead>
-      <tbody>${trs}</tbody>
-    </table>
-    <div class="footer">Happiness Roleplay Medical Center · Los Santos Hospital System · Dokumen Rahasia Internal</div>
+    <h4 style="margin:15px 0 5px; text-transform:uppercase;">📋 Rekapitulasi Pembagian Gaji Desimal Staf</h4>
+    <table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif</th><th>Total Sesi</th><th>Durasi</th><th>Desimal</th><th>Pasien</th><th>Pemasukan</th><th>Bonus</th><th>Gaji Final</th></tr></thead><tbody>${trs}</tbody></table>
   </body></html>`;
+
+  if(format === 'pdf') {
+    const win = window.open('','_blank'); win.document.write(reportHTML); win.document.close();
+    setTimeout(() => { win.print(); }, 400);
+  } else {
+    const blob = new Blob(['\ufeff' + reportHTML], { type: 'application/msword' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Laporan_HRMC_${wk}.doc`; a.click();
+  }
 }
 
-function exportPDF() {
-  const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
-  const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
+function exportExcelCompact() {
+  const wk = document.getElementById('export-week').value;
+  const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value || 10);
   const rows = getExportRekapData(wk, bonusPct);
-  const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  
-  const htmlFull = generateReportHTML(weekLabel(wk), trs);
-  const win = window.open('','_blank'); win.document.write(htmlFull); win.document.close();
-  setTimeout(() => { win.print(); }, 500);
-}
-
-function exportWord() {
-  const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
-  const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
-  const rows = getExportRekapData(wk, bonusPct);
-  const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  
-  const htmlFull = generateReportHTML(weekLabel(wk), trs);
-  const blob = new Blob(['\ufeff' + htmlFull], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `Laporan_HRMC_${wk}.doc`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast('Dokumen Word (.doc) berhasil diunduh!');
-}
-
-function exportExcel() {
-  const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
-  const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
-  const rows = getExportRekapData(wk, bonusPct);
-  const header = 'No,Nama,Jabatan,Tarif per Jam,Total Duty,Total Jam,Jam Desimal,Total Penanganan,Total Pemasukan,Bonus,Total Gaji Akhir\n';
+  const header = 'No,Nama,Jabatan,Tarif per Jam,Total Sesi,Total Jam,Jam Desimal,Total Pasien,Total Pemasukan,Bonus,Total Gaji Akhir\n';
   const body = rows.map((r,i) => [i+1,r.nama,r.jabatan,'$'+r.tarif,r.duty,r.jam,r.jamDes,r.penanganan,'$'+r.pemasukan,r.bonus>0?'$'+r.bonus:'-','$'+r.totalGaji].join(',')).join('\n');
   const blob = new Blob([header+body], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hrmc-payroll-report.csv'; a.click();
-  toast('File CSV Rangkuman diunduh');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `hrmc-payroll-${wk}.csv`; a.click();
 }
 
-// ===================== MODAL BULK & CLOCK UTILS =====================
-function openBulkModal() { document.getElementById('modal-bulk').classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function toast(msg, type='success') {
-  const w = document.getElementById('toast-wrap'); const t = document.createElement('div');
-  t.className = 'toast ' + type; t.innerHTML = msg; w.appendChild(t); setTimeout(() => t.remove(), 3000);
+// ===================== UTILS PARSER ENGINE =====================
+function parseDurasiToMinutes(durStr) {
+  if(!durStr || !durStr.includes(':')) return 0;
+  const [j, m] = durStr.split(':').map(Number); return (j * 60) + m;
 }
+function calcMinutes(masuk, keluar) {
+  if (!masuk || !keluar || !masuk.includes(':') || !keluar.includes(':')) return 0;
+  const [h1,m1] = masuk.split(':').map(Number); const [h2,m2] = keluar.split(':').map(Number);
+  let mins = (h2*60+m2)-(h1*60+m1); if (mins < 0) mins += 1440; return mins;
+}
+function openBulkModal() { document.getElementById('bulk-textarea').value = ''; document.getElementById('bulk-preview-wrap').style.display='none'; openModal('modal-bulk'); }
+function openAddStafModal() { openModal('modal-add-single'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function parseBulkLines() {
   const text = document.getElementById('bulk-textarea').value;
   return text.split('\n').map(e => e.trim()).filter(e => e.includes('|')).map(raw => {
@@ -831,7 +941,7 @@ function parseBulkLines() {
 function onBulkInput() {
   const parsed = parseBulkLines();
   document.getElementById('bulk-preview-wrap').style.display = parsed.length ? 'block' : 'none';
-  document.getElementById('bulk-preview-list').innerHTML = parsed.map(p => `<div class="bulk-preview-row ok"><div class="bulk-dot"></div><span><b>${p.nama}</b> | ${p.jabatanNama}</span></div>`).join('');
+  document.getElementById('bulk-preview-list').innerHTML = parsed.map(p => `<div class="bulk-preview-row"><div class="bulk-dot" style="width:7px; height:7px; border-radius:50%; background:#22c55e;"></div><span><b>${p.nama}</b> | ${p.jabatanNama}</span></div>`).join('');
 }
 function updateClock() {
   const now = new Date();
@@ -840,9 +950,19 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 function toggleDark() { state.darkMode = !state.darkMode; document.body.setAttribute('data-theme', state.darkMode ? 'dark' : 'light'); document.getElementById('darkToggle').classList.toggle('on', state.darkMode); }
+function populateWeekSelect(id) { const el = document.getElementById(id); if (el) el.innerHTML = allWeeks().map(w => `<option value="${w}">${weekLabel(w)}</option>`).join(''); }
 
-applyTimeMask('ab-masuk'); applyTimeMask('ab-keluar');
-document.getElementById('ab-tanggal').value = todayISO(); onAbTanggal();
+// Auto Hitung Durasi Real-Time Pada Form Full Input
+['f-masuk', 'f-keluar'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,''); if (v.length > 4) v = v.slice(0,4); if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2); this.value = v;
+    const m = document.getElementById('f-masuk').value; const k = document.getElementById('f-keluar').value;
+    const mins = calcMinutes(m, k); document.getElementById('f-durasi-display').value = mins > 0 ? Math.floor(mins/60) + 'j ' + (mins%60) + 'm' : '';
+  });
+});
+
+applyTimeMask('f-masuk'); applyTimeMask('f-keluar');
+document.getElementById('f-tanggal').value = todayISO(); onDateChange();
 fetchDataCloud();
 </script>
 </body>
