@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v2.5 - Full Executive Cloud Edition</title>
+<title>HRMC Dashboard v2.6 - Full Executive Cloud Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -158,14 +158,21 @@ table tr:hover td { background: var(--row-hover); }
 .badge-amber { background: rgba(245,158,11,0.12); color: #d97706; }
 .badge-purple { background: rgba(168,85,247,0.12); color: #9333ea; }
 
-/* ── STAFF INLINE EDITOR ── */
-.staff-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+/* SEARCH BAR COMPONENT */
+.search-container { background: var(--card); border: 1.5px solid var(--border); padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 320px; margin-bottom: 14px; }
+.search-input { background: transparent; border: none; width: 100%; font-size: 12.5px; color: var(--text); outline: none; }
+
+/* ── STAFF INLINE & JABATAN EDITOR ── */
+.staff-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--red-bg); display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 13px; font-weight: 800; flex-shrink: 0; border: 2px solid rgba(192,57,43,0.2); }
-.staff-info { flex: 1; min-width: 0; }
-.staff-name-display { font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+.staff-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.staff-name-display { font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; padding: 2px 4px; border-radius: 4px; display: inline-block; width: fit-content; }
 .staff-name-display:hover { background: var(--bg2); color: var(--red); }
 .staff-inline-input { font-size: 13px; font-weight: 700; color: var(--text); background: var(--input-bg); border: 1.5px solid var(--red); border-radius: 6px; padding: 2px 6px; outline: none; width: 100%; max-width: 180px; }
-.staff-role { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.staff-role-wrap { display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+.staff-role-badge-clickable { cursor: pointer; transition: opacity 0.15s; }
+.staff-role-badge-clickable:hover { opacity: 0.75; }
+.staff-inline-select { font-size: 11px; font-weight: 600; color: var(--text); background: var(--input-bg); border: 1px solid var(--red); border-radius: 4px; padding: 1px 4px; outline: none; }
 
 /* ── ORG ── */
 .org-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; margin-bottom: 6px; background: var(--card); }
@@ -243,7 +250,7 @@ table tr:hover td { background: var(--row-hover); }
     <div class="nav-item" onclick="goPage('export')"> Export Laporan </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="version-badge">v2.5</div>
+    <div class="version-badge">v2.6</div>
     <div class="sidebar-quote">"We Care, We Heal,<br>We're HRMC."</div>
   </div>
 </aside>
@@ -266,6 +273,7 @@ table tr:hover td { background: var(--row-hover); }
 
   <div class="page-content">
 
+    <!-- PAGE 1: DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="stat-grid">
         <div class="stat-card c-blue">
@@ -322,6 +330,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
+    <!-- PAGE 2: ANGGOTA -->
     <div class="page" id="page-anggota">
       <div class="card">
         <div class="card-header">
@@ -329,12 +338,19 @@ table tr:hover td { background: var(--row-hover); }
           <button class="btn btn-secondary btn-sm" onclick="openBulkModal()">Tambah Sekaligus</button>
         </div>
         <div class="card-body" style="max-height:540px;overflow-y:auto;">
-          <p style="font-size:11px; color:var(--text3); margin-bottom:12px;">💡 <b>Klik nama staf</b> pada daftar di bawah untuk melakukan <i>Edit Inline</i> secara langsung, lalu tekan Enter.</p>
+          <!-- Kolom Pencarian Data Staf (State-Preserved) -->
+          <div class="search-container">
+            <span>🔍</span>
+            <input type="text" class="search-input" id="staf-search-bar" placeholder="Cari nama atau jabatan staf..." oninput="onStafSearchInput()">
+          </div>
+          
+          <p style="font-size:11px; color:var(--text3); margin-bottom:12px;">💡 <b>Kontrol Akses:</b> Klik nama staf untuk mengedit nama. Klik badge jabatan untuk langsung memutasi jabatan staf tanpa merusak riwayat absensi.</p>
           <div id="anggota-list"></div>
         </div>
       </div>
     </div>
 
+    <!-- PAGE 3: ABSENSI -->
     <div class="page" id="page-absensi">
       <div class="card">
         <div class="card-header"><h3>Input Absensi Duty (Kirim ke Cloud)</h3></div>
@@ -345,6 +361,7 @@ table tr:hover td { background: var(--row-hover); }
             <button class="form-toggle-btn" id="btn-tab-full" onclick="switchFormTab('full')">📋 Full Input</button>
           </div>
 
+          <!-- Quick Input Mode -->
           <div id="container-form-quick">
             <div class="form-row">
               <div class="form-group w2">
@@ -369,6 +386,7 @@ table tr:hover td { background: var(--row-hover); }
             </div>
           </div>
 
+          <!-- Full Input Mode -->
           <div id="container-form-full" style="display:none;">
             <div class="form-row">
               <div class="form-group w2">
@@ -432,6 +450,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
+    <!-- PAGE 4: REKAP MINGGUAN -->
     <div class="page" id="page-rekap">
       <div class="rekap-grid" id="rekap-stats"></div>
       <div class="card">
@@ -445,6 +464,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
+    <!-- PAGE 5: JABATAN -->
     <div class="page" id="page-jabatan">
       <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
         <div class="card" style="flex:1;min-width:300px;">
@@ -458,6 +478,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
+    <!-- PAGE 6: GAJI -->
     <div class="page" id="page-gaji">
       <div class="card">
         <div class="card-header">
@@ -481,6 +502,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
+    <!-- PAGE 7: EXPORT -->
     <div class="page" id="page-export">
       <div class="card">
         <div class="card-header"><h3>Export Laporan Mingguan</h3></div>
@@ -503,7 +525,7 @@ table tr:hover td { background: var(--row-hover); }
         <div class="card-header"><h3>Preview Data Export (Rangkuman Payroll Per Anggota)</h3></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan</th><th>Bonus</th><th>Total Gaji</th></tr></thead>
+            <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan</th><th>Bonus</th><th>Total Gaji</th></tr></thead>
             <tbody id="export-tbody"></tbody>
           </table>
         </div>
@@ -534,7 +556,7 @@ table tr:hover td { background: var(--row-hover); }
 <script>
 const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycby8Gqw1CzNjQufMdpq3OaqTLTkiVMuAKJ_mgFDk5MeSHdTf-4qw71rRsyvL5GnYTPD6/exec";
 
-let state = { absensi: [], staf: [], jabatan: [], darkMode: false, formTabMode: 'quick' };
+let state = { absensi: [], staf: [], jabatan: [], darkMode: false, formTabMode: 'quick', searchKeyword: '' };
 let chartOps = null, chartFlow = null, chartTop = null;
 
 // ===================== CORE LOADER (DIRECT SHEETS) =====================
@@ -631,7 +653,7 @@ function onFullTanggalChange() {
   if (t) document.getElementById('f-hari').value = hariFromISO(t.value);
 }
 
-// ===================== OPERATION INLINE EDITOR =====================
+// ===================== SISTEM EDIT INLINE (NAMA & JABATAN) =====================
 function triggerInlineEditStaf(id, currentName) {
   const container = document.getElementById(`inline-staf-${id}`);
   if(!container || container.querySelector('input')) return;
@@ -662,6 +684,71 @@ function triggerInlineEditStaf(id, currentName) {
 
   input.addEventListener('keydown', e => { if(e.key === 'Enter') saveInlineChange(); if(e.key === 'Escape') container.textContent = currentName; });
   input.addEventListener('blur', saveInlineChange);
+}
+
+function triggerInlineEditJabatan(id, currentJabatan) {
+  const container = document.getElementById(`inline-jabatan-${id}`);
+  if(!container || container.querySelector('select')) return;
+
+  const select = document.createElement('select');
+  select.className = "staff-inline-select";
+  
+  select.innerHTML = state.jabatan.map(j => `
+    <option value="${j.nama}" ${j.nama.toUpperCase() === currentJabatan.toUpperCase() ? 'selected' : ''}>${j.nama}</option>
+  `).join('');
+
+  container.innerHTML = '';
+  container.appendChild(select);
+  select.focus();
+
+  const saveJabatanChange = async () => {
+    const valBaru = select.value;
+    if (valBaru.toUpperCase() === currentJabatan.toUpperCase()) {
+      container.innerHTML = `<span class="badge badge-blue">${currentJabatan}</span>`;
+      return;
+    }
+
+    container.innerHTML = `<span class="badge badge-purple">${valBaru}</span>`;
+    toast("Memproses mutasi jabatan staf...", "success");
+    try {
+      await fetch(URL_API_SPREADSHEET, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ action: "editStafJabatan", id: id, jabatanBaru: valBaru })
+      });
+      fetchDataCloud();
+    } catch(e) { toast("Gagal memperbarui jabatan", "error"); }
+  };
+
+  select.addEventListener('change', saveJabatanChange);
+  select.addEventListener('blur', () => { container.innerHTML = `<span class="badge badge-blue">${currentJabatan}</span>`; });
+}
+
+// ===================== INTERACTIVE PURE PERSISTENT SEARCH ENGINE =====================
+function onStafSearchInput() {
+  state.searchKeyword = document.getElementById('staf-search-bar').value.toLowerCase().trim();
+  renderStafListOnly();
+}
+
+function renderStafListOnly() {
+  let filteredStaf = state.staf;
+  if(state.searchKeyword !== '') {
+    filteredStaf = state.staf.filter(s => 
+      s.nama.toLowerCase().includes(state.searchKeyword) || 
+      s.jabatanId.toLowerCase().includes(state.searchKeyword)
+    );
+  }
+
+  document.getElementById('anggota-list').innerHTML = filteredStaf.map(s => `
+    <div class="staff-item">
+      <div class="avatar">${s.nama.charAt(0).toUpperCase()}</div>
+      <div class="staff-info">
+        <span class="staff-name-display" id="inline-staf-${s.id}" onclick="triggerInlineEditStaf('${s.id}', '${s.nama}')">${s.nama}</span>
+        <div class="staff-role-wrap" id="inline-jabatan-${s.id}" onclick="triggerInlineEditJabatan('${s.id}', '${s.jabatanId}')">
+          <span class="badge badge-blue staff-role-badge-clickable">💼 ${s.jabatanId}</span>
+        </div>
+      </div>
+    </div>`).join('') || '<div style="text-align:center; padding:15px; color:var(--text3); font-size:12px;">Anggota tidak ditemukan.</div>';
 }
 
 // ===================== OPERATION CLOUD WRITE (POST) =====================
@@ -777,14 +864,8 @@ function refreshAllViews() {
   document.getElementById('q-nama').innerHTML = optionsHTML;
   document.getElementById('f-nama').innerHTML = optionsHTML;
 
-  document.getElementById('anggota-list').innerHTML = state.staf.map(s => `
-    <div class="staff-item">
-      <div class="avatar">${s.nama.charAt(0).toUpperCase()}</div>
-      <div class="staff-info">
-        <span class="staff-name-display" id="inline-staf-${s.id}" onclick="triggerInlineEditStaf('${s.id}', '${s.nama}')">${s.nama}</span>
-        <div class="staff-role"><span class="badge badge-blue">${s.jabatanId}</span></div>
-      </div>
-    </div>`).join('');
+  // Render list staf dengan proteksi pencarian tetap aktif
+  renderStafListOnly();
 
   // Perhitungan Gaji Desimal Per Anggota (All-Time Matrix Logs)
   const mapGajiGlobal = {};
@@ -889,7 +970,6 @@ function buildChartsEngine() {
   const labelsTopStaf = sortedRank.map(x => x[0].split(' ')[0]);
   const valuesTopStaf = sortedRank.map(x => parseFloat(x[1].toFixed(2)));
 
-  // Render Grafik 1: Duty & Kasus Pasien
   if(chartOps) chartOps.destroy();
   chartOps = new Chart(document.getElementById('chart-operasional'), {
     type: 'bar',
@@ -900,7 +980,6 @@ function buildChartsEngine() {
     options: { responsive: true, maintainAspectRatio: false, animation: false }
   });
 
-  // Render Grafik 2: Cashflow Finansial
   if(chartFlow) chartFlow.destroy();
   chartFlow = new Chart(document.getElementById('chart-cashflow'), {
     type: 'line',
@@ -911,7 +990,6 @@ function buildChartsEngine() {
     options: { responsive: true, maintainAspectRatio: false, animation: false }
   });
 
-  // Render Grafik 3: Top 7 Aktivitas Staf
   if(chartTop) chartTop.destroy();
   chartTop = new Chart(document.getElementById('chart-top-staf'), {
     type: 'bar',
@@ -920,7 +998,7 @@ function buildChartsEngine() {
   });
 }
 
-// ===================== EXPORT & EXPORT GRAPHICS GENERATOR =====================
+// ===================== EXPORT & DOCUMENT GENERATOR =====================
 function getExportRekapData(wk, bonusPct) {
   const data = state.absensi.filter(a => !wk || wk==='all' ? true : a.weekKey === wk);
   const byStaf = {};
@@ -978,19 +1056,11 @@ function generateReportHTML(wkLabel, trs) {
   </style></head><body>
     <h2>REKAPITULASI LAPORAN MINGGUAN & PAYROLL — HRMC</h2>
     <div class="meta">Periode Operasional: ${wkLabel} &nbsp;|&nbsp; Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</div>
-    
     <div class="section-title">📊 Visualisasi Grafik Statistik Mingguan</div>
     <div class="chart-container-report">
-      <div class="chart-box-report">
-        <div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#c0392b;">Grafik Operasional Sesi & Kasus</div>
-        <img src="${imgOps64}" />
-      </div>
-      <div class="chart-box-report">
-        <div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#16a34a;">Grafik Cashflow Finansial</div>
-        <img src="${imgFlow64}" />
-      </div>
+      <div class="chart-box-report"><div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#c0392b;">Grafik Operasional Sesi & Kasus</div><img src="${imgOps64}" /></div>
+      <div class="chart-box-report"><div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:#16a34a;">Grafik Cashflow Finansial</div><img src="${imgFlow64}" /></div>
     </div>
-
     <div class="section-title">📋 Tabel Rincian Hak Gaji Anggota</div>
     <table>
       <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Total Hak Gaji</th></tr></thead>
@@ -1005,7 +1075,6 @@ function exportPDF() {
   const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value||10);
   const rows = getExportRekapData(wk, bonusPct);
   const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  
   const htmlFull = generateReportHTML(weekLabel(wk), trs);
   const win = window.open('','_blank'); win.document.write(htmlFull); win.document.close();
   setTimeout(() => { win.print(); }, 500);
@@ -1016,13 +1085,9 @@ function exportWord() {
   const bonusPct = parseFloat(document.getElementById('matrix-bonus-pct')?.value||10);
   const rows = getExportRekapData(wk, bonusPct);
   const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  
   const htmlFull = generateReportHTML(weekLabel(wk), trs);
   const blob = new Blob(['\ufeff' + htmlFull], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `Laporan_HRMC_${wk}.doc`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast('Dokumen Word (.doc) berhasil diunduh!');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Laporan_HRMC_${wk}.doc`; a.click();
 }
 
 function exportExcel() {
@@ -1033,7 +1098,6 @@ function exportExcel() {
   const body = rows.map((r,i) => [i+1,r.nama,r.jabatan,'$'+r.tarif,r.duty,r.jam,r.jamDes,r.penanganan,'$'+r.pemasukan,r.bonus>0?'$'+r.bonus:'-','$'+r.totalGaji].join(',')).join('\n');
   const blob = new Blob([header+body], { type:'text/csv;charset=utf-8;' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hrmc-payroll-report.csv'; a.click();
-  toast('File CSV Rangkuman diunduh');
 }
 
 // ===================== MODAL BULK & CLOCK UTILS =====================
