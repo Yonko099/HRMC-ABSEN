@@ -111,7 +111,7 @@ a { text-decoration: none; color: inherit; }
 .stat-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
 .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
 .stat-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
-.stat-sub { font-size: 10.5px; color: var(--text3); }
+.sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 
 /* ── FORMS ── */
 .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -736,8 +736,8 @@ table tr:hover td { background: var(--row-hover); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// URL Endpoint Jalur Google Apps Script Web App Deployment
-const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbxBUOAbfZKySRQd80njkkbgOGQGU6R4iLLbECDRBT-5APV7mtVbzj9yXWu6m-lBK8EI/exec";
+// FIXED: Menggunakan URL API Deployment Baru Anda yang Sesuai
+const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbw0uSILjM1Hw4aZHxBjr7tFjGkD-T_S88yZiUOxkmcepB8wFYGeCcZLLfIe0kpW_A/exec";
 
 let state = {
   absensi: [],
@@ -746,7 +746,7 @@ let state = {
   lastNama: '',
   lastTanggal: '',
   darkMode: false,
-  searchKeyword: '' // Nilai simpanan input teks global pencarian
+  searchKeyword: ''
 };
 
 // ===================== ENGINE RETRIEVAL DATA AUTOMATION =====================
@@ -772,7 +772,7 @@ function refreshAllViews() {
 }
 
 // ══════════════════════════════════════════════
-// UTILS
+// UTILS & FIXERS
 // ══════════════════════════════════════════════
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
@@ -780,10 +780,30 @@ function hariFromISO(iso) {
   if (!iso) return '';
   return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(iso).getDay()];
 }
-function fmtDate(iso) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+// NEW FUNCTION FIXED: Menyingkirkan bug penanggalan ISO/tanda miring, menstandarkannya kembali ke visual ID lokal
+function fmtDate(tglStr) {
+  if (!tglStr) return '-';
+  if (tglStr.includes('-')) {
+    const [y, m, d] = tglStr.split('T')[0].split('-');
+    return `${d}/${m}/${y}`;
+  }
+  return tglStr;
 }
+
+// NEW FUNCTION FIXED: Membersihkan bug visual timestamp "1899-12-30T..." bawaan cloud sheet
+function formatJamMenit(waktuStr) {
+  if (!waktuStr) return "-";
+  if (waktuStr.includes('T')) {
+    let jamMentah = waktuStr.split('T')[1];
+    return jamMentah.slice(0, 5); 
+  }
+  if (waktuStr.includes(':')) {
+    return waktuStr.trim().slice(0, 5);
+  }
+  return waktuStr;
+}
+
 function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
 
 function calcDurasi(masuk, keluar) {
@@ -793,7 +813,7 @@ function calcDurasi(masuk, keluar) {
   let mins = (h2*60+m2)-(h1*60+m1);
   if (mins < 0) mins += 1440;
   const h = Math.floor(mins/60), m = mins%60;
-  return h + 'j' + (m > 0 ? ' ' + m + 'm' : '');
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
 }
 function calcMinutes(masuk, keluar) {
   if (!masuk || !keluar) return 0;
@@ -809,7 +829,7 @@ function minutesToStr(mins) {
   return h + 'j' + (m > 0 ? ' ' + m + 'm' : '');
 }
 function weekKey(iso) {
-  const d = new Date(iso);
+  const d = new Date(iso.split('T')[0]);
   const day = d.getDay();
   const sun = new Date(d); sun.setDate(d.getDate() - day);
   const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
@@ -1245,6 +1265,7 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
+// FIXED FUNCTIONS: Membersihkan render tabel absensi dari string waktu banci spreadsheet
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
@@ -1262,9 +1283,9 @@ function renderAbsensiTable() {
       <td><span class="badge ${jabatanBadgeClass(a.stafId)}">${a.jabatan}</span></td>
       <td class="mono">${fmtDate(a.tanggal)}</td>
       <td>${a.hari}</td>
-      <td class="mono">${a.masuk}</td>
-      <td class="mono">${a.keluar}</td>
-      <td class="mono">${a.durasi}</td>
+      <td class="mono">${formatJamMenit(a.masuk)}</td>
+      <td class="mono">${formatJamMenit(a.keluar)}</td>
+      <td class="mono">${formatJamMenit(a.durasi)}</td>
       <td style="text-align:center;">${a.treatment||0}</td>
       <td class="mono"><strong>${fmtMoney(a.pemasukan)}</strong></td>
       <td><span style="color:var(--text3); font-size:10px;">Cloud Lock</span></td>
@@ -1285,7 +1306,13 @@ function renderRekap() {
   const totalPemasukan = data.reduce((s,a) => s+(a.pemasukan||0), 0);
   
   let totalMins = 0;
-  data.forEach(a => { if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); totalMins += (j*60)+m; } });
+  data.forEach(a => { 
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { 
+      const [j,m] = durClean.split(':').map(Number); 
+      totalMins += (j*60)+m; 
+    } 
+  });
 
   document.getElementById('rekap-stats').innerHTML = `
     <div class="rekap-stat"><div class="r-lbl">Total Duty</div><div class="r-val">${totalDuty}</div><div class="r-sub">Sesi</div></div>
@@ -1296,7 +1323,7 @@ function renderRekap() {
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
   const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
   data.forEach(a => {
-    const d = new Date(a.tanggal).getDay();
+    const d = new Date(a.tanggal.split('T')[0]).getDay();
     incomeByDay[d] += (a.pemasukan||0);
     penangananByDay[d] += (a.treatment||0);
   });
@@ -1318,7 +1345,8 @@ function renderRekap() {
     byStaf[sKey].duty++;
     byStaf[sKey].penanganan += (a.treatment||0);
     byStaf[sKey].pemasukan += (a.pemasukan||0);
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
   });
   
   const tbody = document.getElementById('rekap-tbody');
@@ -1338,13 +1366,14 @@ function renderGaji() {
   const bonusPct = parseFloat(document.getElementById('gaji-bonus-pct')?.value||10)/100;
   document.getElementById('gaji-bonus-display').textContent = Math.round(bonusPct*100) + '%';
 
-  const data = state.absensi.filter(a => a.weekKey === wk);
+  const data = state.absending || state.absensi.filter(a => a.weekKey === wk);
   const byStaf = {};
   data.forEach(a => {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: a.stafId, duty:0, menit:0 };
     byStaf[sKey].duty++;
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
   });
 
   const tbody = document.getElementById('gaji-tbody'); if (!tbody) return;
@@ -1384,7 +1413,10 @@ function renderDashboard() {
   document.getElementById('d-total-duty').textContent = weekData.length;
 
   let totalMins = 0;
-  weekData.forEach(a => { if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); totalMins += (j*60)+m; } });
+  weekData.forEach(a => { 
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); totalMins += (j*60)+m; } 
+  });
   document.getElementById('d-total-jam').textContent = minutesToStr(totalMins) || '0j';
   document.getElementById('d-total-penanganan').textContent = weekData.reduce((s,a)=>s+(a.treatment||0),0);
   document.getElementById('d-total-pemasukan').textContent = fmtMoney(weekData.reduce((s,a)=>s+(a.pemasukan||0),0));
@@ -1393,7 +1425,8 @@ function renderDashboard() {
   weekData.forEach(a => {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { menit:0 };
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
   });
   let totalGajiEst = 0;
   Object.entries(byStaf).forEach(([sid,r]) => {
@@ -1408,18 +1441,20 @@ function renderDashboard() {
   const dutyByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0), incomeByDay = Array(7).fill(0), gajiByDay = Array(7).fill(0);
   
   weekData.forEach(a => {
-    const d = new Date(a.tanggal).getDay();
+    const d = new Date(a.tanggal.split('T')[0]).getDay();
     dutyByDay[d]++; 
     penangananByDay[d] += (a.treatment||0); 
     incomeByDay[d] += (a.pemasukan||0);
     const rate = getStafGajiPokok(a.stafId);
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); gajiByDay[d] += ((j*60+m) / 60) * rate; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); gajiByDay[d] += ((j*60+m) / 60) * rate; }
   });
 
   const memberData = {};
   weekData.forEach(a => {
     if (!memberData[a.stafId]) memberData[a.stafId] = 0;
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); memberData[a.stafId] += (j*60)+m; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); memberData[a.stafId] += (j*60)+m; }
   });
   const sortedMembers = Object.entries(memberData).sort((a,b)=>b[1]-a[1]).slice(0,7);
   const lblAktivitas = sortedMembers.map(m => m[0].split(' ')[0]);
@@ -1457,7 +1492,8 @@ function getExportRekapData(wk, bonusPct) {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: a.stafId, duty:0, menit:0, penanganan:0, pemasukan:0 };
     byStaf[sKey].duty++;
-    if(a.durasi?.includes(':')) { const [j,m] = a.durasi.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    let durClean = formatJamMenit(a.durasi);
+    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
     byStaf[sKey].penanganan += (a.treatment||0);
     byStaf[sKey].pemasukan += (a.pemasukan||0);
   });
