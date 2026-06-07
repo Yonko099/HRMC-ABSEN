@@ -6,7 +6,7 @@
 <title>HRMC Dashboard v2.6 - Full Cloud Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=400;600&display=swap');
 
 :root {
   --red: #c0392b;
@@ -111,7 +111,6 @@ a { text-decoration: none; color: inherit; }
 .stat-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
 .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
 .stat-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
-.sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 
 /* ── FORMS ── */
 .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -736,7 +735,6 @@ table tr:hover td { background: var(--row-hover); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// FIXED: Menggunakan URL API Deployment Baru Anda yang Sesuai
 const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbw0uSILjM1Hw4aZHxBjr7tFjGkD-T_S88yZiUOxkmcepB8wFYGeCcZLLfIe0kpW_A/exec";
 
 let state = {
@@ -776,12 +774,18 @@ function refreshAllViews() {
 // ══════════════════════════════════════════════
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
+
+// FIXED: Penentu Hari Kebal Terhadap Slash Format (/)
 function hariFromISO(iso) {
   if (!iso) return '';
-  return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(iso).getDay()];
+  let cleanIso = iso.split('T')[0];
+  if (cleanIso.includes('/')) {
+    const [d, m, y] = cleanIso.split('/');
+    cleanIso = `${y}-${m}-${d}`;
+  }
+  return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(cleanIso).getDay()];
 }
 
-// NEW FUNCTION FIXED: Menyingkirkan bug penanggalan ISO/tanda miring, menstandarkannya kembali ke visual ID lokal
 function fmtDate(tglStr) {
   if (!tglStr) return '-';
   if (tglStr.includes('-')) {
@@ -791,7 +795,6 @@ function fmtDate(tglStr) {
   return tglStr;
 }
 
-// NEW FUNCTION FIXED: Membersihkan bug visual timestamp "1899-12-30T..." bawaan cloud sheet
 function formatJamMenit(waktuStr) {
   if (!waktuStr) return "-";
   if (waktuStr.includes('T')) {
@@ -828,13 +831,28 @@ function minutesToStr(mins) {
   const h = Math.floor(mins/60), m = mins%60;
   return h + 'j' + (m > 0 ? ' ' + m + 'm' : '');
 }
+
+// FIXED CRITICAL ENGINE: Menghilangkan RangeError Invalid time value Akibat Format DD/MM/YYYY
 function weekKey(iso) {
-  const d = new Date(iso.split('T')[0]);
+  if (!iso) return currentWeekKey();
+  let cleanIso = iso.split('T')[0];
+  
+  if (cleanIso.includes('/')) {
+    const [d, m, y] = cleanIso.split('/');
+    cleanIso = `${y}-${m}-${d}`;
+  }
+  
+  const d = new Date(cleanIso);
+  if (isNaN(d.getTime())) {
+    return currentWeekKey(); 
+  }
+  
   const day = d.getDay();
   const sun = new Date(d); sun.setDate(d.getDate() - day);
   const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
   return sun.toISOString().slice(0,10) + '_' + sat.toISOString().slice(0,10);
 }
+
 function currentWeekKey() { return weekKey(todayISO()); }
 function weekLabel(key) {
   if(!key || !key.includes('_')) return '-';
@@ -1265,14 +1283,23 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED FUNCTIONS: Membersihkan render tabel absensi dari string waktu banci spreadsheet
+// FIXED: Penyelaras Urutan & Pengenal Tanggal Berformat Slash (/)
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
   const q = (document.getElementById('absensi-search')?.value||'').toLowerCase();
   
-  let data = [...state.absensi].sort((a,b) => b.tanggal.localeCompare(a.tanggal));
-  if (wkFilter && wkFilter !== 'all') data = data.filter(a => a.weekKey === wkFilter);
+  let data = [...state.absensi].sort((a,b) => {
+    let tglA = a.tanggal || '';
+    let tglB = b.tanggal || '';
+    if (tglA.includes('/')) { const [d,m,y] = tglA.split('/'); tglA = `${y}-${m}-${d}`; }
+    if (tglB.includes('/')) { const [d,m,y] = tglB.split('/'); tglB = `${y}-${m}-${d}`; }
+    return tglB.localeCompare(tglA);
+  });
+
+  if (wkFilter && wkFilter !== 'all') {
+    data = data.filter(a => weekKey(a.tanggal) === wkFilter);
+  }
   if (q) data = data.filter(a => a.stafId.toLowerCase().includes(q));
   
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
@@ -1299,7 +1326,7 @@ let chartRekapIncome = null, chartRekapPenanganan = null;
 function renderRekap() {
   const el = document.getElementById('rekap-filter');
   const wk = el ? el.value : currentWeekKey(); if (!wk) return;
-  const data = state.absensi.filter(a => a.weekKey === wk);
+  const data = state.absensi.filter(a => weekKey(a.tanggal) === wk);
 
   const totalDuty = data.length;
   const totalPenanganan = data.reduce((s,a) => s+(a.treatment||0), 0);
@@ -1323,7 +1350,9 @@ function renderRekap() {
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
   const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
   data.forEach(a => {
-    const d = new Date(a.tanggal.split('T')[0]).getDay();
+    let tgl = a.tanggal || '';
+    if (tgl.includes('/')) { const [d,m,y] = tgl.split('/'); tgl = `${y}-${m}-${d}`; }
+    const d = new Date(tgl.split('T')[0]).getDay();
     incomeByDay[d] += (a.pemasukan||0);
     penangananByDay[d] += (a.treatment||0);
   });
@@ -1366,7 +1395,7 @@ function renderGaji() {
   const bonusPct = parseFloat(document.getElementById('gaji-bonus-pct')?.value||10)/100;
   document.getElementById('gaji-bonus-display').textContent = Math.round(bonusPct*100) + '%';
 
-  const data = state.absending || state.absensi.filter(a => a.weekKey === wk);
+  const data = state.absensi.filter(a => weekKey(a.tanggal) === wk);
   const byStaf = {};
   data.forEach(a => {
     const sKey = a.stafId.toLowerCase().trim();
@@ -1407,7 +1436,7 @@ function renderGaji() {
 let dashCharts = {};
 function renderDashboard() {
   const wk = currentWeekKey();
-  const weekData = state.absensi.filter(a => a.weekKey === wk);
+  const weekData = state.absensi.filter(a => weekKey(a.tanggal) === wk);
 
   document.getElementById('d-total-anggota').textContent = state.staf.length;
   document.getElementById('d-total-duty').textContent = weekData.length;
@@ -1441,7 +1470,9 @@ function renderDashboard() {
   const dutyByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0), incomeByDay = Array(7).fill(0), gajiByDay = Array(7).fill(0);
   
   weekData.forEach(a => {
-    const d = new Date(a.tanggal.split('T')[0]).getDay();
+    let tgl = a.tanggal || '';
+    if (tgl.includes('/')) { const [d,m,y] = tgl.split('/'); tgl = `${y}-${m}-${d}`; }
+    const d = new Date(tgl.split('T')[0]).getDay();
     dutyByDay[d]++; 
     penangananByDay[d] += (a.treatment||0); 
     incomeByDay[d] += (a.pemasukan||0);
@@ -1486,7 +1517,7 @@ function renderDashboard() {
 // EXPORT CENTER ENGINE (RANGKUMAN ABSENSI)
 // ══════════════════════════════════════════════
 function getExportRekapData(wk, bonusPct) {
-  const data = state.absensi.filter(a => !wk || wk==='all' ? true : a.weekKey === wk);
+  const data = state.absensi.filter(a => !wk || wk==='all' ? true : weekKey(a.tanggal) === wk);
   const byStaf = {};
   data.forEach(a => {
     const sKey = a.stafId.toLowerCase().trim();
@@ -1533,8 +1564,35 @@ function exportExcel() {
 function exportWord() { exportPDF(); }
 
 // ══════════════════════════════════════════════
-// INIT SYSTEM INITIALIZER
+// BACKGROUND AUTOMATION ENGINE
 // ══════════════════════════════════════════════
+function startAutoSync() {
+  setInterval(async () => {
+    console.log("[Auto-Sync] Menjalankan sinkronisasi senyap 10 detik...");
+    try {
+      const respon = await fetch(URL_API_SPREADSHEET);
+      if (respon.ok) {
+        const dataCloud = await respon.json();
+        state.absensi = dataCloud.absensi || [];
+        state.staf = dataCloud.staf || [];
+        state.jabatan = dataCloud.jabatan || [];
+        
+        // Cek halaman mana yang aktif saat ini, re-render datanya tanpa ganggu interface ngetik
+        const currentTab = document.querySelector('.nav-item.active')?.getAttribute('onclick')?.match(/'([^']+)'/)[1] || 'dashboard';
+        if (currentTab === 'dashboard') renderDashboard();
+        if (currentTab === 'anggota') renderAnggotaList(state.searchKeyword);
+        if (currentTab === 'absensi') renderAbsensiTable();
+        if (currentTab === 'rekap') renderRekap();
+        if (currentTab === 'gaji') renderGaji();
+        if (currentTab === 'export') renderExportPreview();
+        console.log("[Auto-Sync] Data dashboard diperbarui.");
+      }
+    } catch (error) {
+      console.error("[Auto-Sync Error] Koneksi mampet:", error);
+    }
+  }, 10000);
+}
+
 function initAbsensiForm() {
   applyTimeMask('ab-masuk'); applyTimeMask('ab-keluar');
   const td = document.getElementById('ab-tanggal');
@@ -1543,7 +1601,7 @@ function initAbsensiForm() {
   updatePenangananSum();
 }
 function init() {
-  applyTheme(); initAbsensiForm(); fetchDataCloud();
+  applyTheme(); initAbsensiForm(); fetchDataCloud(); startAutoSync();
 }
 init();
 </script>
