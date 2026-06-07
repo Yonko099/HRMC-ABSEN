@@ -735,7 +735,7 @@ table tr:hover td { background: var(--row-hover); }
 
 <script>
 // 🔥 DEPLOYMENT URL UPDATE: Menggunakan sirkuit teranyar dari server awan Google Apps Script
-const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycby4l6F1I_WDtbQwnT1XJixi5h6smXAEnVEcREXpS_YsV_krQ77Q62Vny3kdGeDGMPf8/exec";
+const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbjgNZt9cTTD7WtdlqyCKOFWiYklBfp8UjbxWVd85HHnBT-YI3Dyh-DSKcyFTauhjZOO/exec";
 
 let state = {
   absensi: [],
@@ -820,7 +820,15 @@ function formatJamMenit(waktuStr) {
   
   let str = String(waktuStr).trim();
   
-  // Kasus 1: Desimal Spreadsheet bawaan Google Sheets API (misal: 0.7083)
+  // Jika formatnya sudah berupa teks jam menit murni bawaan display spreadsheet (misal: 9:00 atau 16:43)
+  if (str.includes(':')) {
+    let parts = str.split(':');
+    let jam = parts[0].trim().padStart(2, '0');
+    let menit = parts[1].trim().slice(0, 2).padStart(2, '0');
+    return jam + ':' + menit;
+  }
+  
+  // Kasus alternatif jika berupa pecahan desimal bawaan Google Sheets API (misal: 0.7083)
   if (!isNaN(str) && parseFloat(str) > 0 && parseFloat(str) < 1) {
     let totalMins = Math.round(parseFloat(str) * 1440);
     let hrs = Math.floor(totalMins / 60);
@@ -828,15 +836,16 @@ function formatJamMenit(waktuStr) {
     return String(hrs).padStart(2, '0') + ':' + String(mns).padStart(2, '0');
   }
 
-  // Kasus 2: String ISO gabungan bercampur tanggal 1899 (misal: 1899-12-30T04:02:24.000Z)
   if (str.includes('T')) {
     str = str.split('T')[1];
   }
   
-  // Kasus 3: String panjang waktu bawaan system GMT / text campuran deskripsi browser lokal
-  if (str.includes(' ') && str.includes(':')) {
-    const polaJam = str.match(/\d{2}:\d{2}/);
-    if (polaJam) return polaJam[0];
+  if (str.includes(' ')) {
+    const polaJam = str.match(/\d{1,2}:\d{2}/);
+    if (polaJam) {
+      let parts = polaJam[0].split(':');
+      return parts[0].padStart(2, '0') + ':' + parts[1];
+    }
   }
   
   if (str.includes('+')) str = str.split('+')[0];
@@ -990,6 +999,9 @@ function toast(msg, type='success') {
   t.innerHTML = (icons[type]||'✓') + ' ' + msg; w.appendChild(t); setTimeout(() => t.remove(), 3200);
 }
 
+// ══════════════════════════════════════════════
+// WEEKS POPULATOR
+// ══════════════════════════════════════════════
 function populateWeekSelect(id) {
   const el = document.getElementById(id); if (!el) return;
   el.innerHTML = allWeeks().map(w => `<option value="${w}">${weekLabel(w)}</option>`).join('');
@@ -1149,6 +1161,9 @@ function triggerInlineEditJabatan(namaKey, currentJabatan) {
   select.addEventListener('blur', () => { renderAnggotaList(state.searchKeyword); });
 }
 
+// ══════════════════════════════════════════════
+// RENDER MEMBER CONTROL
+// ══════════════════════════════════════════════
 function filterAnggota(val) {
   state.searchKeyword = val.toLowerCase().trim();
   renderAnggotaList(state.searchKeyword);
