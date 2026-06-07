@@ -457,11 +457,11 @@ table tr:hover td { background: var(--row-hover); }
           <div class="form-row">
             <div class="form-group">
               <label>Jam Masuk (HH:MM)</label>
-              <input type="text" class="form-control" id="ab-masuk" placeholder="07:00" maxlength="5">
+              <input type="text" class="form-control" id="ab-masuk" placeholder="17:00" maxlength="5">
             </div>
             <div class="form-group">
               <label>Jam Keluar (HH:MM)</label>
-              <input type="text" class="form-control" id="ab-keluar" placeholder="12:00" maxlength="5">
+              <input type="text" class="form-control" id="ab-keluar" placeholder="23:00" maxlength="5">
             </div>
             <div class="form-group">
               <label>Durasi Duty</label>
@@ -775,7 +775,7 @@ function refreshAllViews() {
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
-// FIXED: Penentu Hari Kebal Terhadap Slash Format (/)
+// Penentu Hari Kebal Terhadap Slash Format (/)
 function hariFromISO(iso) {
   if (!iso) return '';
   let cleanIso = iso.split('T')[0];
@@ -795,16 +795,23 @@ function fmtDate(tglStr) {
   return tglStr;
 }
 
+// FIXED: Fungsi Pembersih Jam agar murni menampilkan format HH:MM (Membasmi teks +0757)
 function formatJamMenit(waktuStr) {
   if (!waktuStr) return "-";
-  if (waktuStr.includes('T')) {
-    let jamMentah = waktuStr.split('T')[1];
-    return jamMentah.slice(0, 5); 
+  let str = String(waktuStr).trim();
+  
+  if (str.includes('T')) {
+    str = str.split('T')[1];
   }
-  if (waktuStr.includes(':')) {
-    return waktuStr.trim().slice(0, 5);
+  
+  if (str.includes('+')) str = str.split('+')[0];
+  if (str.includes('-')) str = str.split('-')[0];
+  
+  if (str.includes(':')) {
+    let parts = str.split(':');
+    return parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
   }
-  return waktuStr;
+  return str;
 }
 
 function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
@@ -827,12 +834,19 @@ function calcMinutes(masuk, keluar) {
   return mins;
 }
 function minutesToDecimal(mins) { return (mins/60).toFixed(2); }
+
+// FIXED: Format tampilan string durasi kerja rapi sesuai instruksi ("4 Jam" / "4 Jam 30 Menit")
 function minutesToStr(mins) {
-  const h = Math.floor(mins/60), m = mins%60;
-  return h + 'j' + (m > 0 ? ' ' + m + 'm' : '');
+  if (!mins || mins <= 0) return '0j';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (m === 0) {
+    return h + ' Jam';
+  }
+  return h + ' Jam ' + m + ' Menit';
 }
 
-// FIXED CRITICAL ENGINE: Menghilangkan RangeError Invalid time value Akibat Format DD/MM/YYYY
+// Menghilangkan RangeError Invalid time value Akibat Format DD/MM/YYYY
 function weekKey(iso) {
   if (!iso) return currentWeekKey();
   let cleanIso = iso.split('T')[0];
@@ -1063,6 +1077,7 @@ function startInlineEdit(namaKey) {
   inp.addEventListener('blur', commit);
 }
 
+// 🔐 DATA MUTASI PENGELOLAAN SENSITIF - JABATAN INTERNAL STAF (ROLEPLAY CONTEXT ONLY)
 function triggerInlineEditJabatan(namaKey, currentJabatan) {
   const container = document.getElementById(`srole-${namaKey}`);
   if(!container || container.querySelector('select')) return;
@@ -1283,7 +1298,7 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED: Penyelaras Urutan & Pengenal Tanggal Berformat Slash (/)
+// FIXED: Penyelaras Urutan & Pembersih Format Jam Absensi (HH:MM & "X Jam Y Menit")
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
@@ -1303,20 +1318,27 @@ function renderAbsensiTable() {
   if (q) data = data.filter(a => a.stafId.toLowerCase().includes(q));
   
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
-  tbody.innerHTML = data.map((a,i) => `
+  tbody.innerHTML = data.map((a,i) => {
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    const totalMenit = calcMinutes(jMasukClean, jKeluarClean);
+    const durasiDisplay = minutesToStr(totalMenit);
+
+    return `
     <tr>
       <td>${i+1}</td>
       <td><strong>${a.stafId}</strong></td>
       <td><span class="badge ${jabatanBadgeClass(a.stafId)}">${a.jabatan}</span></td>
       <td class="mono">${fmtDate(a.tanggal)}</td>
       <td>${a.hari}</td>
-      <td class="mono">${formatJamMenit(a.masuk)}</td>
-      <td class="mono">${formatJamMenit(a.keluar)}</td>
-      <td class="mono">${formatJamMenit(a.durasi)}</td>
+      <td class="mono">${jMasukClean}</td>
+      <td class="mono">${jKeluarClean}</td>
+      <td class="mono"><strong>${durasiDisplay}</strong></td>
       <td style="text-align:center;">${a.treatment||0}</td>
       <td class="mono"><strong>${fmtMoney(a.pemasukan)}</strong></td>
       <td><span style="color:var(--text3); font-size:10px;">Cloud Lock</span></td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -1334,11 +1356,9 @@ function renderRekap() {
   
   let totalMins = 0;
   data.forEach(a => { 
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { 
-      const [j,m] = durClean.split(':').map(Number); 
-      totalMins += (j*60)+m; 
-    } 
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    totalMins += calcMinutes(jMasukClean, jKeluarClean);
   });
 
   document.getElementById('rekap-stats').innerHTML = `
@@ -1347,7 +1367,7 @@ function renderRekap() {
     <div class="rekap-stat"><div class="r-lbl">Penanganan Pasien</div><div class="r-val">${totalPenanganan}</div><div class="r-sub">Kasus</div></div>
     <div class="rekap-stat"><div class="r-lbl">Total Pemasukan</div><div class="r-val" style="font-size:16px; color:#16a34a;">${fmtMoney(totalPemasukan)}</div><div class="r-sub">Income</div></div>`;
 
-  const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sat'];
   const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
   data.forEach(a => {
     let tgl = a.tanggal || '';
@@ -1374,8 +1394,9 @@ function renderRekap() {
     byStaf[sKey].duty++;
     byStaf[sKey].penanganan += (a.treatment||0);
     byStaf[sKey].pemasukan += (a.pemasukan||0);
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
   });
   
   const tbody = document.getElementById('rekap-tbody');
@@ -1401,8 +1422,9 @@ function renderGaji() {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: a.stafId, duty:0, menit:0 };
     byStaf[sKey].duty++;
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
   });
 
   const tbody = document.getElementById('gaji-tbody'); if (!tbody) return;
@@ -1443,8 +1465,9 @@ function renderDashboard() {
 
   let totalMins = 0;
   weekData.forEach(a => { 
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); totalMins += (j*60)+m; } 
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    totalMins += calcMinutes(jMasukClean, jKeluarClean);
   });
   document.getElementById('d-total-jam').textContent = minutesToStr(totalMins) || '0j';
   document.getElementById('d-total-penanganan').textContent = weekData.reduce((s,a)=>s+(a.treatment||0),0);
@@ -1454,8 +1477,10 @@ function renderDashboard() {
   weekData.forEach(a => {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { menit:0 };
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    byStaf[sKey].textMins = calcMinutes(jMasukClean, jKeluarClean);
+    byStaf[sKey].menit += byStaf[sKey].textMins;
   });
   let totalGajiEst = 0;
   Object.entries(byStaf).forEach(([sid,r]) => {
@@ -1477,15 +1502,17 @@ function renderDashboard() {
     penangananByDay[d] += (a.treatment||0); 
     incomeByDay[d] += (a.pemasukan||0);
     const rate = getStafGajiPokok(a.stafId);
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); gajiByDay[d] += ((j*60+m) / 60) * rate; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    gajiByDay[d] += (calcMinutes(jMasukClean, jKeluarClean) / 60) * rate;
   });
 
   const memberData = {};
   weekData.forEach(a => {
     if (!memberData[a.stafId]) memberData[a.stafId] = 0;
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); memberData[a.stafId] += (j*60)+m; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    memberData[a.stafId] += calcMinutes(jMasukClean, jKeluarClean);
   });
   const sortedMembers = Object.entries(memberData).sort((a,b)=>b[1]-a[1]).slice(0,7);
   const lblAktivitas = sortedMembers.map(m => m[0].split(' ')[0]);
@@ -1523,8 +1550,9 @@ function getExportRekapData(wk, bonusPct) {
     const sKey = a.stafId.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: a.stafId, duty:0, menit:0, penanganan:0, pemasukan:0 };
     byStaf[sKey].duty++;
-    let durClean = formatJamMenit(a.durasi);
-    if(durClean.includes(':')) { const [j,m] = durClean.split(':').map(Number); byStaf[sKey].menit += (j*60)+m; }
+    const jMasukClean = formatJamMenit(a.masuk);
+    const jKeluarClean = formatJamMenit(a.keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
     byStaf[sKey].penanganan += (a.treatment||0);
     byStaf[sKey].pemasukan += (a.pemasukan||0);
   });
@@ -1577,7 +1605,6 @@ function startAutoSync() {
         state.staf = dataCloud.staf || [];
         state.jabatan = dataCloud.jabatan || [];
         
-        // Cek halaman mana yang aktif saat ini, re-render datanya tanpa ganggu interface ngetik
         const currentTab = document.querySelector('.nav-item.active')?.getAttribute('onclick')?.match(/'([^']+)'/)[1] || 'dashboard';
         if (currentTab === 'dashboard') renderDashboard();
         if (currentTab === 'anggota') renderAnggotaList(state.searchKeyword);
