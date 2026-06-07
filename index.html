@@ -816,42 +816,28 @@ function fmtDate(tglStr) {
   return `${d}/${m}/${y}`;
 }
 
-// FIXED: Ultimate Anti-Blank Jam Kerja dari sisa string/desimal Google Sheets
+// FIXED: Memotong segala bentuk format waktu ISO (1899-12-30T...) tanpa merusak struktur string jam
 function formatJamMenit(waktuStr) {
-  if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "-";
-  
+  if (!waktuStr) return "-";
   let str = String(waktuStr).trim();
   
-  // 1. JIKA FORMAT NYA ANGKA DESIMAL SPREADSHEET (Contoh: 0.16811)
-  if (!isNaN(str) && parseFloat(str) > 0 && parseFloat(str) < 1) {
-    let totalMins = Math.round(parseFloat(str) * 1440);
-    let hrs = Math.floor(totalMins / 60);
-    let mns = totalMins % 60;
-    return String(hrs).padStart(2, '0') + ':' + String(mns).padStart(2, '0');
-  }
-
-  // 2. JIKA FORMAT ISO (Contoh: 1899-12-30T04:02:24)
   if (str.includes('T')) {
     str = str.split('T')[1];
   }
-  
-  // 3. JIKA FORMAT GMT/DESKRIPTIF BROWSER (Contoh: Sun Jun 07 2026 04:02:24 GMT+0700)
-  if (str.includes(' ') && str.includes(':')) {
-    const polaJam = str.match(/\d{2}:\d{2}/);
-    if (polaJam) return polaJam[0];
+  if (str.includes(' ')) {
+    // Ambil token berformat HH:MM:SS jika bercampur string text
+    const found = str.match(/\d{2}:\d{2}/);
+    if (found) return found[0];
   }
   
-  // Bersihkan sisa-sisa zona waktu di belakang jika ada
   if (str.includes('+')) str = str.split('+')[0];
   if (str.includes('-')) str = str.split('-')[0];
   if (str.includes('Z')) str = str.split('Z')[0];
   
-  // Ambil HH:MM murninya
   if (str.includes(':')) {
     let parts = str.split(':');
-    return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().padStart(2, '0');
+    return parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
   }
-  
   return str;
 }
 
@@ -1305,8 +1291,6 @@ function resetAbsensi() {
   document.getElementById('ab-btn-reset-text').textContent = 'Reset';
   updatePenangananSum();
 }
-
-// FIXED: Membawa pemicu UID unik agar Google Sheets tidak overwrite baris orang yang sama di hari yang sama
 async function simpanAbsensi() {
   const stafNama = document.getElementById('ab-nama').value;
   if (!stafNama) { toast('Pilih anggota','error'); return; }
@@ -1323,7 +1307,6 @@ async function simpanAbsensi() {
 
   const payload = {
     action: "addAbsen",
-    id: uid(), 
     stafId: stafNama,
     jabatan: selectedStaf ? selectedStaf.jabatanId : "Nurse",
     tanggal: tanggal, hari: hariFromISO(tanggal), masuk, keluar,
@@ -1344,7 +1327,7 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED: Sinkronisasi pemetaan parameter API dengan data olahan Apps Script yang baru
+// FIXED: Mengantisipasi variasi penamaan properti API dan memotong text GMT deskriptif secara aman
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
@@ -1386,8 +1369,8 @@ function renderAbsensiTable() {
       <td><span class="badge ${jabatanBadgeClass(stafIdClean)}">${jabatanClean}</span></td>
       <td class="mono">${fmtDate(tanggalClean)}</td>
       <td>${hariClean}</td>
-      <td class="mono">${jMasukClean !== '-' ? jMasukClean : jamMasukRaw}</td>
-      <td class="mono">${jKeluarClean !== '-' ? jKeluarClean : jamKeluarRaw}</td>
+      <td class="mono">${jMasukClean}</td>
+      <td class="mono">${jKeluarClean}</td>
       <td class="mono"><strong>${durasiDisplay}</strong></td>
       <td style="text-align:center;">${treatmentClean}</td>
       <td class="mono"><strong>${fmtMoney(pemasukanClean)}</strong></td>
@@ -1441,7 +1424,7 @@ function renderRekap() {
   chartRekapIncome = new Chart(document.getElementById('chart-rekap-income'), { type:'line', data:{ labels:days, datasets:[{ label:'Pemasukan', data:incomeByDay, borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#c0392b', pointRadius:5, borderWidth:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, callback:v=>'$'+v }, grid:{ color:gc }, min:0 } } } });
   
   if (chartRekapPenanganan) chartRekapPenanganan.destroy();
-  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, grid:{ color:gc }, min:0 } } } });
+  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc }, grid:{ color:gc }, min:0 } } } });
 
   const byStaf = {};
   data.forEach(a => {
