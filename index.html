@@ -132,7 +132,7 @@ a { text-decoration: none; color: inherit; }
 .date-nav { display: flex; align-items: center; gap: 6px; }
 .date-nav-btn { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 7px; padding: 6px 10px; font-size: 13px; color: var(--text2); transition: all 0.12s; }
 .date-nav-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
-.date-nav-btn.today { background: var(--red); color: #fff; border-color: var(--red-dark); font-size: 11px; font-weight: 700; padding: 6px 12px; }
+.date-nav-btn.today { background: var(--red); color: #fff; border-color: var(--red-dark); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 7px; }
 .date-nav-btn.today:hover { background: var(--red-dark); }
 
 /* ── BUTTONS ── */
@@ -734,7 +734,8 @@ table tr:hover td { background: var(--row-hover); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbw0uSILjM1Hw4aZHxBjr7tFjGkD-T_S88yZiUOxkmcepB8wFYGeCcZLLfIe0kpW_A/exec";
+// 🔥 DEPLOYMENT URL UPDATE: Menggunakan sirkuit teranyar dari server awan Google Apps Script
+const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycby4l6F1I_WDtbQwnT1XJixi5h6smXAEnVEcREXpS_YsV_krQ77Q62Vny3kdGeDGMPf8/exec";
 
 let state = {
   absensi: [],
@@ -774,7 +775,6 @@ function refreshAllViews() {
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
-// ULTIMATE RE-FIXER: Mengamankan konversi teks tanggal acak browser lokal, objek sistem, maupun format strip standard
 function parseToCleanDateString(tglStr) {
   if (!tglStr) return '';
   let s = String(tglStr).trim();
@@ -791,11 +791,10 @@ function parseToCleanDateString(tglStr) {
     } catch(e) {}
   }
 
-  // Pendeteksi khusus format DD/MM/YYYY dari Google Sheets agar tidak terbalik menjadi MM/DD/YYYY
   if (s.includes('/')) {
     const parts = s.split(' ')[0].split('/');
-    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`; // YYYY/MM/DD
-    if (parts[2] && parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; // DD/MM/YYYY
+    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`; 
+    if (parts[2] && parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; 
   }
 
   return s.split(' ')[0].split('T')[0];
@@ -816,9 +815,8 @@ function fmtDate(tglStr) {
   return `${d}/${m}/${y}`;
 }
 
-// BULLETPROOF ENGINE TIME: Membaca, memotong, dan menormalisasi teks "1899-12-30T...", desimal, maupun objek GMT secara murni.
 function formatJamMenit(waktuStr) {
-  if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "-";
+  if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "00:00";
   
   let str = String(waktuStr).trim();
   
@@ -841,7 +839,6 @@ function formatJamMenit(waktuStr) {
     if (polaJam) return polaJam[0];
   }
   
-  // Bersihkan karakter-karakter sisa di belakang string jam
   if (str.includes('+')) str = str.split('+')[0];
   if (str.includes('-')) str = str.split('-')[0];
   if (str.includes('Z')) str = str.split('Z')[0];
@@ -852,7 +849,7 @@ function formatJamMenit(waktuStr) {
     return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().padStart(2, '0');
   }
   
-  return str;
+  return str === "-" ? "00:00" : str;
 }
 
 function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
@@ -861,7 +858,6 @@ function calcDurasi(masuk, keluar) {
   if (!masuk || !keluar) return '';
   const cleanM = formatJamMenit(masuk);
   const cleanK = formatJamMenit(keluar);
-  if (!cleanM.includes(':') || !cleanK.includes(':')) return '';
   const [h1,m1] = cleanM.split(':').map(Number);
   const [h2,m2] = cleanK.split(':').map(Number);
   let mins = (h2*60+m2)-(h1*60+m1);
@@ -874,8 +870,6 @@ function calcMinutes(masuk, keluar) {
   if (!masuk || !keluar) return 0;
   const cleanMasuk = formatJamMenit(masuk);
   const cleanKeluar = formatJamMenit(keluar);
-  
-  if (!cleanMasuk.includes(':') || !cleanKeluar.includes(':')) return 0;
   
   const [h1, m1] = cleanMasuk.split(':').map(Number);
   const [h2, m2] = cleanKeluar.split(':').map(Number);
@@ -895,14 +889,12 @@ function minutesToStr(mins) {
   return h + ' Jam ' + m + ' Menit';
 }
 
-// SAFEST WEEK KEY ENGINE: Memperbaiki crash Uncaught RangeError saat pembuatan filter minggu dari tanggal abnormal
 function weekKey(iso) {
   const cleanIso = parseToCleanDateString(iso);
   if (!cleanIso) return currentWeekKey();
   
   const d = new Date(cleanIso);
   if (isNaN(d.getTime())) {
-    // Fallback jika parsing meleset karena format sangat acak
     return currentWeekKey(); 
   }
   
@@ -1370,7 +1362,6 @@ function renderAbsensiTable() {
     const treatmentClean = a.treatment || a.Treatment || 0;
     const pemasukanClean = a.pemasukan || a.Pemasukan || 0;
 
-    // Bersihkan data jam hancur desimal / ISO bawaan Sheets API
     const jMasukClean = formatJamMenit(jamMasukRaw);
     const jKeluarClean = formatJamMenit(jamKeluarRaw);
     
