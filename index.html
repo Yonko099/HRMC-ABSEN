@@ -774,12 +774,11 @@ function refreshAllViews() {
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
-// FIXED: Membersihkan & menormalisasi segala jenis string tanggal acak (ISO, Slash, Maupun GMT Deskriptif)
+// ULTIMATE RE-FIXER: Mengamankan konversi teks tanggal acak browser lokal, objek sistem, maupun format strip standard
 function parseToCleanDateString(tglStr) {
   if (!tglStr) return '';
   let s = String(tglStr).trim();
   
-  // Jika format membawa deskripsi nama hari/bulan sistem (Contoh: "Sun Jun 07 2026...")
   if (s.includes(' Waktu ') || s.includes(' GMT') || /[a-zA-Z]{3}\s[a-zA-Z]{3}\s\d+/.test(s)) {
     try {
       const d = new Date(s);
@@ -792,13 +791,14 @@ function parseToCleanDateString(tglStr) {
     } catch(e) {}
   }
 
-  let clean = s.split(' Berlin')[0].split(' Waktu ')[0].split('T')[0];
-  if (clean.includes('/')) {
-    const parts = clean.split('/');
-    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
-    return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+  // Pendeteksi khusus format DD/MM/YYYY dari Google Sheets agar tidak terbalik menjadi MM/DD/YYYY
+  if (s.includes('/')) {
+    const parts = s.split(' ')[0].split('/');
+    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`; // YYYY/MM/DD
+    if (parts[2] && parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; // DD/MM/YYYY
   }
-  return clean;
+
+  return s.split(' ')[0].split('T')[0];
 }
 
 function hariFromISO(iso) {
@@ -816,13 +816,13 @@ function fmtDate(tglStr) {
   return `${d}/${m}/${y}`;
 }
 
-// FIXED ULTIMATE: Kebal format desimal spreadsheet, format ISO maupun teks deskripsi browser lokal
+// BULLETPROOF ENGINE TIME: Membaca, memotong, dan menormalisasi teks "1899-12-30T...", desimal, maupun objek GMT secara murni.
 function formatJamMenit(waktuStr) {
   if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "-";
   
   let str = String(waktuStr).trim();
   
-  // 1. JIKA FORMAT NYA ANGKA DESIMAL SPREADSHEET (Contoh: 0.16811)
+  // Kasus 1: Desimal Spreadsheet bawaan Google Sheets API (misal: 0.7083)
   if (!isNaN(str) && parseFloat(str) > 0 && parseFloat(str) < 1) {
     let totalMins = Math.round(parseFloat(str) * 1440);
     let hrs = Math.floor(totalMins / 60);
@@ -830,23 +830,23 @@ function formatJamMenit(waktuStr) {
     return String(hrs).padStart(2, '0') + ':' + String(mns).padStart(2, '0');
   }
 
-  // 2. JIKA FORMAT ISO (Contoh: 1899-12-30T04:02:24)
+  // Kasus 2: String ISO gabungan bercampur tanggal 1899 (misal: 1899-12-30T04:02:24.000Z)
   if (str.includes('T')) {
     str = str.split('T')[1];
   }
   
-  // 3. JIKA FORMAT GMT/DESKRIPTIF BROWSER (Contoh: Sun Jun 07 2026 04:02:24 GMT+0700)
+  // Kasus 3: String panjang waktu bawaan system GMT / text campuran deskripsi browser lokal
   if (str.includes(' ') && str.includes(':')) {
     const polaJam = str.match(/\d{2}:\d{2}/);
     if (polaJam) return polaJam[0];
   }
   
-  // Bersihkan sisa-sisa zona waktu di belakang jika ada
+  // Bersihkan karakter-karakter sisa di belakang string jam
   if (str.includes('+')) str = str.split('+')[0];
   if (str.includes('-')) str = str.split('-')[0];
   if (str.includes('Z')) str = str.split('Z')[0];
+  if (str.includes('.')) str = str.split('.')[0];
   
-  // Ambil HH:MM murninya
   if (str.includes(':')) {
     let parts = str.split(':');
     return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().padStart(2, '0');
@@ -895,12 +895,16 @@ function minutesToStr(mins) {
   return h + ' Jam ' + m + ' Menit';
 }
 
+// SAFEST WEEK KEY ENGINE: Memperbaiki crash Uncaught RangeError saat pembuatan filter minggu dari tanggal abnormal
 function weekKey(iso) {
   const cleanIso = parseToCleanDateString(iso);
   if (!cleanIso) return currentWeekKey();
   
   const d = new Date(cleanIso);
-  if (isNaN(d.getTime())) return currentWeekKey(); 
+  if (isNaN(d.getTime())) {
+    // Fallback jika parsing meleset karena format sangat acak
+    return currentWeekKey(); 
+  }
   
   const day = d.getDay();
   const sun = new Date(d); sun.setDate(d.getDate() - day);
@@ -986,9 +990,6 @@ function goPage(name) {
   if (name === 'export') { populateWeekSelect('export-week'); renderExportPreview(); }
 }
 
-// ══════════════════════════════════════════════
-// CORE FUNCTION LAYERS
-// ══════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function toast(msg, type='success') {
@@ -1006,6 +1007,9 @@ function populateWeekFilter(id) {
   el.innerHTML = '<option value="all">Semua Minggu</option>' + allWeeks().map(w => `<option value="${w}">${weekLabel(w)}</option>`).join('');
 }
 
+// ══════════════════════════════════════════════
+// CORE SAVE & STRUKTUR PIPELINES
+// ══════════════════════════════════════════════
 function openAddJabatan() {
   document.getElementById('jabatan-modal-title').textContent = 'Tambah Jabatan';
   document.getElementById('jabatan-edit-id').value = '';
@@ -1298,7 +1302,6 @@ function resetAbsensi() {
   updatePenangananSum();
 }
 
-// FIXED UPGRADE: Menyertakan parameter 'id' (UID) unik agar bisa input multi-sesi dalam satu hari
 async function simpanAbsensi() {
   const stafNama = document.getElementById('ab-nama').value;
   if (!stafNama) { toast('Pilih anggota','error'); return; }
@@ -1336,7 +1339,9 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED UPGRADE: Sinkron murni berbasis API penampung huruf kecil data olahan Apps Script baru
+// ══════════════════════════════════════════════
+// RENDER DATA TABLE (SAFE LOGIC)
+// ══════════════════════════════════════════════
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
@@ -1365,6 +1370,7 @@ function renderAbsensiTable() {
     const treatmentClean = a.treatment || a.Treatment || 0;
     const pemasukanClean = a.pemasukan || a.Pemasukan || 0;
 
+    // Bersihkan data jam hancur desimal / ISO bawaan Sheets API
     const jMasukClean = formatJamMenit(jamMasukRaw);
     const jKeluarClean = formatJamMenit(jamKeluarRaw);
     
@@ -1378,8 +1384,8 @@ function renderAbsensiTable() {
       <td><span class="badge ${jabatanBadgeClass(stafIdClean)}">${jabatanClean}</span></td>
       <td class="mono">${fmtDate(tanggalClean)}</td>
       <td>${hariClean}</td>
-      <td class="mono">${jMasukClean !== '-' ? jMasukClean : jamMasukRaw}</td>
-      <td class="mono">${jKeluarClean !== '-' ? jKeluarClean : jamKeluarRaw}</td>
+      <td class="mono">${jMasukClean}</td>
+      <td class="mono">${jKeluarClean}</td>
       <td class="mono"><strong>${durasiDisplay}</strong></td>
       <td style="text-align:center;">${treatmentClean}</td>
       <td class="mono"><strong>${fmtMoney(pemasukanClean)}</strong></td>
