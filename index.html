@@ -95,7 +95,6 @@ a { text-decoration: none; color: inherit; }
 /* ── STAT CARDS ── */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
-.stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.06; }
 .stat-card.c-blue::before { background: #3b82f6; }
 .stat-card.c-orange::before { background: #f97316; }
 .stat-card.c-green::before { background: #22c55e; }
@@ -770,38 +769,65 @@ function refreshAllViews() {
 }
 
 // ══════════════════════════════════════════════
-// UTILS & FIXERS
+// UTILS & FIXERS (DATE-TIME ENGINE CORRECTION)
 // ══════════════════════════════════════════════
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
-// Penentu Hari Kebal Terhadap Slash Format (/)
-function hariFromISO(iso) {
-  if (!iso) return '';
-  let cleanIso = iso.split('T')[0];
-  if (cleanIso.includes('/')) {
-    const [d, m, y] = cleanIso.split('/');
-    cleanIso = `${y}-${m}-${d}`;
+// FIXED: Membersihkan & menormalisasi segala jenis string tanggal acak (ISO, Slash, Maupun GMT Deskriptif)
+function parseToCleanDateString(tglStr) {
+  if (!tglStr) return '';
+  let s = String(tglStr).trim();
+  
+  // Jika format membawa deskripsi nama hari/bulan sistem (Contoh: "Sun Jun 07 2026...")
+  if (s.includes(' Waktu ') || s.includes(' GMT') || /[a-zA-Z]{3}\s[a-zA-Z]{3}\s\d+/.test(s)) {
+    try {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch(e) {}
   }
-  return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date(cleanIso).getDay()];
+
+  let clean = s.split(' Berlin')[0].split(' Waktu ')[0].split('T')[0];
+  if (clean.includes('/')) {
+    const parts = clean.split('/');
+    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+    return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+  }
+  return clean;
+}
+
+function hariFromISO(iso) {
+  const clean = parseToCleanDateString(iso);
+  if (!clean) return '';
+  const d = new Date(clean);
+  if (isNaN(d.getTime())) return '';
+  return ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
 }
 
 function fmtDate(tglStr) {
-  if (!tglStr) return '-';
-  if (tglStr.includes('-')) {
-    const [y, m, d] = tglStr.split('T')[0].split('-');
-    return `${d}/${m}/${y}`;
-  }
-  return tglStr;
+  const clean = parseToCleanDateString(tglStr);
+  if (!clean || !clean.includes('-')) return String(tglStr);
+  const [y, m, d] = clean.split('-');
+  return `${d}/${m}/${y}`;
 }
 
-// FIXED CRITICAL SAKTI: Memotong format ISO mentah bawaan Google Sheets secara total
+// FIXED: Memotong segala bentuk format waktu ISO (1899-12-30T...) tanpa merusak struktur string jam
 function formatJamMenit(waktuStr) {
   if (!waktuStr) return "-";
   let str = String(waktuStr).trim();
   
   if (str.includes('T')) {
     str = str.split('T')[1];
+  }
+  if (str.includes(' ')) {
+    // Ambil token berformat HH:MM:SS jika bercampur string text
+    const found = str.match(/\d{2}:\d{2}/);
+    if (found) return found[0];
   }
   
   if (str.includes('+')) str = str.split('+')[0];
@@ -830,7 +856,6 @@ function calcDurasi(masuk, keluar) {
   return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
 }
 
-// FIXED CRITICAL SAKTI: Penghitung selisih menit yang kebal terhadap string ISO aneh
 function calcMinutes(masuk, keluar) {
   if (!masuk || !keluar) return 0;
   const cleanMasuk = formatJamMenit(masuk);
@@ -848,31 +873,20 @@ function calcMinutes(masuk, keluar) {
 
 function minutesToDecimal(mins) { return (mins/60).toFixed(2); }
 
-// FIXED: Format tampilan string durasi kerja murni rapi sesuai instruksi ("4 Jam" / "4 Jam 30 Menit")
 function minutesToStr(mins) {
   if (!mins || mins <= 0) return '0j';
   const h = Math.floor(mins / 60);
   const m = mins % 60;
-  if (m === 0) {
-    return h + ' Jam';
-  }
+  if (m === 0) return h + ' Jam';
   return h + ' Jam ' + m + ' Menit';
 }
 
-// Menghilangkan RangeError Invalid time value Akibat Format DD/MM/YYYY
 function weekKey(iso) {
-  if (!iso) return currentWeekKey();
-  let cleanIso = iso.split('T')[0];
-  
-  if (cleanIso.includes('/')) {
-    const [d, m, y] = cleanIso.split('/');
-    cleanIso = `${y}-${m}-${d}`;
-  }
+  const cleanIso = parseToCleanDateString(iso);
+  if (!cleanIso) return currentWeekKey();
   
   const d = new Date(cleanIso);
-  if (isNaN(d.getTime())) {
-    return currentWeekKey(); 
-  }
+  if (isNaN(d.getTime())) return currentWeekKey(); 
   
   const day = d.getDay();
   const sun = new Date(d); sun.setDate(d.getDate() - day);
@@ -888,7 +902,10 @@ function weekLabel(key) {
 }
 function allWeeks() {
   const wks = {};
-  state.absensi.forEach(a => { if (a.tanggal || a.Tanggal) wks[weekKey(a.tanggal || a.Tanggal)] = true; });
+  state.absensi.forEach(a => { 
+    const tgl = a.tanggal || a.Tanggal;
+    if (tgl) wks[weekKey(tgl)] = true; 
+  });
   wks[currentWeekKey()] = true;
   return Object.keys(wks).sort().reverse();
 }
@@ -1029,7 +1046,7 @@ function renderJabatan() {
 }
 
 // ══════════════════════════════════════════════
-// DATA ANGGOTA & MUTASI INLINE CONFIG
+// DATA ANGGOTA & MUTASI CONFIG
 // ══════════════════════════════════════════════
 function populateJabatanSelect(elId) {
   const el = document.getElementById(elId); if (!el) return;
@@ -1310,17 +1327,15 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED: Mengantisipasi variasi penamaan properti API (case-insensitive) dan memproses waktu ISO
+// FIXED: Mengantisipasi variasi penamaan properti API dan memotong text GMT deskriptif secara aman
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
   const q = (document.getElementById('absensi-search')?.value||'').toLowerCase();
   
   let data = [...state.absensi].sort((a,b) => {
-    let tglA = a.tanggal || a.Tanggal || '';
-    let tglB = b.tanggal || b.Tanggal || '';
-    if (tglA.includes('/')) { const [d,m,y] = tglA.split('/'); tglA = `${y}-${m}-${d}`; }
-    if (tglB.includes('/')) { const [d,m,y] = tglB.split('/'); tglB = `${y}-${m}-${d}`; }
+    let tglA = parseToCleanDateString(a.tanggal || a.Tanggal || '');
+    let tglB = parseToCleanDateString(b.tanggal || b.Tanggal || '');
     return tglB.localeCompare(tglA);
   });
 
@@ -1393,11 +1408,12 @@ function renderRekap() {
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sat'];
   const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
   data.forEach(a => {
-    let tgl = a.tanggal || a.Tanggal || '';
-    if (tgl.includes('/')) { const [d,m,y] = tgl.split('/'); tgl = `${y}-${m}-${d}`; }
-    const d = new Date(tgl.split('T')[0]).getDay();
-    incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
-    penangananByDay[d] += (a.treatment || a.Treatment || 0);
+    let tgl = parseToCleanDateString(a.tanggal || a.Tanggal || '');
+    if (tgl) {
+      const d = new Date(tgl).getDay();
+      incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
+      penangananByDay[d] += (a.treatment || a.Treatment || 0);
+    }
   });
   
   const isDark = state.darkMode;
@@ -1520,16 +1536,17 @@ function renderDashboard() {
   const dutyByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0), incomeByDay = Array(7).fill(0), gajiByDay = Array(7).fill(0);
   
   weekData.forEach(a => {
-    let tgl = a.tanggal || a.Tanggal || '';
-    if (tgl.includes('/')) { const [d,m,y] = tgl.split('/'); tgl = `${y}-${m}-${d}`; }
-    const d = new Date(tgl.split('T')[0]).getDay();
-    dutyByDay[d]++; 
-    penangananByDay[d] += (a.treatment || a.Treatment || 0); 
-    incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
-    const rate = getStafGajiPokok(a.stafId || a.StafId);
-    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
-    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
-    gajiByDay[d] += (calcMinutes(jMasukClean, jKeluarClean) / 60) * rate;
+    let tgl = parseToCleanDateString(a.tanggal || a.Tanggal || '');
+    if (tgl) {
+      const d = new Date(tgl).getDay();
+      dutyByDay[d]++; 
+      penangananByDay[d] += (a.treatment || a.Treatment || 0); 
+      incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
+      const rate = getStafGajiPokok(a.stafId || a.StafId);
+      const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+      const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+      gajiByDay[d] += (calcMinutes(jMasukClean, jKeluarClean) / 60) * rate;
+    }
   });
 
   const memberData = {};
