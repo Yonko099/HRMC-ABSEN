@@ -816,28 +816,42 @@ function fmtDate(tglStr) {
   return `${d}/${m}/${y}`;
 }
 
-// FIXED: Memotong segala bentuk format waktu ISO (1899-12-30T...) tanpa merusak struktur string jam
+// FIXED ULTIMATE: Kebal format desimal spreadsheet, format ISO maupun teks deskripsi browser lokal
 function formatJamMenit(waktuStr) {
-  if (!waktuStr) return "-";
+  if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "-";
+  
   let str = String(waktuStr).trim();
   
+  // 1. JIKA FORMAT NYA ANGKA DESIMAL SPREADSHEET (Contoh: 0.16811)
+  if (!isNaN(str) && parseFloat(str) > 0 && parseFloat(str) < 1) {
+    let totalMins = Math.round(parseFloat(str) * 1440);
+    let hrs = Math.floor(totalMins / 60);
+    let mns = totalMins % 60;
+    return String(hrs).padStart(2, '0') + ':' + String(mns).padStart(2, '0');
+  }
+
+  // 2. JIKA FORMAT ISO (Contoh: 1899-12-30T04:02:24)
   if (str.includes('T')) {
     str = str.split('T')[1];
   }
-  if (str.includes(' ')) {
-    // Ambil token berformat HH:MM:SS jika bercampur string text
-    const found = str.match(/\d{2}:\d{2}/);
-    if (found) return found[0];
+  
+  // 3. JIKA FORMAT GMT/DESKRIPTIF BROWSER (Contoh: Sun Jun 07 2026 04:02:24 GMT+0700)
+  if (str.includes(' ') && str.includes(':')) {
+    const polaJam = str.match(/\d{2}:\d{2}/);
+    if (polaJam) return polaJam[0];
   }
   
+  // Bersihkan sisa-sisa zona waktu di belakang jika ada
   if (str.includes('+')) str = str.split('+')[0];
   if (str.includes('-')) str = str.split('-')[0];
   if (str.includes('Z')) str = str.split('Z')[0];
   
+  // Ambil HH:MM murninya
   if (str.includes(':')) {
     let parts = str.split(':');
-    return parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
+    return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().padStart(2, '0');
   }
+  
   return str;
 }
 
@@ -972,6 +986,9 @@ function goPage(name) {
   if (name === 'export') { populateWeekSelect('export-week'); renderExportPreview(); }
 }
 
+// ══════════════════════════════════════════════
+// CORE FUNCTION LAYERS
+// ══════════════════════════════════════════════
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function toast(msg, type='success') {
@@ -989,9 +1006,6 @@ function populateWeekFilter(id) {
   el.innerHTML = '<option value="all">Semua Minggu</option>' + allWeeks().map(w => `<option value="${w}">${weekLabel(w)}</option>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// STRUKTUR JABATAN PIPELINE
-// ══════════════════════════════════════════════
 function openAddJabatan() {
   document.getElementById('jabatan-modal-title').textContent = 'Tambah Jabatan';
   document.getElementById('jabatan-edit-id').value = '';
@@ -1014,6 +1028,7 @@ async function saveJabatan() {
     fetchDataCloud();
   } catch(e) { toast("Gagal menyimpan jabatan", "error"); }
 }
+
 function renderJabatan() {
   const el = document.getElementById('jabatan-list');
   const prev = document.getElementById('org-preview');
@@ -1045,9 +1060,6 @@ function renderJabatan() {
   }
 }
 
-// ══════════════════════════════════════════════
-// DATA ANGGOTA & MUTASI CONFIG
-// ══════════════════════════════════════════════
 function populateJabatanSelect(elId) {
   const el = document.getElementById(elId); if (!el) return;
   el.innerHTML = state.jabatan.map(j => `<option value="${j.nama}">${j.nama}</option>`).join('');
@@ -1171,9 +1183,6 @@ function renderAnggotaList(filterText = '') {
   }).join('');
 }
 
-// ══════════════════════════════════════════════
-// BULK ADD LOGIC
-// ══════════════════════════════════════════════
 function openBulkModal() {
   document.getElementById('bulk-textarea').value = '';
   document.getElementById('bulk-preview-wrap').style.display = 'none';
@@ -1229,9 +1238,6 @@ async function saveBulkStaf() {
   fetchDataCloud();
 }
 
-// ══════════════════════════════════════════════
-// DATA ABSENSI DATA WRITER
-// ══════════════════════════════════════════════
 function populateNamaSelect() {
   const el = document.getElementById('ab-nama'); if (!el) return;
   el.innerHTML = state.staf.length
@@ -1291,6 +1297,8 @@ function resetAbsensi() {
   document.getElementById('ab-btn-reset-text').textContent = 'Reset';
   updatePenangananSum();
 }
+
+// FIXED UPGRADE: Menyertakan parameter 'id' (UID) unik agar bisa input multi-sesi dalam satu hari
 async function simpanAbsensi() {
   const stafNama = document.getElementById('ab-nama').value;
   if (!stafNama) { toast('Pilih anggota','error'); return; }
@@ -1307,6 +1315,7 @@ async function simpanAbsensi() {
 
   const payload = {
     action: "addAbsen",
+    id: uid(), 
     stafId: stafNama,
     jabatan: selectedStaf ? selectedStaf.jabatanId : "Nurse",
     tanggal: tanggal, hari: hariFromISO(tanggal), masuk, keluar,
@@ -1327,7 +1336,7 @@ async function simpanAbsensi() {
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
-// FIXED: Mengantisipasi variasi penamaan properti API dan memotong text GMT deskriptif secara aman
+// FIXED UPGRADE: Sinkron murni berbasis API penampung huruf kecil data olahan Apps Script baru
 function renderAbsensiTable() {
   const tbody = document.getElementById('absensi-tbody'); if (!tbody) return;
   const wkFilter = document.getElementById('ab-filter-week')?.value || 'all';
@@ -1369,8 +1378,8 @@ function renderAbsensiTable() {
       <td><span class="badge ${jabatanBadgeClass(stafIdClean)}">${jabatanClean}</span></td>
       <td class="mono">${fmtDate(tanggalClean)}</td>
       <td>${hariClean}</td>
-      <td class="mono">${jMasukClean}</td>
-      <td class="mono">${jKeluarClean}</td>
+      <td class="mono">${jMasukClean !== '-' ? jMasukClean : jamMasukRaw}</td>
+      <td class="mono">${jKeluarClean !== '-' ? jKeluarClean : jamKeluarRaw}</td>
       <td class="mono"><strong>${durasiDisplay}</strong></td>
       <td style="text-align:center;">${treatmentClean}</td>
       <td class="mono"><strong>${fmtMoney(pemasukanClean)}</strong></td>
