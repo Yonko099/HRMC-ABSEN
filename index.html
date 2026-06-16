@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v2.7 - Full Cloud Ultra Edition</title>
+<title>HRMC Dashboard v2.8 - Full Cloud Ultra Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=400;600&display=swap');
@@ -135,8 +135,6 @@ a { text-decoration: none; color: inherit; }
 .btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,0.35); }
 .btn-secondary { background: var(--bg2); color: var(--text); border: 1.5px solid var(--border); }
 .btn-secondary:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
-.btn-icon { background: transparent; border: none; padding: 5px 7px; color: var(--text3); font-size: 14px; border-radius: 6px; transition: all 0.12s; }
-.btn-icon:hover { background: var(--bg2); color: var(--red); }
 .btn-add { background: var(--red); border: none; border-radius: 8px; width: 34px; height: 34px; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .btn-add:hover { background: var(--red-dark); }
 .btn-sm { padding: 5px 11px; font-size: 12px; }
@@ -300,7 +298,7 @@ table tr:hover td { background: var(--row-hover); }
     </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="version-badge">v2.7</div>
+    <div class="version-badge">v2.8</div>
     <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()" style="width:100%; justify-content:center; margin-bottom:8px;">🔄 Sinkron Cloud</button>
     <div class="sidebar-quote" style="font-size:10px; color:#555; line-height:1.3;">"We Care, We Heal,<br>We're HRMC."</div>
   </div>
@@ -556,11 +554,11 @@ table tr:hover td { background: var(--row-hover); }
     <div class="page" id="page-gaji">
       <div class="card">
         <div class="card-header">
-          <h3>Pengaturan Gaji Staf</h3>
+          <h3>Panel Kontrol & Riwayat Payroll Gaji</h3>
           <div class="gaji-settings">
             <div class="form-group" style="flex:0 0 auto;">
-              <label>Periode</label>
-              <select class="form-control" id="gaji-filter" onchange="renderGaji()" style="width:230px;"></select>
+              <label>Pilih Minggu Kontrak Gaji</label>
+              <select class="form-control" id="gaji-filter" onchange="renderGaji()" style="width:240px; font-weight:700; border-color:var(--red);"></select>
             </div>
             <div class="form-group" style="flex:0 0 auto;">
               <label>Bonus (%)</label>
@@ -573,16 +571,31 @@ table tr:hover td { background: var(--row-hover); }
         </div>
         <div class="card-body">
           <div class="bonus-info" style="margin-bottom:12px;">
-            Bonus <strong id="gaji-bonus-display">10%</strong> diberikan apabila total jam kerja <strong>&gt; 10 jam</strong>. Di bawah atau sama dengan 10 jam tidak mendapat bonus.<br>
-            Sistem Gaji: <strong style="color:var(--red-light);">Total Jam Kerja Desimal × Tarif Per Jam Jabatan</strong>.
+            Bonus <strong id="gaji-bonus-display">10%</strong> diberikan apabila total jam kerja <strong>&gt; 10 jam</strong> dalam seminggu kontrak kerja.<br>
+            Formula Sistem Gaji: <strong style="color:var(--red-light);">Total Jam Kerja Desimal × Tarif Per Jam Jabatan + Bonus (Jika Berlaku)</strong>.
           </div>
+          
+          <div class="rekap-grid" id="gaji-metrics-summary" style="margin-top:14px;">
+            </div>
         </div>
       </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="card">
+          <div class="card-header"><h3>Alokasi Pengeluaran Gaji Per Anggota</h3></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="chart-gaji-staf"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Proporsi Pengeluaran (Gaji Pokok vs Bonus)</h3></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="chart-gaji-proporsi"></canvas></div></div>
+        </div>
+      </div>
+
       <div class="card">
-        <div class="card-header"><h3>Tabel Perhitungan Gaji Berdasarkan Jam Kerja Desimal</h3></div>
+        <div class="card-header"><h3>Tabel Analisis Payroll & Hak Gaji Anggota</h3></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Gaji Pokok</th><th>Bonus</th><th>Total Gaji</th></tr></thead>
+            <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Gaji Pokok</th><th>Bonus</th><th>Total Hak Gaji</th></tr></thead>
             <tbody id="gaji-tbody"></tbody>
           </table>
         </div>
@@ -717,6 +730,10 @@ let dashCharts = {};
 let chartRekapIncome = null;
 let chartRekapPenanganan = null;
 
+// Instance Chart Baru Khusus Menu Gaji
+let chartGajiStaf = null;
+let chartGajiProporsi = null;
+
 async function fetchDataCloud() {
   try {
     const respon = await fetch(URL_API_SPREADSHEET);
@@ -804,6 +821,7 @@ function formatJamMenit(waktuStr) {
   return str === "-" ? "00:00" : str;
 }
 
+// Render simple units (numbers/currency) normally without LaTeX wrapping
 function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
 
 function calcDurasi(masuk, keluar) {
@@ -843,6 +861,7 @@ function weekKey(iso) {
 }
 
 function currentWeekKey() { return weekKey(todayISO()); }
+// Format text normally
 function weekLabel(key) {
   if(!key || !key.includes('_')) return '-';
   const [a,b] = key.split('_');
@@ -890,7 +909,13 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-function toggleDark() { state.darkMode = !state.darkMode; applyTheme(); if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard(); if(document.getElementById('page-rekap').classList.contains('active')) renderRekap(); }
+function toggleDark() { 
+  state.darkMode = !state.darkMode; 
+  applyTheme(); 
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard(); 
+  if(document.getElementById('page-rekap').classList.contains('active')) renderRekap(); 
+  if(document.getElementById('page-gaji').classList.contains('active')) renderGaji(); 
+}
 function applyTheme() {
   document.body.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
   const t = document.getElementById('darkToggle');
@@ -1318,12 +1343,11 @@ function renderRekap() {
   const gc = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
   const tc = isDark ? '#71717a' : '#9ca3af';
   
-  // FIX CHIPS: Destroy instance grafik rekap lama agar tidak overlap crash
   if (chartRekapIncome) chartRekapIncome.destroy();
   chartRekapIncome = new Chart(document.getElementById('chart-rekap-income'), { type:'line', data:{ labels:days, datasets:[{ label:'Pemasukan', data:incomeByDay, borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#c0392b', pointRadius:5, borderWidth:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, callback:v=>'$'+v }, grid:{ color:gc }, min:0 } } } });
   
   if (chartRekapPenanganan) chartRekapPenanganan.destroy();
-  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc }, grid:{ color:gc }, min:0 } } } });
+  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, grid:{ color:gc }, min:0 } } } });
 
   const byStaf = {};
   data.forEach(a => {
@@ -1341,7 +1365,7 @@ function renderRekap() {
 }
 
 // ══════════════════════════════════════════════
-// PERHITUNGAN GAJI REAL-TIME DESIMAL
+// 🔥 PERHITUNGAN GAJI MINGGUAN HISTORICAL METRICS CENTER (TAB GAJI UPDATE)
 // ══════════════════════════════════════════════
 function renderGaji() {
   const el = document.getElementById('gaji-filter');
@@ -1349,7 +1373,9 @@ function renderGaji() {
   const bonusPct = parseFloat(document.getElementById('gaji-bonus-pct')?.value||10)/100;
   document.getElementById('gaji-bonus-display').textContent = Math.round(bonusPct*100) + '%';
 
+  // Filter data murni berdasarkan Minggu Kontrak yang aktif dipilih di historical select panel
   const data = state.absensi.filter(a => weekKey(a.tanggal || a.Tanggal) === wk);
+  
   const byStaf = {};
   data.forEach(a => {
     const rawStaf = a.stafId || a.StafId || ''; const sKey = rawStaf.toLowerCase().trim();
@@ -1360,13 +1386,41 @@ function renderGaji() {
 
   const tbody = document.getElementById('gaji-tbody'); if (!tbody) return;
   const entries = Object.entries(byStaf);
-  if (!entries.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data absensi.</td></tr>'; return; }
+  
+  // Variabel Akumulasi Hitung Ringkasan Gaji & Render Grafik Gaji
+  let akumulasiGajiPokok = 0;
+  let akumulasiBonus = 0;
+  let akumulasiTotalGajiOut = 0;
+  
+  const namaStafLabels = [];
+  const totalGajiValues = [];
+
+  if (!entries.length) { 
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data absensi pada minggu kontrak ini.</td></tr>';
+    document.getElementById('gaji-metrics-summary').innerHTML = `
+      <div class="rekap-stat"><div class="r-lbl">Total Payroll</div><div class="r-val">$0</div><div class="r-sub">Gaji Keluar</div></div>
+      <div class="rekap-stat"><div class="r-lbl">Gaji Pokok</div><div class="r-val">$0</div><div class="r-sub">Keluaran Pokok</div></div>
+      <div class="rekap-stat"><div class="r-lbl">Bonus Pelayanan</div><div class="r-val">$0</div><div class="r-sub">Keluaran Bonus</div></div>
+      <div class="rekap-stat"><div class="r-lbl">Rerata Gaji</div><div class="r-val">$0</div><div class="r-sub">Per Anggota</div></div>`;
+    if(chartGajiStaf) chartGajiStaf.destroy();
+    if(chartGajiProporsi) chartGajiProporsi.destroy();
+    return; 
+  }
 
   tbody.innerHTML = entries.map(([sid,r],i) => {
     const ratePerJam = getStafGajiPokok(r.rawName);
     const jamDesimal = parseFloat((r.menit / 60).toFixed(2));
     const gajiPokokTotal = jamDesimal * ratePerJam;
     const bonusAmt = jamDesimal > 10 ? Math.round(gajiPokokTotal * bonusPct) : 0;
+    const totalGajiNet = gajiPokokTotal + bonusAmt;
+    
+    // Simpan data kalkulasi finansial
+    akumulasiGajiPokok += gajiPokokTotal;
+    akumulasiBonus += bonusAmt;
+    akumulasiTotalGajiOut += totalGajiNet;
+    
+    namaStafLabels.push(r.rawName.split(' ')[0]); // Ambil nama panggilan pendek untuk grafik
+    totalGajiValues.push(totalGajiNet);
     
     return `<tr>
       <td>${i+1}</td>
@@ -1378,14 +1432,74 @@ function renderGaji() {
       <td class="mono"><b>${jamDesimal}</b></td>
       <td class="mono">${fmtMoney(gajiPokokTotal)}</td>
       <td class="mono">${bonusAmt > 0 ? '<span class="badge badge-green">+' + fmtMoney(bonusAmt) + '</span>' : '<span class="badge" style="background:var(--bg2);color:var(--text3);">-</span>'}</td>
-      <td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(gajiPokokTotal + bonusAmt)}</strong></td>
+      <td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(totalGajiNet)}</strong></td>
     </tr>`;
   }).join('');
+
+  // 1. UPDATE KARTU SUMMARY METRICS PANEL GAJI MINGGUAN
+  const rerataGaji = akumulasiTotalGajiOut / entries.length;
+  document.getElementById('gaji-metrics-summary').innerHTML = `
+    <div class="rekap-stat"><div class="r-lbl">Total Payroll</div><div class="r-val" style="color:var(--red-light);">${fmtMoney(akumulasiTotalGajiOut)}</div><div class="r-sub">Gaji Keluar</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Gaji Pokok</div><div class="r-val">${fmtMoney(akumulasiGajiPokok)}</div><div class="r-sub">Keluaran Pokok</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Bonus Pelayanan</div><div class="r-val" style="color:#16a34a;">${fmtMoney(akumulasiBonus)}</div><div class="r-sub">Keluaran Bonus</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Rerata Gaji</div><div class="r-val">${fmtMoney(rerataGaji)}</div><div class="r-sub">Per Anggota</div></div>`;
+
+  // CONFIG THEME UNTUK KANVAS GAJI
+  const isDark = state.darkMode;
+  const gc = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+  const tc = isDark ? '#71717a' : '#9ca3af';
+
+  // 2. RENDER GRAFIK GAJI 1 (ALOKASI GAJI PER ANGGOTA)
+  if (chartGajiStaf) chartGajiStaf.destroy();
+  chartGajiStaf = new Chart(document.getElementById('chart-gaji-staf'), {
+    type: 'bar',
+    data: {
+      labels: namaStafLabels,
+      datasets: [{
+        label: 'Hak Gaji ($)',
+        data: totalGajiValues,
+        backgroundColor: 'rgba(168, 85, 247, 0.75)', // Ungu transparan elegan
+        borderRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: tc }, grid: { color: gc } },
+        y: { ticks: { color: tc, callback: v => '$' + v }, grid: { color: gc }, min: 0 }
+      }
+    }
+  });
+
+  // 3. RENDER GRAFIK GAJI 2 (PROPORSI POKOK VS BONUS)
+  if (chartGajiProporsi) chartGajiProporsi.destroy();
+  chartGajiProporsi = new Chart(document.getElementById('chart-gaji-proporsi'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Gaji Pokok', 'Bonus Pelayanan'],
+      datasets: [{
+        data: [akumulasiGajiPokok, akumulasiBonus],
+        backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)'], // Biru vs Green
+        borderColor: isDark ? '#1c1c1e' : '#ffffff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: isDark ? '#f4f4f5' : '#111827', font: { size: 11 } } }
+      }
+    }
+  });
 }
 
 // ══════════════════════════════════════════════
 // ANALITIK UTAMA DASHBOARD CORE
 // ══════════════════════════════════════════════
+let dashCharts = {};
 function renderDashboard() {
   const wk = currentWeekKey();
   const weekData = state.absensi.filter(a => weekKey(a.tanggal || a.Tanggal) === wk);
@@ -1439,7 +1553,7 @@ function renderDashboard() {
   const tc = isDark?'#71717a':'#9ca3af';
   
   const chartDefs = [
-    { id:'chart-duty', type:'bar', labels:days, datasets:[{label:'Duty Sesi',data:dutyByDay,backgroundColor:'rgba(59,130,246,0.7)',borderRadius:5}] },
+    { id:'chart-duty', type:'bar', labels:days, datasets:[{label:'Duty Sesi',data:dutyByDay,backgroundColor:'rgba(59, 130, 246, 0.7)',borderRadius:5}] },
     { id:'chart-penanganan', type:'bar', labels:days, datasets:[{label:'Kasus Pasien',data:penangananByDay,backgroundColor:'rgba(245,158,11,0.75)',borderRadius:5}] },
     { id:'chart-pemasukan', type:'line', labels:days, datasets:[
         {label:'Pemasukan Hospital',data:incomeByDay,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.08)',fill:true,tension:0.4,pointBackgroundColor:'#22c55e',pointRadius:4,borderWidth:2},
@@ -1449,7 +1563,6 @@ function renderDashboard() {
     { id:'chart-aktivitas', type:'bar', labels:lblAktivitas.length ? lblAktivitas : ['Belum ada'], datasets:[{label:'Total Jam Kerja',data:valAktivitas.length ? valAktivitas : [0],backgroundColor:'rgba(168,85,247,0.7)',borderRadius:5}] },
   ];
   
-  // FIX CHIPS: Hancurkan instance chart lama satu-satu secara aman sebelum inisialisasi ulang
   chartDefs.forEach(def => {
     if (dashCharts[def.id]) { dashCharts[def.id].destroy(); }
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -1492,7 +1605,7 @@ function exportPDF() {
   const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
   const rows = getExportRekapData(wk, bonusPct);
   const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:15px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MINGGUAN — HRMC</h2><div>Periode: ${weekLabel(wk)}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Total Gaji</th></tr></thead><tbody>${trs}</tbody></table></body></html>`;
+  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:15px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MINGGUAN — HRMC</h2><div class="meta">Periode Absensi: ${weekLabel(wk)}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Total Gaji</th></tr></thead><tbody>${trs}</tbody></table></body></html>`;
   const w = window.open('','_blank'); w.document.write(html); w.document.close(); w.print();
 }
 
