@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v2.8 - Full Cloud Ultra Edition</title>
+<title>HRMC Dashboard v2.6 - Full Cloud Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=400;600&display=swap');
@@ -95,6 +95,12 @@ a { text-decoration: none; color: inherit; }
 /* ── STAT CARDS ── */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.stat-card.c-blue::before { background: #3b82f6; }
+.stat-card.c-orange::before { background: #f97316; }
+.stat-card.c-green::before { background: #22c55e; }
+.stat-card.c-purple::before { background: #a855f7; }
+.stat-card.c-red::before { background: var(--red); }
+.stat-card.c-amber::before { background: #f59e0b; }
 .stat-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .stat-icon.blue { background: rgba(59,130,246,0.12); color: #3b82f6; }
 .stat-icon.orange { background: rgba(249,115,22,0.12); color: #f97316; }
@@ -135,6 +141,8 @@ a { text-decoration: none; color: inherit; }
 .btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,0.35); }
 .btn-secondary { background: var(--bg2); color: var(--text); border: 1.5px solid var(--border); }
 .btn-secondary:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+.btn-icon { background: transparent; border: none; padding: 5px 7px; color: var(--text3); font-size: 14px; border-radius: 6px; transition: all 0.12s; }
+.btn-icon:hover { background: var(--bg2); color: var(--red); }
 .btn-add { background: var(--red); border: none; border-radius: 8px; width: 34px; height: 34px; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .btn-add:hover { background: var(--red-dark); }
 .btn-sm { padding: 5px 11px; font-size: 12px; }
@@ -298,7 +306,7 @@ table tr:hover td { background: var(--row-hover); }
     </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="version-badge">v2.8</div>
+    <div class="version-badge">v2.6</div>
     <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()" style="width:100%; justify-content:center; margin-bottom:8px;">🔄 Sinkron Cloud</button>
     <div class="sidebar-quote">"We Care, We Heal,<br>We're HRMC."</div>
   </div>
@@ -349,7 +357,7 @@ table tr:hover td { background: var(--row-hover); }
           <div class="stat-sub">Jam kerja</div>
         </div>
         <div class="stat-card c-amber">
-          <div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div>
           <div class="stat-label">Penanganan Pasien</div>
           <div class="stat-value" id="d-total-penanganan">0</div>
           <div class="stat-sub">Minggu ini</div>
@@ -399,8 +407,14 @@ table tr:hover td { background: var(--row-hover); }
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="text" id="anggota-search" placeholder="Cari nama/jabatan..." oninput="filterAnggota(this.value)">
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="openBulkModal()">Tambah Sekaligus</button>
-            <button class="btn btn-primary btn-sm" onclick="openAddStaf()">Tambah</button>
+            <button class="btn btn-secondary btn-sm" onclick="openBulkModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              Tambah Sekaligus
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openAddStaf()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah
+            </button>
           </div>
         </div>
         <div class="card-body" style="max-height:540px;overflow-y:auto;">
@@ -422,16 +436,16 @@ table tr:hover td { background: var(--row-hover); }
               <label>Nama Anggota</label>
               <div class="input-group">
                 <select class="form-control" id="ab-nama"></select>
-                <button class="btn-add" onclick="openAddStaf()" title="Tambah anggota baru">＋</button>
+                <button class="btn-add" onclick="openAddStaf()" title="Tambah anggota baru"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
             <div class="form-group">
               <label>Tanggal</label>
               <div class="date-nav">
-                <button class="date-nav-btn" onclick="navDate(-1)">◀</button>
+                <button class="date-nav-btn" onclick="navDate(-1)" title="Hari Sebelumnya">◀</button>
                 <input type="date" class="form-control" id="ab-tanggal" style="flex:1;" oninput="onAbTanggal()">
-                <button class="date-nav-btn" onclick="navDate(1)">▶</button>
-                <button class="date-nav-btn today" onclick="navToday()">📅 Hari Ini</button>
+                <button class="date-nav-btn" onclick="navDate(1)" title="Hari Berikutnya">▶</button>
+                <button class="date-nav-btn today" onclick="navToday()" title="Hari Ini">📅 Hari Ini</button>
               </div>
             </div>
             <div class="form-group" style="flex:0 0 100px;">
@@ -475,8 +489,14 @@ table tr:hover td { background: var(--row-hover); }
               Penanganan : <strong id="ab-penanganan-sum">0</strong>
             </div>
             <div style="flex:1;display:flex;justify-content:flex-end;gap:8px;">
-              <button class="btn btn-secondary" onclick="resetAbsensi()"><span id="ab-btn-reset-text">Reset</span></button>
-              <button class="btn btn-primary" onclick="simpanAbsensi()"><span id="ab-btn-save-text">Simpan</span></button>
+              <button class="btn btn-secondary" onclick="resetAbsensi()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+                <span id="ab-btn-reset-text">Reset</span>
+              </button>
+              <button class="btn btn-primary" onclick="simpanAbsensi()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span id="ab-btn-save-text">Simpan</span>
+              </button>
             </div>
           </div>
           <div class="form-note">* Data absensi akan diunggah langsung ke baris tabel awan Google Sheets secara real-time.</div>
@@ -488,6 +508,7 @@ table tr:hover td { background: var(--row-hover); }
           <h3>Semua Data Absensi</h3>
           <div style="display:flex;gap:7px;align-items:center;">
             <div class="search-box">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="text" id="absensi-search" placeholder="Cari nama..." oninput="renderAbsensiTable()">
             </div>
             <select class="form-control" id="ab-filter-week" style="width:180px;" onchange="renderAbsensiTable()"></select>
@@ -537,10 +558,13 @@ table tr:hover td { background: var(--row-hover); }
         <div class="card" style="flex:1;min-width:300px;">
           <div class="card-header">
             <h3>Struktur Jabatan & Tarif Per Jam</h3>
-            <button class="btn btn-primary btn-sm" onclick="openAddJabatan()">Tambah</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddJabatan()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah
+            </button>
           </div>
           <div class="card-body">
-            <p style="font-size:10.5px;color:var(--text3);margin-bottom:10px;">Atur urutan dan nominal upah per jam jabatan.</p>
+            <p style="font-size:10.5px;color:var(--text3);margin-bottom:10px;">Atur urutan dan nominal upah per jam jabatan. ▲▼ untuk mengubah urutan.</p>
             <div id="jabatan-list"></div>
           </div>
         </div>
@@ -554,11 +578,11 @@ table tr:hover td { background: var(--row-hover); }
     <div class="page" id="page-gaji">
       <div class="card">
         <div class="card-header">
-          <h3>Panel Kontrol & Riwayat Payroll Gaji</h3>
+          <h3>Pengaturan Gaji Staf</h3>
           <div class="gaji-settings">
             <div class="form-group" style="flex:0 0 auto;">
-              <label>Pilih Minggu Kontrak Gaji</label>
-              <select class="form-control" id="gaji-filter" onchange="renderGaji()" style="width:240px; font-weight:700; border-color:var(--red);"></select>
+              <label>Periode</label>
+              <select class="form-control" id="gaji-filter" onchange="renderGaji()" style="width:230px;"></select>
             </div>
             <div class="form-group" style="flex:0 0 auto;">
               <label>Bonus (%)</label>
@@ -571,31 +595,16 @@ table tr:hover td { background: var(--row-hover); }
         </div>
         <div class="card-body">
           <div class="bonus-info" style="margin-bottom:12px;">
-            Bonus <strong id="gaji-bonus-display">10%</strong> diberikan apabila total jam kerja <strong>&gt; 10 jam</strong> dalam seminggu kontrak kerja.<br>
-            Sistem Gaji: <strong style="color:var(--red-light);">Total Jam Kerja Desimal × Tarif Per Jam Jabatan + Bonus (Jika Berlaku)</strong>.
+            Bonus <strong id="gaji-bonus-display">10%</strong> diberikan apabila total jam kerja <strong>&gt; 10 jam</strong>. Di bawah atau sama dengan 10 jam tidak mendapat bonus.<br>
+            Sistem Gaji: <strong style="color:var(--red-light);">Total Jam Kerja Desimal × Tarif Per Jam Jabatan</strong>.
           </div>
-          
-          <div class="rekap-grid" id="gaji-metrics-summary" style="margin-top:14px;">
-            </div>
         </div>
       </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="card">
-          <div class="card-header"><h3>Alokasi Pengeluaran Gaji Per Anggota</h3></div>
-          <div class="card-body"><div class="chart-wrap"><canvas id="chart-gaji-staf"></canvas></div></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h3>Proporsi Pengeluaran (Gaji Pokok vs Bonus)</h3></div>
-          <div class="card-body"><div class="chart-wrap"><canvas id="chart-gaji-proporsi"></canvas></div></div>
-        </div>
-      </div>
-
       <div class="card">
-        <div class="card-header"><h3>Tabel Analisis Payroll & Hak Gaji Anggota</h3></div>
+        <div class="card-header"><h3>Tabel Perhitungan Gaji Berdasarkan Jam Kerja Desimal</h3></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Gaji Pokok</th><th>Bonus</th><th>Total Hak Gaji</th></tr></thead>
+            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Jam Desimal</th><th>Gaji Pokok</th><th>Bonus</th><th>Total Gaji</th></tr></thead>
             <tbody id="gaji-tbody"></tbody>
           </table>
         </div>
@@ -617,10 +626,20 @@ table tr:hover td { background: var(--row-hover); }
             </div>
           </div>
           <div class="export-btns">
-            <button class="btn-export" onclick="exportPDF()">Export PDF</button>
-            <button class="btn-export" onclick="exportExcel()">Export Excel (CSV)</button>
+            <button class="btn-export" onclick="exportPDF()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export PDF
+            </button>
+            <button class="btn-export" onclick="exportExcel()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              Export Excel (CSV)
+            </button>
+            <button class="btn-export" onclick="exportWord()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export Word (HTML)
+            </button>
           </div>
-          <div class="form-note">* PDF: Export HTML lalu cetak/simpan dari browser. Excel: File CSV ringkas.</div>
+          <div class="form-note">* PDF & Word: Export HTML lalu cetak/simpan dari browser. Excel: File CSV ringkas yang langsung dikelompokkan per nama anggota.</div>
         </div>
       </div>
       <div class="card">
@@ -697,6 +716,9 @@ table tr:hover td { background: var(--row-hover); }
     </div>
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:5px;">Jabatan tersedia <em>(klik untuk salin)</em>:</div>
     <div class="bulk-jabatan-ref" id="bulk-jabatan-ref"></div>
+    <div style="font-size:10.5px;color:var(--text3);margin-bottom:7px;line-height:1.8;">
+      Pisahkan dengan <strong style="color:var(--text);">koma (,)</strong> atau baris baru. Jabatan opsional: tambah <strong style="color:var(--text);">| JABATAN</strong>
+    </div>
     <textarea class="bulk-textarea" id="bulk-textarea" placeholder="Budi Santoso, Sari Dewi&#10;Rina | Nurse, Doni | Head of EMS" oninput="onBulkInput()" spellcheck="false"></textarea>
     <div id="bulk-preview-wrap" style="display:none;">
       <div style="font-size:10.5px;color:var(--text3);margin:8px 0 4px;">Preview:</div>
@@ -712,6 +734,7 @@ table tr:hover td { background: var(--row-hover); }
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
+// 🔥 DEPLOYMENT URL UPDATE: Menggunakan sirkuit teranyar dari server awan Google Apps Script
 const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbyfWNZqfCAesm3dl55UZOBMIr25paeZpMqBry7RqefYEGOnm6MswbdaWQGmgeBa2YeD/exec";
 
 let state = {
@@ -724,15 +747,7 @@ let state = {
   searchKeyword: ''
 };
 
-// Instance Engine Chart Global
-let dashCharts = {};
-let chartRekapIncome = null;
-let chartRekapPenanganan = null;
-
-// 🔥 Instance Khusus Chart Gaji (v2.8)
-let chartGajiStaf = null;
-let chartGajiProporsi = null;
-
+// ===================== ENGINE RETRIEVAL DATA AUTOMATION =====================
 async function fetchDataCloud() {
   try {
     const respon = await fetch(URL_API_SPREADSHEET);
@@ -755,7 +770,7 @@ function refreshAllViews() {
 }
 
 // ══════════════════════════════════════════════
-// UTILS & FIXERS (DATE-TIME RECONSTRUCTION)
+// UTILS & FIXERS (DATE-TIME ENGINE CORRECTION)
 // ══════════════════════════════════════════════
 function uid() { return "ABS-" + Date.now(); }
 function todayISO() { return new Date().toISOString().slice(0,10); }
@@ -763,19 +778,25 @@ function todayISO() { return new Date().toISOString().slice(0,10); }
 function parseToCleanDateString(tglStr) {
   if (!tglStr) return '';
   let s = String(tglStr).trim();
+  
   if (s.includes(' Waktu ') || s.includes(' GMT') || /[a-zA-Z]{3}\s[a-zA-Z]{3}\s\d+/.test(s)) {
     try {
       const d = new Date(s);
       if (!isNaN(d.getTime())) {
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
       }
     } catch(e) {}
   }
+
   if (s.includes('/')) {
     const parts = s.split(' ')[0].split('/');
     if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`; 
     if (parts[2] && parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; 
   }
+
   return s.split(' ')[0].split('T')[0];
 }
 
@@ -796,16 +817,29 @@ function fmtDate(tglStr) {
 
 function formatJamMenit(waktuStr) {
   if (waktuStr === undefined || waktuStr === null || waktuStr === '') return "00:00";
+  
   let str = String(waktuStr).trim();
+  
+  // Jika formatnya sudah berupa teks jam menit murni bawaan display spreadsheet (misal: 9:00 atau 16:43)
   if (str.includes(':')) {
     let parts = str.split(':');
-    return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().slice(0, 2).padStart(2, '0');
+    let jam = parts[0].trim().padStart(2, '0');
+    let menit = parts[1].trim().slice(0, 2).padStart(2, '0');
+    return jam + ':' + menit;
   }
+  
+  // Kasus alternatif jika berupa pecahan desimal bawaan Google Sheets API (misal: 0.7083)
   if (!isNaN(str) && parseFloat(str) > 0 && parseFloat(str) < 1) {
     let totalMins = Math.round(parseFloat(str) * 1440);
-    return String(Math.floor(totalMins / 60)).padStart(2, '0') + ':' + String(totalMins % 60).padStart(2, '0');
+    let hrs = Math.floor(totalMins / 60);
+    let mns = totalMins % 60;
+    return String(hrs).padStart(2, '0') + ':' + String(mns).padStart(2, '0');
   }
-  if (str.includes('T')) str = str.split('T')[1];
+
+  if (str.includes('T')) {
+    str = str.split('T')[1];
+  }
+  
   if (str.includes(' ')) {
     const polaJam = str.match(/\d{1,2}:\d{2}/);
     if (polaJam) {
@@ -813,6 +847,17 @@ function formatJamMenit(waktuStr) {
       return parts[0].padStart(2, '0') + ':' + parts[1];
     }
   }
+  
+  if (str.includes('+')) str = str.split('+')[0];
+  if (str.includes('-')) str = str.split('-')[0];
+  if (str.includes('Z')) str = str.split('Z')[0];
+  if (str.includes('.')) str = str.split('.')[0];
+  
+  if (str.includes(':')) {
+    let parts = str.split(':');
+    return parts[0].trim().padStart(2, '0') + ':' + parts[1].trim().padStart(2, '0');
+  }
+  
   return str === "-" ? "00:00" : str;
 }
 
@@ -826,30 +871,44 @@ function calcDurasi(masuk, keluar) {
   const [h2,m2] = cleanK.split(':').map(Number);
   let mins = (h2*60+m2)-(h1*60+m1);
   if (mins < 0) mins += 1440;
-  return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
+  const h = Math.floor(mins/60), m = mins%60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
 }
 
 function calcMinutes(masuk, keluar) {
   if (!masuk || !keluar) return 0;
-  const [h1, m1] = formatJamMenit(masuk).split(':').map(Number);
-  const [h2, m2] = formatJamMenit(keluar).split(':').map(Number);
+  const cleanMasuk = formatJamMenit(masuk);
+  const cleanKeluar = formatJamMenit(keluar);
+  
+  const [h1, m1] = cleanMasuk.split(':').map(Number);
+  const [h2, m2] = cleanKeluar.split(':').map(Number);
+  
   let mins = (h2 * 60 + m2) - (h1 * 60 + m1);
-  return mins < 0 ? mins + 1440 : mins;
+  if (mins < 0) mins += 1440;
+  return mins;
 }
+
+function minutesToDecimal(mins) { return (mins/60).toFixed(2); }
 
 function minutesToStr(mins) {
   if (!mins || mins <= 0) return '0j';
   const h = Math.floor(mins / 60);
   const m = mins % 60;
-  return m === 0 ? h + ' Jam' : h + ' Jam ' + m + ' Menit';
+  if (m === 0) return h + ' Jam';
+  return h + ' Jam ' + m + ' Menit';
 }
 
 function weekKey(iso) {
   const cleanIso = parseToCleanDateString(iso);
   if (!cleanIso) return currentWeekKey();
+  
   const d = new Date(cleanIso);
-  if (isNaN(d.getTime())) return currentWeekKey(); 
-  const sun = new Date(d); sun.setDate(d.getDate() - d.getDay());
+  if (isNaN(d.getTime())) {
+    return currentWeekKey(); 
+  }
+  
+  const day = d.getDay();
+  const sun = new Date(d); sun.setDate(d.getDate() - day);
   const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
   return sun.toISOString().slice(0,10) + '_' + sat.toISOString().slice(0,10);
 }
@@ -869,7 +928,6 @@ function allWeeks() {
   wks[currentWeekKey()] = true;
   return Object.keys(wks).sort().reverse();
 }
-
 function getStaf(nama) { return state.staf.find(s => s.nama.toLowerCase().trim() === nama.toLowerCase().trim()); }
 function getJabatan(nama) { return state.jabatan.find(j => j.nama.toLowerCase().trim() === nama.toLowerCase().trim()); }
 function getStafJabatanNama(namaStaf) {
@@ -882,7 +940,10 @@ function getStafGajiPokok(namaStaf) {
   const j = getJabatan(s.jabatanId);
   return j ? (j.gaji||0) : 300;
 }
-function jabatanColor(idx) { return ['badge-red','badge-blue','badge-green','badge-amber','badge-purple'][idx % 5]; }
+function jabatanColor(idx) {
+  const colors = ['badge-red','badge-blue','badge-green','badge-amber','badge-purple'];
+  return colors[idx % colors.length];
+}
 function jabatanBadgeClass(namaStaf) {
   const s = getStaf(namaStaf);
   if (!s) return 'badge-red';
@@ -902,14 +963,7 @@ function updateClock() {
 }
 setInterval(updateClock, 1000); updateClock();
 
-function toggleDark() { 
-  state.darkMode = !state.darkMode; 
-  applyTheme(); 
-  const currentTab = document.querySelector('.nav-item.active')?.getAttribute('onclick')?.match(/'([^']+)'/)[1] || 'dashboard';
-  if (currentTab === 'dashboard') renderDashboard();
-  if (currentTab === 'rekap') renderRekap();
-  if (currentTab === 'gaji') renderGaji();
-}
+function toggleDark() { state.darkMode = !state.darkMode; applyTheme(); }
 function applyTheme() {
   document.body.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
   const t = document.getElementById('darkToggle');
@@ -941,7 +995,8 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function toast(msg, type='success') {
   const w = document.getElementById('toast-wrap'); const t = document.createElement('div');
-  t.className = 'toast ' + type; t.innerHTML = (type==='error'?'✕':'✓') + ' ' + msg; w.appendChild(t); setTimeout(() => t.remove(), 3200);
+  t.className = 'toast ' + type; const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  t.innerHTML = (icons[type]||'✓') + ' ' + msg; w.appendChild(t); setTimeout(() => t.remove(), 3200);
 }
 
 // ══════════════════════════════════════════════
@@ -972,6 +1027,7 @@ async function saveJabatan() {
   if (!nama) { toast('Nama jabatan wajib diisi','error'); return; }
   closeModal('modal-jabatan');
   toast("Menyimpan parameter jabatan baru...", "success");
+  
   try {
     await fetch(URL_API_SPREADSHEET, {
       method: "POST", mode: "no-cors",
@@ -985,6 +1041,7 @@ function renderJabatan() {
   const el = document.getElementById('jabatan-list');
   const prev = document.getElementById('org-preview');
   if (!el) return;
+  
   el.innerHTML = state.jabatan.map((j,i) => `
     <div class="org-item">
       <div class="org-rank">${i+1}</div>
@@ -1028,6 +1085,7 @@ async function saveStaf() {
   if (!nama) { toast('Nama wajib diisi','error'); return; }
   closeModal('modal-staf');
   toast("Mendaftarkan anggota baru ke database...", "success");
+  
   try {
     await fetch(URL_API_SPREADSHEET, {
       method: "POST", mode: "no-cors",
@@ -1039,11 +1097,16 @@ async function saveStaf() {
 
 function startInlineEdit(namaKey) {
   if (document.querySelector('.staff-name-input')) return;
-  const s = state.staf.find(x => x.nama === namaKey); if (!s) return;
-  const display = document.getElementById('sname-' + namaKey); if (!display) return;
+  const s = state.staf.find(x => x.nama === namaKey);
+  if (!s) return;
+  const display = document.getElementById('sname-' + namaKey);
+  if (!display) return;
   
-  const inp = document.createElement('input'); inp.className = 'staff-name-input'; inp.value = s.nama;
-  display.replaceWith(inp); inp.focus(); inp.select();
+  const inp = document.createElement('input');
+  inp.className = 'staff-name-input';
+  inp.value = s.nama;
+  display.replaceWith(inp);
+  inp.focus(); inp.select();
   
   const commit = async () => {
     const newName = inp.value.trim();
@@ -1056,7 +1119,9 @@ function startInlineEdit(namaKey) {
         });
         fetchDataCloud();
       } catch(e) { toast("Gagal sinkron nama baru", "error"); }
-    } else { renderAnggotaList(state.searchKeyword); }
+    } else {
+      renderAnggotaList(state.searchKeyword);
+    }
   };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } if (e.key === 'Escape') renderAnggotaList(state.searchKeyword); });
   inp.addEventListener('blur', commit);
@@ -1066,13 +1131,22 @@ function triggerInlineEditJabatan(namaKey, currentJabatan) {
   const container = document.getElementById(`srole-${namaKey}`);
   if(!container || container.querySelector('select')) return;
 
-  const select = document.createElement('select'); select.className = "staff-inline-select";
-  select.innerHTML = state.jabatan.map(j => `<option value="${j.nama}" ${j.nama.toLowerCase().trim() === currentJabatan.toLowerCase().trim() ? 'selected' : ''}>${j.nama}</option>`).join('');
-  container.innerHTML = ''; container.appendChild(select); select.focus();
+  const select = document.createElement('select');
+  select.className = "staff-inline-select";
+  select.innerHTML = state.jabatan.map(j => `
+    <option value="${j.nama}" ${j.nama.toLowerCase().trim() === currentJabatan.toLowerCase().trim() ? 'selected' : ''}>${j.nama}</option>
+  `).join('');
+
+  container.innerHTML = '';
+  container.appendChild(select);
+  select.focus();
 
   const saveJabatanChange = async () => {
     const valBaru = select.value;
-    if (valBaru.toLowerCase().trim() === currentJabatan.toLowerCase().trim()) { renderAnggotaList(state.searchKeyword); return; }
+    if (valBaru.toLowerCase().trim() === currentJabatan.toLowerCase().trim()) {
+      renderAnggotaList(state.searchKeyword);
+      return;
+    }
     toast("Memproses mutasi jabatan...", "success");
     try {
       await fetch(URL_API_SPREADSHEET, {
@@ -1082,21 +1156,28 @@ function triggerInlineEditJabatan(namaKey, currentJabatan) {
       fetchDataCloud();
     } catch(e) { toast("Gagal memproses mutasi", "error"); }
   };
+
   select.addEventListener('change', saveJabatanChange);
   select.addEventListener('blur', () => { renderAnggotaList(state.searchKeyword); });
 }
 
+// ══════════════════════════════════════════════
+// RENDER MEMBER CONTROL
+// ══════════════════════════════════════════════
 function filterAnggota(val) {
   state.searchKeyword = val.toLowerCase().trim();
   renderAnggotaList(state.searchKeyword);
 }
 
 function renderAnggotaList(filterText = '') {
-  const el = document.getElementById('anggota-list'); if (!el) return;
+  const el = document.getElementById('anggota-list');
+  if (!el) return;
+  
   let list = state.staf;
   if (filterText !== '') {
     list = state.staf.filter(s => s.nama.toLowerCase().includes(filterText) || s.jabatanId.toLowerCase().includes(filterText));
   }
+  
   if (!list.length) { el.innerHTML = '<p style="color:var(--text3);text-align:center;padding:24px;font-size:13px;">Belum ada anggota.</p>'; return; }
   
   el.innerHTML = list.map(s => {
@@ -1104,7 +1185,7 @@ function renderAnggotaList(filterText = '') {
     return `<div class="staff-item">
       <div class="avatar">${s.nama.charAt(0).toUpperCase()}</div>
       <div class="staff-info">
-        <span class="staff-name-display" id="sname-${s.nama}" onclick="startInlineEdit('${s.nama}')">${s.nama}</span>
+        <span class="staff-name-display" id="sname-${s.nama}" onclick="startInlineEdit('${s.nama}')" title="Klik untuk edit nama">${s.nama}</span>
         <div class="staff-role" id="srole-${s.nama}" onclick="triggerInlineEditJabatan('${s.nama}', '${s.jabatanId}')">
           <span class="badge ${jabatanColor(ji !== -1 ? ji : 0)} staff-role-badge-clickable">💼 ${s.jabatanId}</span>
         </div>
@@ -1121,7 +1202,6 @@ function openBulkModal() {
   openModal('modal-bulk');
 }
 function copyBulkJabatan(nama) { navigator.clipboard?.writeText(nama).catch(()=>{}); toast('Disalin: ' + nama,'info'); }
-
 function parseBulkLines() {
   const text = document.getElementById('bulk-textarea').value;
   return text.split(/[\n,]/).map(e => e.trim()).filter(Boolean).map(raw => {
@@ -1141,7 +1221,6 @@ function parseBulkLines() {
     return { nama, jabatanNama, err, ok: !err };
   }).filter(Boolean);
 }
-
 function onBulkInput() {
   const parsed = parseBulkLines();
   const ok = parsed.filter(p => p.ok).length;
@@ -1155,12 +1234,12 @@ function onBulkInput() {
     : `<div class="bulk-preview-row err"><div class="bulk-dot err"></div><span style="flex:1;">${p.nama}</span><span style="font-size:10.5px;">${p.err}</span></div>`
   ).join('');
 }
-
 async function saveBulkStaf() {
   const toAdd = parseBulkLines().filter(p => p.ok);
   if (!toAdd.length) { toast('Tidak ada data valid','error'); return; }
   closeModal('modal-bulk');
   toast(`Mengunggah ${toAdd.length} Staf Ke Awan...`, "success");
+  
   for(let p of toAdd) {
     await fetch(URL_API_SPREADSHEET, {
       method: "POST", mode: "no-cors",
@@ -1177,7 +1256,6 @@ function populateNamaSelect() {
     : '<option value="">-- Belum ada anggota --</option>';
   if (state.lastNama) el.value = state.lastNama;
 }
-
 function applyTimeMask(id) {
   const el = document.getElementById(id); if (!el) return;
   el.addEventListener('input', function() {
@@ -1188,27 +1266,26 @@ function applyTimeMask(id) {
     updateDurasi();
   });
 }
-
 function updateDurasi() {
   const m = document.getElementById('ab-masuk')?.value;
   const k = document.getElementById('ab-keluar')?.value;
   const d = document.getElementById('ab-durasi');
   if (d) d.value = calcDurasi(m, k);
 }
-
 function onAbTanggal() {
   const t = document.getElementById('ab-tanggal');
   const h = document.getElementById('ab-hari');
   if (h && t) h.value = hariFromISO(t.value);
   state.lastTanggal = document.getElementById('ab-tanggal')?.value || '';
 }
-
 function navDate(delta) {
   const el = document.getElementById('ab-tanggal'); if (!el) return;
   const d = new Date(el.value || todayISO()); d.setDate(d.getDate() + delta);
   el.value = d.toISOString().slice(0,10); onAbTanggal();
 }
-function navToday() { const el = document.getElementById('ab-tanggal'); if (el) { el.value = todayISO(); onAbTanggal(); } }
+function navToday() {
+  const el = document.getElementById('ab-tanggal'); if (el) { el.value = todayISO(); onAbTanggal(); }
+}
 function spin(id, delta) {
   const el = document.getElementById(id); let v = parseInt(el.value)||0;
   el.value = Math.max(0, v + delta); el.dispatchEvent(new Event('input'));
@@ -1217,7 +1294,6 @@ function updatePenangananSum() {
   const p = parseInt(document.getElementById('ab-penanganan')?.value)||0;
   const el = document.getElementById('ab-penanganan-sum'); if (el) el.textContent = p;
 }
-
 function resetAbsensi() {
   document.getElementById('absensi-form-title').textContent = 'Input Absensi Duty';
   document.getElementById('ab-edit-id').value = '';
@@ -1234,7 +1310,8 @@ function resetAbsensi() {
 }
 
 async function simpanAbsensi() {
-  const stafNama = document.getElementById('ab-nama').value; if (!stafNama) { toast('Pilih anggota','error'); return; }
+  const stafNama = document.getElementById('ab-nama').value;
+  if (!stafNama) { toast('Pilih anggota','error'); return; }
   const tanggal = document.getElementById('ab-tanggal').value;
   const masuk = document.getElementById('ab-masuk').value;
   const keluar = document.getElementById('ab-keluar').value;
@@ -1262,7 +1339,10 @@ async function simpanAbsensi() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    state.lastNama = stafNama; state.lastTanggal = tanggal; resetAbsensi(); fetchDataCloud();
+    state.lastNama = stafNama;
+    state.lastTanggal = tanggal;
+    resetAbsensi();
+    fetchDataCloud();
   } catch (e) { toast("Gagal transmisi data cloud", "error"); }
 }
 
@@ -1275,34 +1355,46 @@ function renderAbsensiTable() {
   const q = (document.getElementById('absensi-search')?.value||'').toLowerCase();
   
   let data = [...state.absensi].sort((a,b) => {
-    return parseToCleanDateString(b.tanggal || b.Tanggal || '').localeCompare(parseToCleanDateString(a.tanggal || a.Tanggal || ''));
+    let tglA = parseToCleanDateString(a.tanggal || a.Tanggal || '');
+    let tglB = parseToCleanDateString(b.tanggal || b.Tanggal || '');
+    return tglB.localeCompare(tglA);
   });
 
-  if (wkFilter && wkFilter !== 'all') data = data.filter(a => weekKey(a.tanggal || a.Tanggal) === wkFilter);
+  if (wkFilter && wkFilter !== 'all') {
+    data = data.filter(a => weekKey(a.tanggal || a.Tanggal) === wkFilter);
+  }
   if (q) data = data.filter(a => (a.stafId || a.StafId || '').toLowerCase().includes(q));
+  
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
   
   tbody.innerHTML = data.map((a,i) => {
-    const sId = a.stafId || a.StafId || '-';
-    const jClean = a.jabatan || a.Jabatan || '-';
-    const tClean = a.tanggal || a.Tanggal || '';
-    const hClean = a.hari || a.Hari || '-';
-    const treat = a.treatment || a.Treatment || 0;
-    const pem = a.pemasukan || a.Pemasukan || 0;
-    const jMasuk = formatJamMenit(a.masuk || a.Masuk);
-    const jKeluar = formatJamMenit(a.keluar || a.Keluar);
+    const jamMasukRaw = a.masuk || a.Masuk || '';
+    const jamKeluarRaw = a.keluar || a.Keluar || '';
+    const stafIdClean = a.stafId || a.StafId || '-';
+    const jabatanClean = a.jabatan || a.Jabatan || '-';
+    const tanggalClean = a.tanggal || a.Tanggal || '';
+    const hariClean = a.hari || a.Hari || '-';
+    const treatmentClean = a.treatment || a.Treatment || 0;
+    const pemasukanClean = a.pemasukan || a.Pemasukan || 0;
 
-    return `<tr>
+    const jMasukClean = formatJamMenit(jamMasukRaw);
+    const jKeluarClean = formatJamMenit(jamKeluarRaw);
+    
+    const totalMenit = calcMinutes(jMasukClean, jKeluarClean);
+    const durasiDisplay = minutesToStr(totalMenit);
+
+    return `
+    <tr>
       <td>${i+1}</td>
-      <td><strong>${sId}</strong></td>
-      <td><span class="badge ${jabatanBadgeClass(sId)}">${jClean}</span></td>
-      <td class="mono">${fmtDate(tClean)}</td>
-      <td>${hClean}</td>
-      <td class="mono">${jMasuk}</td>
-      <td class="mono">${jKeluar}</td>
-      <td class="mono"><strong>${minutesToStr(calcMinutes(jMasuk, jKeluar))}</strong></td>
-      <td style="text-align:center;">${treat}</td>
-      <td class="mono"><strong>${fmtMoney(pem)}</strong></td>
+      <td><strong>${stafIdClean}</strong></td>
+      <td><span class="badge ${jabatanBadgeClass(stafIdClean)}">${jabatanClean}</span></td>
+      <td class="mono">${fmtDate(tanggalClean)}</td>
+      <td>${hariClean}</td>
+      <td class="mono">${jMasukClean}</td>
+      <td class="mono">${jKeluarClean}</td>
+      <td class="mono"><strong>${durasiDisplay}</strong></td>
+      <td style="text-align:center;">${treatmentClean}</td>
+      <td class="mono"><strong>${fmtMoney(pemasukanClean)}</strong></td>
       <td><span style="color:var(--text3); font-size:10px;">Cloud Lock</span></td>
     </tr>`;
   }).join('');
@@ -1311,16 +1403,28 @@ function renderAbsensiTable() {
 // ══════════════════════════════════════════════
 // REKAP MINGGUAN METRICS CENTER
 // ══════════════════════════════════════════════
+let chartRekapIncome = null, chartRekapPenanganan = null;
 function renderRekap() {
   const el = document.getElementById('rekap-filter');
   const wk = el ? el.value : currentWeekKey(); if (!wk) return;
   const data = state.absensi.filter(a => weekKey(a.tanggal || a.Tanggal) === wk);
 
+  const totalDuty = data.length;
+  const totalPenanganan = data.reduce((s,a) => s+(a.treatment || a.Treatment || 0), 0);
+  const totalPemasukan = data.reduce((s,a) => s+(a.pemasukan || a.Pemasukan || 0), 0);
+  
+  let totalMins = 0;
+  data.forEach(a => { 
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    totalMins += calcMinutes(jMasukClean, jKeluarClean);
+  });
+
   document.getElementById('rekap-stats').innerHTML = `
-    <div class="rekap-stat"><div class="r-lbl">Total Duty</div><div class="r-val">${data.length}</div><div class="r-sub">Sesi</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Total Jam</div><div class="r-val">${minutesToStr(data.reduce((s,a)=>s+calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar),0))}</div><div class="r-sub">Kerja</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Penanganan Pasien</div><div class="r-val">${data.reduce((s,a)=>s+(a.treatment||a.Treatment||0),0)}</div><div class="r-sub">Kasus</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Total Pemasukan</div><div class="r-val" style="font-size:16px; color:#16a34a;">${fmtMoney(data.reduce((s,a)=>s+(a.pemasukan||a.Pemasukan||0),0))}</div><div class="r-sub">Income</div></div>`;
+    <div class="rekap-stat"><div class="r-lbl">Total Duty</div><div class="r-val">${totalDuty}</div><div class="r-sub">Sesi</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Total Jam</div><div class="r-val">${minutesToStr(totalMins)}</div><div class="r-sub">Kerja</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Penanganan Pasien</div><div class="r-val">${totalPenanganan}</div><div class="r-sub">Kasus</div></div>
+    <div class="rekap-stat"><div class="r-lbl">Total Pemasukan</div><div class="r-val" style="font-size:16px; color:#16a34a;">${fmtMoney(totalPemasukan)}</div><div class="r-sub">Income</div></div>`;
 
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sat'];
   const incomeByDay = Array(7).fill(0), penangananByDay = Array(7).fill(0);
@@ -1341,25 +1445,31 @@ function renderRekap() {
   chartRekapIncome = new Chart(document.getElementById('chart-rekap-income'), { type:'line', data:{ labels:days, datasets:[{ label:'Pemasukan', data:incomeByDay, borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#c0392b', pointRadius:5, borderWidth:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, callback:v=>'$'+v }, grid:{ color:gc }, min:0 } } } });
   
   if (chartRekapPenanganan) chartRekapPenanganan.destroy();
-  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, grid:{ color:gc }, min:0 } } } });
+  chartRekapPenanganan = new Chart(document.getElementById('chart-rekap-penanganan'), { type:'bar', data:{ labels:days, datasets:[{ label:'Penanganan', data:penangananByDay, backgroundColor:'rgba(245,158,11,0.75)', borderRadius:5 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc }, grid:{ color:gc }, min:0 } } } });
 
   const byStaf = {};
   data.forEach(a => {
-    const rawStaf = a.stafId || a.StafId || ''; const sKey = rawStaf.toLowerCase().trim();
+    const rawStaf = a.stafId || a.StafId || '';
+    const sKey = rawStaf.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName:rawStaf, duty:0, penanganan:0, pemasukan:0, menit:0 };
     byStaf[sKey].duty++;
     byStaf[sKey].penanganan += (a.treatment || a.Treatment || 0);
     byStaf[sKey].pemasukan += (a.pemasukan || a.Pemasukan || 0);
-    byStaf[sKey].menit += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar);
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
   });
   
-  const tbody = document.getElementById('rekap-tbody'); const entries = Object.entries(byStaf);
+  const tbody = document.getElementById('rekap-tbody');
+  const entries = Object.entries(byStaf);
   if (!entries.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
-  tbody.innerHTML = entries.map(([sid,r],i) => `<tr><td>${i+1}</td><td><strong>${r.rawName}</strong></td><td><span class="badge ${jabatanBadgeClass(r.rawName)}">${getStafJabatanNama(r.rawName)}</span></td><td style="text-align:center;">${r.duty}</td><td class="mono">${minutesToStr(r.menit)}</td><td style="text-align:center;">${r.penanganan}</td><td class="mono"><strong>${fmtMoney(r.pemasukan)}</strong></td></tr>`).join('');
+  tbody.innerHTML = entries.map(([sid,r],i) => `
+    <tr><td>${i+1}</td><td><strong>${r.rawName}</strong></td><td><span class="badge ${jabatanBadgeClass(r.rawName)}">${getStafJabatanNama(r.rawName)}</span></td><td style="text-align:center;">${r.duty}</td><td class="mono">${minutesToStr(r.menit)}</td><td style="text-align:center;">${r.penanganan}</td><td class="mono"><strong>${fmtMoney(r.pemasukan)}</strong></td></tr>`
+  ).join('');
 }
 
 // ══════════════════════════════════════════════
-// 🔥 TAB PERHITUNGAN GAJI MINGGUAN GRAPH & PANEL (v2.8 UPDATE)
+// PERHITUNGAN GAJI REAL-TIME DESIMAL
 // ══════════════════════════════════════════════
 function renderGaji() {
   const el = document.getElementById('gaji-filter');
@@ -1367,53 +1477,27 @@ function renderGaji() {
   const bonusPct = parseFloat(document.getElementById('gaji-bonus-pct')?.value||10)/100;
   document.getElementById('gaji-bonus-display').textContent = Math.round(bonusPct*100) + '%';
 
-  // Filter murni berdasarkan Minggu Kontrak Gaji yang aktif dipilih
   const data = state.absensi.filter(a => weekKey(a.tanggal || a.Tanggal) === wk);
   const byStaf = {};
   data.forEach(a => {
-    const rawStaf = a.stafId || a.StafId || ''; const sKey = rawStaf.toLowerCase().trim();
+    const rawStaf = a.stafId || a.StafId || '';
+    const sKey = rawStaf.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: rawStaf, duty:0, menit:0 };
     byStaf[sKey].duty++;
-    byStaf[sKey].menit += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar);
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
   });
 
   const tbody = document.getElementById('gaji-tbody'); if (!tbody) return;
   const entries = Object.entries(byStaf);
-  
-  // Kontainer akumulasi metrik finansial
-  let akumulasiGajiPokok = 0;
-  let akumulasiBonus = 0;
-  let akumulasiTotalGajiOut = 0;
-  
-  const namaStafLabels = [];
-  const totalGajiValues = [];
-
-  if (!entries.length) { 
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data absensi pada minggu kontrak ini.</td></tr>';
-    document.getElementById('gaji-metrics-summary').innerHTML = `
-      <div class="rekap-stat"><div class="r-lbl">Total Payroll</div><div class="r-val">$0</div><div class="r-sub">Gaji Keluar</div></div>
-      <div class="rekap-stat"><div class="r-lbl">Gaji Pokok</div><div class="r-val">$0</div><div class="r-sub">Keluaran Pokok</div></div>
-      <div class="rekap-stat"><div class="r-lbl">Bonus Pelayanan</div><div class="r-val">$0</div><div class="r-sub">Keluaran Bonus</div></div>
-      <div class="rekap-stat"><div class="r-lbl">Rerata Gaji</div><div class="r-val">$0</div><div class="r-sub">Per Anggota</div></div>`;
-    if(chartGajiStaf) chartGajiStaf.destroy();
-    if(chartGajiProporsi) chartGajiProporsi.destroy();
-    return; 
-  }
+  if (!entries.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data absensi.</td></tr>'; return; }
 
   tbody.innerHTML = entries.map(([sid,r],i) => {
     const ratePerJam = getStafGajiPokok(r.rawName);
     const jamDesimal = parseFloat((r.menit / 60).toFixed(2));
     const gajiPokokTotal = jamDesimal * ratePerJam;
     const bonusAmt = jamDesimal > 10 ? Math.round(gajiPokokTotal * bonusPct) : 0;
-    const totalGajiNet = gajiPokokTotal + bonusAmt;
-    
-    // Simpan kalkulasi akumulatif
-    akumulasiGajiPokok += gajiPokokTotal;
-    akumulasiBonus += bonusAmt;
-    akumulasiTotalGajiOut += totalGajiNet;
-    
-    namaStafLabels.push(r.rawName.split(' ')[0]); // Nama panggilan pendek staf
-    totalGajiValues.push(totalGajiNet);
     
     return `<tr>
       <td>${i+1}</td>
@@ -1425,73 +1509,15 @@ function renderGaji() {
       <td class="mono"><b>${jamDesimal}</b></td>
       <td class="mono">${fmtMoney(gajiPokokTotal)}</td>
       <td class="mono">${bonusAmt > 0 ? '<span class="badge badge-green">+' + fmtMoney(bonusAmt) + '</span>' : '<span class="badge" style="background:var(--bg2);color:var(--text3);">-</span>'}</td>
-      <td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(totalGajiNet)}</strong></td>
+      <td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(gajiPokokTotal + bonusAmt)}</strong></td>
     </tr>`;
   }).join('');
-
-  // 1. UPDATE CARD PANEL METRIK GAJI MINGGUAN
-  const rerataGaji = akumulasiTotalGajiOut / entries.length;
-  document.getElementById('gaji-metrics-summary').innerHTML = `
-    <div class="rekap-stat"><div class="r-lbl">Total Payroll</div><div class="r-val" style="color:var(--red-light);">${fmtMoney(akumulasiTotalGajiOut)}</div><div class="r-sub">Gaji Keluar</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Gaji Pokok</div><div class="r-val">${fmtMoney(akumulasiGajiPokok)}</div><div class="r-sub">Keluaran Pokok</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Bonus Pelayanan</div><div class="r-val" style="color:#16a34a;">${fmtMoney(akumulasiBonus)}</div><div class="r-sub">Keluaran Bonus</div></div>
-    <div class="rekap-stat"><div class="r-lbl">Rerata Gaji</div><div class="r-val">${fmtMoney(rerataGaji)}</div><div class="r-sub">Per Anggota</div></div>`;
-
-  // THEME CONFIG
-  const isDark = state.darkMode;
-  const gc = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
-  const tc = isDark ? '#71717a' : '#9ca3af';
-
-  // 2. RENDER CHART GAJI PER ANGGOTA (BAR CHART)
-  if (chartGajiStaf) chartGajiStaf.destroy();
-  chartGajiStaf = new Chart(document.getElementById('chart-gaji-staf'), {
-    type: 'bar',
-    data: {
-      labels: namaStafLabels,
-      datasets: [{
-        label: 'Hak Gaji ($)',
-        data: totalGajiValues,
-        backgroundColor: 'rgba(168, 85, 247, 0.75)',
-        borderRadius: 5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: tc }, grid: { color: gc } },
-        y: { ticks: { color: tc, callback: v => '$' + v }, grid: { color: gc }, min: 0 }
-      }
-    }
-  });
-
-  // 3. RENDER CHART PROPORSI FINANSIAL POKOK VS BONUS (DOUGHNUT CHART)
-  if (chartGajiProporsi) chartGajiProporsi.destroy();
-  chartGajiProporsi = new Chart(document.getElementById('chart-gaji-proporsi'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Gaji Pokok', 'Bonus Pelayanan'],
-      datasets: [{
-        data: [akumulasiGajiPokok, akumulasiBonus],
-        backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)'],
-        borderColor: isDark ? '#1c1c1e' : '#ffffff',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { color: isDark ? '#f4f4f5' : '#111827', font: { size: 11 } } }
-      }
-    }
-  });
 }
 
 // ══════════════════════════════════════════════
 // ANALITIK UTAMA DASHBOARD CORE
 // ══════════════════════════════════════════════
+let dashCharts = {};
 function renderDashboard() {
   const wk = currentWeekKey();
   const weekData = state.absensi.filter(a => weekKey(a.tanggal || a.Tanggal) === wk);
@@ -1500,20 +1526,29 @@ function renderDashboard() {
   document.getElementById('d-total-duty').textContent = weekData.length;
 
   let totalMins = 0;
-  weekData.forEach(a => { totalMins += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar); });
+  weekData.forEach(a => { 
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    totalMins += calcMinutes(jMasukClean, jKeluarClean);
+  });
   document.getElementById('d-total-jam').textContent = minutesToStr(totalMins) || '0j';
   document.getElementById('d-total-penanganan').textContent = weekData.reduce((s,a)=>s+(a.treatment || a.Treatment || 0),0);
   document.getElementById('d-total-pemasukan').textContent = fmtMoney(weekData.reduce((s,a)=>s+(a.pemasukan || a.Pemasukan || 0),0));
 
   const byStaf = {};
   weekData.forEach(a => {
-    const rawStaf = a.stafId || a.StafId || ''; const sKey = rawStaf.toLowerCase().trim();
+    const rawStaf = a.stafId || a.StafId || '';
+    const sKey = rawStaf.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { menit:0 };
-    byStaf[sKey].menit += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar);
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
   });
   let totalGajiEst = 0;
   Object.entries(byStaf).forEach(([sid,r]) => {
-    const rate = getStafGajiPokok(sid); const jamDes = r.menit / 60; const gPokok = jamDes * rate;
+    const rate = getStafGajiPokok(sid);
+    const jamDes = r.menit / 60;
+    const gPokok = jamDes * rate;
     totalGajiEst += gPokok + (jamDes > 10 ? Math.round(gPokok * 0.10) : 0);
   });
   document.getElementById('d-total-gaji').textContent = fmtMoney(totalGajiEst);
@@ -1525,8 +1560,13 @@ function renderDashboard() {
     let tgl = parseToCleanDateString(a.tanggal || a.Tanggal || '');
     if (tgl) {
       const d = new Date(tgl).getDay();
-      dutyByDay[d]++; penangananByDay[d] += (a.treatment || a.Treatment || 0); incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
-      gajiByDay[d] += (calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar) / 60) * getStafGajiPokok(a.stafId || a.StafId);
+      dutyByDay[d]++; 
+      penangananByDay[d] += (a.treatment || a.Treatment || 0); 
+      incomeByDay[d] += (a.pemasukan || a.Pemasukan || 0);
+      const rate = getStafGajiPokok(a.stafId || a.StafId);
+      const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+      const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+      gajiByDay[d] += (calcMinutes(jMasukClean, jKeluarClean) / 60) * rate;
     }
   });
 
@@ -1534,7 +1574,9 @@ function renderDashboard() {
   weekData.forEach(a => {
     const rawStaf = a.stafId || a.StafId || 'Unknown';
     if (!memberData[rawStaf]) memberData[rawStaf] = 0;
-    memberData[rawStaf] += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar);
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    memberData[rawStaf] += calcMinutes(jMasukClean, jKeluarClean);
   });
   const sortedMembers = Object.entries(memberData).sort((a,b)=>b[1]-a[1]).slice(0,7);
   const lblAktivitas = sortedMembers.map(m => m[0].split(' ')[0]);
@@ -1556,7 +1598,7 @@ function renderDashboard() {
   ];
   
   chartDefs.forEach(def => {
-    if (dashCharts[def.id]) { dashCharts[def.id].destroy(); }
+    if (dashCharts[def.id]) dashCharts[def.id].destroy();
     const canvas = document.getElementById(def.id); if (!canvas) return;
     dashCharts[def.id] = new Chart(canvas, { type:def.type, data:{ labels:def.labels, datasets:def.datasets }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display: def.id==='chart-pemasukan', labels:{color:tc, font:{size:10}} } }, scales:{ x:{ ticks:{ color:tc }, grid:{ color:gc } }, y:{ ticks:{ color:tc, callback: (v) => def.id==='chart-pemasukan'? '$'+v : v }, grid:{ color:gc }, min:0 } } } });
   });
@@ -1569,20 +1611,24 @@ function getExportRekapData(wk, bonusPct) {
   const data = state.absensi.filter(a => !wk || wk==='all' ? true : weekKey(a.tanggal || a.Tanggal) === wk);
   const byStaf = {};
   data.forEach(a => {
-    const rawStaf = a.stafId || a.StafId || ''; const sKey = rawStaf.toLowerCase().trim();
+    const rawStaf = a.stafId || a.StafId || '';
+    const sKey = rawStaf.toLowerCase().trim();
     if (!byStaf[sKey]) byStaf[sKey] = { rawName: rawStaf, duty:0, menit:0, penanganan:0, pemasukan:0 };
     byStaf[sKey].duty++;
-    byStaf[sKey].menit += calcMinutes(a.masuk||a.Masuk, a.keluar||a.Keluar);
+    const jMasukClean = formatJamMenit(a.masuk || a.Masuk);
+    const jKeluarClean = formatJamMenit(a.keluar || a.Keluar);
+    byStaf[sKey].menit += calcMinutes(jMasukClean, jKeluarClean);
     byStaf[sKey].penanganan += (a.treatment || a.Treatment || 0);
     byStaf[sKey].pemasukan += (a.pemasukan || a.Pemasukan || 0);
   });
   return Object.entries(byStaf).map(([sid,r]) => {
-    const rate = getStafGajiPokok(r.rawName); const jamDes = parseFloat((r.menit/60).toFixed(2));
-    const gajiPokokTotal = jamDes * rate; const bonus = jamDes > 10 ? Math.round(gajiPokokTotal * (bonusPct/100)) : 0;
+    const rate = getStafGajiPokok(r.rawName);
+    const jamDes = parseFloat((r.menit/60).toFixed(2));
+    const gajiPokokTotal = jamDes * rate;
+    const bonus = jamDes > 10 ? Math.round(gajiPokokTotal * (bonusPct/100)) : 0;
     return { nama: r.rawName, jabatan: getStafJabatanNama(r.rawName), tarif: rate, duty: r.duty, jam: minutesToStr(r.menit), jamDes, penanganan: r.penanganan, pemasukan: r.pemasukan, bonus, totalGaji: gajiPokokTotal + bonus };
   });
 }
-
 function renderExportPreview() {
   const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
   const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
@@ -1591,16 +1637,14 @@ function renderExportPreview() {
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data.</td></tr>'; return; }
   tbody.innerHTML = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td><span class="badge ${jabatanBadgeClass(r.nama)}">${r.jabatan}</span></td><td class="mono">${fmtMoney(r.tarif)}/j</td><td style="text-align:center;">${r.duty}</td><td class="mono">${r.jam}</td><td class="mono">${r.jamDes}</td><td style="text-align:center;">${r.penanganan}</td><td class="mono">${fmtMoney(r.pemasukan)}</td><td class="mono">${r.bonus>0?'+'+fmtMoney(r.bonus):'-'}</td><td class="mono" style="color:var(--red-light);"><strong>${fmtMoney(r.totalGaji)}</strong></td></tr>`).join('');
 }
-
 function exportPDF() {
   const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
   const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
   const rows = getExportRekapData(wk, bonusPct);
   const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:15px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MINGGUAN — HRMC</h2><div class="meta">Periode Absensi: ${weekLabel(wk)}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Total Gaji</th></tr></thead><tbody>${trs}</tbody></table></body></html>`;
+  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}.meta{font-size:12px;color:#666;margin:6px 0 20px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;text-transform:uppercase;}td{padding:9px 8px;border-bottom:1px solid #eee;}tr:nth-child(even){background:#fff5f5;}.footer{margin-top:35px;font-size:11px;color:#888;text-align:center;border-top:1px dashed #ccc;padding-top:10px;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MINGGUAN — HRMC</h2><div class="meta">Periode Absensi: ${weekLabel(wk)} &nbsp;|&nbsp; Tanggal Cetak Dokumen: ${new Date().toLocaleDateString('id-ID')}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus Pelayanan</th><th>Total Hak Gaji</th></tr></thead><tbody>${trs}</tbody></table><div class="footer">Happiness Roleplay Medical Center · Rumah Sakit Kota Los Santos · Generated Securely via Dashboard System v2.6</div></body></html>`;
   const w = window.open('','_blank'); w.document.write(html); w.document.close(); w.print();
 }
-
 function exportExcel() {
   const el = document.getElementById('export-week'); const wk = el ? el.value : currentWeekKey();
   const bonusPct = parseFloat(document.getElementById('export-bonus-pct')?.value||10);
@@ -1610,6 +1654,7 @@ function exportExcel() {
   const blob = new Blob([header+body], { type:'text/csv;charset=utf-8;' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `hrmc-laporan-payroll-${wk}.csv`; a.click();
 }
+function exportWord() { exportPDF(); }
 
 // ══════════════════════════════════════════════
 // BACKGROUND AUTOMATION ENGINE
@@ -1632,8 +1677,11 @@ function startAutoSync() {
         if (currentTab === 'rekap') renderRekap();
         if (currentTab === 'gaji') renderGaji();
         if (currentTab === 'export') renderExportPreview();
+        console.log("[Auto-Sync] Data dashboard diperbarui.");
       }
-    } catch (error) { console.error("[Auto-Sync Error] Jaringan sibuk:", error); }
+    } catch (error) {
+      console.error("[Auto-Sync Error] Koneksi mampet:", error);
+    }
   }, 10000);
 }
 
@@ -1644,8 +1692,9 @@ function initAbsensiForm() {
   const pen = document.getElementById('ab-penanganan'); if (pen) pen.addEventListener('input', updatePenangananSum);
   updatePenangananSum();
 }
-
-function init() { applyTheme(); initAbsensiForm(); fetchDataCloud(); startAutoSync(); }
+function init() {
+  applyTheme(); initAbsensiForm(); fetchDataCloud(); startAutoSync();
+}
 init();
 </script>
 </body>
