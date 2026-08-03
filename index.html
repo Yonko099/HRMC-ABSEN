@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v2.7 - Multi-Week Range Edition</title>
+<title>HRMC Dashboard v2.8 - Multi-Week Range Edition</title>
+<!-- Pustaka Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- Pustaka SheetJS (XLSX) untuk Export Excel Matang -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=400;600&display=swap');
 
@@ -374,7 +377,7 @@ table tr:hover td { background: var(--row-hover); }
           <div class="stat-sub">Sesi duty</div>
         </div>
         <div class="stat-card c-purple">
-          <div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg></div>
           <div class="stat-label">Total Jam Periode Ini</div>
           <div class="stat-value" id="d-total-jam">0j</div>
           <div class="stat-sub">Jam kerja</div>
@@ -713,7 +716,7 @@ table tr:hover td { background: var(--row-hover); }
             </button>
             <button class="btn-export" onclick="exportExcel()">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-              Export Excel (CSV)
+              Export Excel (.xlsx)
             </button>
             <button class="btn-export" onclick="exportWord()">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -1725,7 +1728,7 @@ function renderGaji() {
 }
 
 // ══════════════════════════════════════════════
-// EXPORT MULTI-WEEK ENGINE
+// EXPORT MULTI-WEEK ENGINE (PERBAIKAN SHEETJS XLSX)
 // ══════════════════════════════════════════════
 function getExportRekapData() {
   const sWk = document.getElementById('export-start-week')?.value;
@@ -1774,11 +1777,94 @@ function exportPDF() {
 
 function exportExcel() {
   const rows = getExportRekapData();
-  const header = 'No,Nama,Jabatan,Tarif per Jam,Total Duty,Total Jam,Jam Desimal,Total Penanganan,Total Pemasukan,Bonus,Grand Total Gaji\n';
-  const body = rows.map((r,i) => [i+1,r.nama,r.jabatan,'$'+r.tarif,r.duty,r.jam,r.jamDes,r.penanganan,'$'+r.pemasukan,r.bonus>0?'$'+r.bonus:'-','$'+r.totalGaji].join(',')).join('\n');
-  const blob = new Blob([header+body], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `hrmc-laporan-multiweek.csv`; a.click();
+  if (!rows.length) {
+    toast('Tidak ada data untuk diekspor', 'error');
+    return;
+  }
+
+  const sWk = document.getElementById('export-start-week')?.value;
+  const eWk = document.getElementById('export-end-week')?.value;
+
+  // 1. Buat Header Laporan (Judul di bagian atas Excel)
+  const excelData = [
+    ["REKAPITULASI PAYROLL PAY MULTI-PERIODE — HRMC"],
+    [`Rentang Periode: ${weekLabel(sWk)} s/d ${weekLabel(eWk)}`],
+    [`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`],
+    [] // Baris kosong sebagai pemisah
+  ];
+
+  // 2. Judul Kolom Tabel
+  excelData.push([
+    "No",
+    "Nama Anggota",
+    "Jabatan",
+    "Tarif/Jam ($)",
+    "Total Duty",
+    "Total Durasi",
+    "Jam Desimal",
+    "Penanganan",
+    "Pemasukan RS ($)",
+    "Bonus ($)",
+    "Grand Total Gaji ($)"
+  ]);
+
+  // 3. Masukkan Data Baris (Menggunakan data angka murni agar bisa diproses kalkulasi Excel)
+  rows.forEach((r, i) => {
+    excelData.push([
+      i + 1,
+      r.nama,
+      r.jabatan,
+      r.tarif,
+      r.duty,
+      r.jam,
+      r.jamDes,
+      r.penanganan,
+      r.pemasukan,
+      r.bonus,
+      r.totalGaji
+    ]);
+  });
+
+  // 4. Hitung Total Keseluruhan di Baris Paling Bawah
+  const totalPenanganan = rows.reduce((s, r) => s + r.penanganan, 0);
+  const totalPemasukan = rows.reduce((s, r) => s + r.pemasukan, 0);
+  const totalBonus = rows.reduce((s, r) => s + r.bonus, 0);
+  const totalGajiKeseluruhan = rows.reduce((s, r) => s + r.totalGaji, 0);
+
+  excelData.push([
+    "TOTAL", "", "", "", "", "", "",
+    totalPenanganan,
+    totalPemasukan,
+    totalBonus,
+    totalGajiKeseluruhan
+  ]);
+
+  // 5. Buat Workbook dan Sheet XLSX
+  const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+  // 6. Atur Lebar Kolom Otomatis (Autofit Column Width)
+  ws['!cols'] = [
+    { wch: 6 },  // No
+    { wch: 22 }, // Nama
+    { wch: 18 }, // Jabatan
+    { wch: 14 }, // Tarif
+    { wch: 12 }, // Total Duty
+    { wch: 16 }, // Total Durasi
+    { wch: 12 }, // Jam Desimal
+    { wch: 14 }, // Penanganan
+    { wch: 18 }, // Pemasukan RS
+    { wch: 12 }, // Bonus
+    { wch: 20 }  // Grand Total Gaji
+  ];
+
+  // 7. Simpan File sebagai file XLSX Asli
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Laporan Payroll");
+  
+  XLSX.writeFile(wb, `HRMC_Payroll_${sWk}_sd_${eWk}.xlsx`);
+  toast('Export Excel (.xlsx) rapi berhasil diunduh!', 'success');
 }
+
 function exportWord() { exportPDF(); }
 
 // ══════════════════════════════════════════════
