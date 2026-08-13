@@ -1768,10 +1768,35 @@ function renderExportPreview() {
 
 function exportPDF() {
   const rows = getExportRekapData();
+  if (!rows.length) {
+    toast('Tidak ada data untuk diekspor', 'error');
+    return;
+  }
+
   const sWk = document.getElementById('export-start-week')?.value;
   const eWk = document.getElementById('export-end-week')?.value;
+
   const trs = rows.map((r,i) => `<tr><td>${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.jabatan}</td><td>$${r.tarif}/j</td><td>${r.duty} Sesi</td><td>${r.jam}</td><td>${r.jamDes}</td><td>${r.penanganan} Kasus</td><td>$${r.pemasukan}</td><td>${r.bonus>0?'$'+r.bonus:'-'}</td><td><strong>$${r.totalGaji}</strong></td></tr>`).join('');
-  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC Multi-Week</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}.meta{font-size:12px;color:#666;margin:6px 0 20px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MULTI-PERIODE — HRMC</h2><div class="meta">Rentang Periode: ${weekLabel(sWk)} s/d ${weekLabel(eWk)} &nbsp;|&nbsp; Cetak: ${new Date().toLocaleDateString('id-ID')}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Grand Total Gaji</th></tr></thead><tbody>${trs}</tbody></table></body></html>`;
+
+  // Hitung total keseluruhan (sama seperti exportExcel)
+  const totalDuty = rows.reduce((s,r) => s + r.duty, 0);
+  const totalPenanganan = rows.reduce((s,r) => s + r.penanganan, 0);
+  const totalPemasukan = rows.reduce((s,r) => s + r.pemasukan, 0);
+  const totalBonus = rows.reduce((s,r) => s + r.bonus, 0);
+  const totalGajiKeseluruhan = rows.reduce((s,r) => s + r.totalGaji, 0);
+
+  const totalRow = `<tr style="background:#fdecea; font-weight:800;">
+    <td colspan="4" style="text-align:right;">TOTAL KESELURUHAN</td>
+    <td>${totalDuty} Sesi</td>
+    <td>-</td>
+    <td>-</td>
+    <td>${totalPenanganan} Kasus</td>
+    <td>$${totalPemasukan.toLocaleString('en-US')}</td>
+    <td>$${totalBonus.toLocaleString('en-US')}</td>
+    <td style="color:#c0392b;">$${totalGajiKeseluruhan.toLocaleString('en-US')}</td>
+  </tr>`;
+
+  const html = `<!DOCTYPE html><html><head><title>Laporan Payroll Gaji HRMC Multi-Week</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#c0392b;margin:0;}.meta{font-size:12px;color:#666;margin:6px 0 20px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#c0392b;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}tfoot td{border-top:2px solid #c0392b;border-bottom:none;padding:11px 8px;}</style></head><body><h2>REKAPITULASI PAYROLL PAY MULTI-PERIODE — HRMC</h2><div class="meta">Rentang Periode: ${weekLabel(sWk)} s/d ${weekLabel(eWk)} &nbsp;|&nbsp; Cetak: ${new Date().toLocaleDateString('id-ID')}</div><table><thead><tr><th>No</th><th>Nama Anggota</th><th>Jabatan</th><th>Tarif/Jam</th><th>Total Duty</th><th>Total Durasi</th><th>Jam Desimal</th><th>Penanganan</th><th>Pemasukan RS</th><th>Bonus</th><th>Grand Total Gaji</th></tr></thead><tbody>${trs}</tbody><tfoot>${totalRow}</tfoot></table></body></html>`;
   const w = window.open('','_blank'); w.document.write(html); w.document.close(); w.print();
 }
 
