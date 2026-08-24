@@ -74,6 +74,13 @@ a { text-decoration: none; color: inherit; }
 .sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 .version-badge { display: inline-block; background: rgba(192,57,43,0.2); color: #c0392b; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.5px; }
 
+/* ── USER PROFILE BIODATA (DICODING STANDARD) ── */
+.dicoding-profile { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; margin-top: 10px; text-align: left; display: flex; align-items: center; gap: 8px; }
+.dicoding-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+.dicoding-info { min-width: 0; }
+.dicoding-name { font-size: 11px; font-weight: 700; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dicoding-role { font-size: 9px; color: #888; }
+
 /* ── TOPBAR ── */
 .topbar-title h1 { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .topbar-title p { font-size: 10.5px; color: var(--text3); }
@@ -335,12 +342,22 @@ table tr:hover td { background: var(--row-hover); }
   <div class="sidebar-bottom">
     <div class="version-badge">v4.0 Integrated</div>
     <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()" style="width:100%; justify-content:center; margin-bottom:8px;">🔄 Sinkron Cloud</button>
-    <div class="sidebar-quote">"We Care, We Heal,<br>We're HRMC."</div>
+    <div class="sidebar-quote" style="color:#666; font-size:10px;">"We Care, We Heal,<br>We're HRMC."</div>
+    
+    <!-- BIODATA PROFILE UNTUK SUBMISSION DICODING -->
+    <div class="dicoding-profile">
+      <div class="dicoding-avatar">KC</div>
+      <div class="dicoding-info">
+        <div class="dicoding-name">Kuro Clip</div>
+        <div class="dicoding-role">Developer & Student</div>
+      </div>
+    </div>
   </div>
 </aside>
 
 <div class="main">
-  <div class="topbar">
+  <!-- SEMANTIC HTML5 HEADER -->
+  <header class="topbar">
     <div class="topbar-title">
       <h1>HRMC DASHBOARD</h1>
       <p>Happiness Roleplay Medical Center</p>
@@ -359,9 +376,10 @@ table tr:hover td { background: var(--row-hover); }
         <div class="toggle" id="darkToggle" onclick="toggleDark()"></div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="page-content">
+  <!-- SEMANTIC HTML5 MAIN CONTENT -->
+  <main class="page-content">
 
     <!-- ── PAGE 1: DASHBOARD MULTI-WEEK ── -->
     <div class="page active" id="page-dashboard">
@@ -1060,7 +1078,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-  </div>
+  </main>
 </div>
 </div>
 
@@ -1992,7 +2010,7 @@ function renderRekap() {
     singleCardWrap.style.display = 'block';
     singleCardWrap.innerHTML = `
       <div class="member-summary-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-space-between; align-items:center;">
           <div>
             <div style="font-size:18px; font-weight:800; color:var(--text);">👤 Nama : <span style="color:var(--red);">${target.rawName}</span></div>
             <div style="font-size:11.5px; color:var(--text2); margin-top:2px;">Periode : <b>Minggu ${idxStart} — Minggu ${idxEnd}</b></div>
@@ -2481,12 +2499,15 @@ async function simpanMutasiObat() {
   closeModal('modal-mutasi-stok');
   toast("Mengirim pembaruan stok ke Cloud...", "info");
 
+  // FIXED: Gunakan format tanggal hari ini (YYYY-MM-DD)
+  const tglFormatted = todayISO();
+
   const payload = {
     action: "addMutasiStok",
     id: "STK-" + Date.now(),
     petugas: petugas,
-    tanggal: new Date().toISOString(),
-    hari: new Date().toLocaleDateString('id-ID', { weekday: 'long' }),
+    tanggal: tglFormatted,
+    hari: hariFromISO(tglFormatted),
     obatDitambah: tipe === 'tambah' ? qty : 0,
     obatDiambil: tipe === 'kurang' ? qty : 0,
     catatan: catatan
@@ -2519,10 +2540,19 @@ async function simpanRestokBahan() {
   if (qty <= 0) { toast('Jumlah unit harus diisi', 'error'); return; }
 
   toast("Mengunggah restock bahan ke Cloud...", "info");
+
+  // FIXED: Gunakan format tanggal hari ini (YYYY-MM-DD) dan sertakan parameter yang dibutuhkan Apps Script
+  const tglFormatted = todayISO();
+
   const payload = {
     action: "addRestokBahan",
     id: "RST-" + Date.now(),
-    tanggal: new Date().toISOString(),
+    petugas: supplier || "Petugas HRMC",
+    tanggal: tglFormatted,
+    hari: hariFromISO(tglFormatted),
+    wortel: bahan === "Wortel" ? qty : 0,
+    kentang: bahan === "Kentang" ? qty : 0,
+    uangKeluar: totalBiaya,
     namaItem: bahan,
     qty: qty,
     hargaSatuan: hargaSatuan,
