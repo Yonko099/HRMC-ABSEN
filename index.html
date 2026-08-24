@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v3.0 - Setoran Edition</title>
+<title>HRMC Dashboard v4.0 - Integrated Apotek Edition</title>
 <!-- Pustaka Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <!-- Pustaka SheetJS (XLSX) untuk Export Excel -->
@@ -116,6 +116,7 @@ a { text-decoration: none; color: inherit; }
 .stat-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
 .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
 .stat-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-sub { font-size: 10.5px; color: var(--text3); }
 
 /* ── MEMBER SUMMARY CARD ── */
 .member-summary-card { background: var(--card); border: 2px solid var(--red); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-lg); }
@@ -164,7 +165,7 @@ a { text-decoration: none; color: inherit; }
 .total-box { background: var(--bg); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 14px; border: 1.5px solid var(--border); flex-wrap: wrap; }
 .total-lbl { font-size: 9.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
 .total-val { font-size: 26px; font-weight: 800; color: var(--red-light); display: flex; align-items: center; gap: 3px; }
-.total-val input { width: 120px; font-size: 22px; font-weight: 800; color: var(--red-light); background: transparent; border: none; border-bottom: 2px solid var(--red-light); padding: 2px 4px; outline: none; font-family: 'JetBrains Mono', monospace; }
+.total-val input { width: 140px; font-size: 22px; font-weight: 800; color: var(--red-light); background: transparent; border: none; border-bottom: 2px solid var(--red-light); padding: 2px 4px; outline: none; font-family: 'JetBrains Mono', monospace; }
 .form-note { font-size: 10.5px; color: var(--text3); margin-top: 6px; }
 
 /* ── TABLES ── */
@@ -298,7 +299,7 @@ table tr:hover td { background: var(--row-hover); }
     </div>
   </div>
   <div class="nav-section">
-    <div class="nav-label">Pengelolaan</div>
+    <div class="nav-label">Pengelolaan Staf & Duty</div>
     <div class="nav-item" onclick="goPage('jabatan')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="14" width="6" height="4" rx="1"/><rect x="15" y="14" width="6" height="4" rx="1"/><line x1="12" y1="7" x2="12" y2="11"/><line x1="12" y1="11" x2="6" y2="16"/><line x1="12" y1="11" x2="18" y2="16"/></svg>
       Struktur Jabatan
@@ -309,11 +310,30 @@ table tr:hover td { background: var(--row-hover); }
     </div>
     <div class="nav-item" onclick="goPage('export')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="10" y1="12" x2="16" y2="12"/><polyline points="13 9 16 12 13 15"/></svg>
-      Export Laporan
+      Export Laporan Duty
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Apotek & Logistik</div>
+    <div class="nav-item" onclick="goPage('apt')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
+      Penjualan Obat Pusing
+    </div>
+    <div class="nav-item" onclick="goPage('stock')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 7.27a1 1 0 0 0-.5-.86L12.5 2.5a1 1 0 0 0-1 0L4 6.41a1 1 0 0 0-.5.86v9.46a1 1 0 0 0 .5.86l7.5 3.91a1 1 0 0 0 1 0l7.5-3.91a1 1 0 0 0 .5-.86z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+      Mutasi Stok Obat Pusing
+    </div>
+    <div class="nav-item" onclick="goPage('restock')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Restock Bahan Racik
+    </div>
+    <div class="nav-item" onclick="goPage('export-apt')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+      Export Apotek
     </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="version-badge">v3.0</div>
+    <div class="version-badge">v4.0 Integrated</div>
     <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()" style="width:100%; justify-content:center; margin-bottom:8px;">🔄 Sinkron Cloud</button>
     <div class="sidebar-quote">"We Care, We Heal,<br>We're HRMC."</div>
   </div>
@@ -331,7 +351,7 @@ table tr:hover td { background: var(--row-hover); }
         <span id="top-date">-</span>
       </div>
       <div class="meta-chip">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
         <span id="top-clock">-</span>
       </div>
       <div class="toggle-wrap">
@@ -629,7 +649,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 6: PERHITUNGAN GAJI MULTI-WEEK (KOLOM JAM DESIMAL DIHAPUS) ── -->
+    <!-- ── PAGE 6: PERHITUNGAN GAJI MULTI-WEEK ── -->
     <div class="page" id="page-gaji">
       <div class="card">
         <div class="card-header">
@@ -675,10 +695,10 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 7: EXPORT LAPORAN MULTI-WEEK (KOLOM JAM DESIMAL DIHAPUS) ── -->
+    <!-- ── PAGE 7: EXPORT LAPORAN DUTY & PAYROLL ── -->
     <div class="page" id="page-export">
       <div class="card">
-        <div class="card-header"><h3>Export Laporan Periode Kustom</h3></div>
+        <div class="card-header"><h3>Export Laporan Duty & Gaji Staf</h3></div>
         <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
           <div class="range-filter-box" style="border:none; padding:0; background:transparent; box-shadow:none;">
             <div class="form-group" style="flex:0 0 auto;">
@@ -712,11 +732,329 @@ table tr:hover td { background: var(--row-hover); }
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><h3>Preview Data Export (Rangkuman Payroll)</h3></div>
+        <div class="card-header"><h3>Preview Data Export Duty Staf (Payroll)</h3></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Penanganan</th><th>Pemasukan</th><th>Total Gaji Pokok</th></tr></thead>
+            <thead><tr><th>No</th><th>Nama</th><th>Jabatan</th><th>Tarif / Jam</th><th>Total Duty</th><th>Total Jam</th><th>Penanganan</th><th>Pemasukan RS</th><th>Total Gaji Pokok</th></tr></thead>
             <tbody id="export-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE 8: PENJUALAN OBAT PUSING (/apt) ── -->
+    <div class="page" id="page-apt">
+      <div class="card">
+        <div class="card-header">
+          <h3>Input Penjualan Paket Obat Pusing</h3>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="form-row">
+            <div class="form-group w2">
+              <label>Nama Medis / Apoteker</label>
+              <select class="form-control" id="apt-petugas"></select>
+            </div>
+            <div class="form-group">
+              <label>Tanggal</label>
+              <div class="date-nav">
+                <button class="date-nav-btn" onclick="navDateApt(-1)">◀</button>
+                <input type="date" class="form-control" id="apt-tanggal" style="flex:1;" oninput="onAptTanggal()">
+                <button class="date-nav-btn" onclick="navDateApt(1)">▶</button>
+                <button class="date-nav-btn today" onclick="navTodayApt()">📅 Hari Ini</button>
+              </div>
+            </div>
+            <div class="form-group" style="flex:0 0 100px;">
+              <label>Hari</label>
+              <input type="text" class="form-control" id="apt-hari" readonly>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- PAKET REGULER -->
+            <div class="form-group" style="background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+              <label style="color:var(--red);">Paket Reguler</label>
+              <div style="display:flex; gap:6px; margin-bottom:6px;">
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">HARGA ($)</span>
+                  <input type="number" class="form-control" id="apt-harga-reguler" value="750" min="0" oninput="hitungTotalTrxInline()">
+                </div>
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">QTY (PAKET)</span>
+                  <div class="spinner-wrap">
+                    <input type="number" id="apt-qty-reguler" value="0" min="0" oninput="hitungTotalTrxInline()">
+                    <div class="spinner-btns">
+                      <button onclick="spinApt('apt-qty-reguler',1)">▲</button>
+                      <button onclick="spinApt('apt-qty-reguler',-1)">▼</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAKET SPESIAL -->
+            <div class="form-group" style="background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+              <label style="color:var(--red);">Paket Spesial</label>
+              <div style="display:flex; gap:6px; margin-bottom:6px;">
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">HARGA ($)</span>
+                  <input type="number" class="form-control" id="apt-harga-spesial" value="1200" min="0" oninput="hitungTotalTrxInline()">
+                </div>
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">QTY (PAKET)</span>
+                  <div class="spinner-wrap">
+                    <input type="number" id="apt-qty-spesial" value="0" min="0" oninput="hitungTotalTrxInline()">
+                    <div class="spinner-btns">
+                      <button onclick="spinApt('apt-qty-spesial',1)">▲</button>
+                      <button onclick="spinApt('apt-qty-spesial',-1)">▼</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAKET NON-KTP -->
+            <div class="form-group" style="background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+              <label style="color:var(--red);">Paket Non-KTP</label>
+              <div style="display:flex; gap:6px; margin-bottom:6px;">
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">HARGA ($)</span>
+                  <input type="number" class="form-control" id="apt-harga-nonktp" value="1500" min="0" oninput="hitungTotalTrxInline()">
+                </div>
+                <div style="flex:1;">
+                  <span style="font-size:9px; color:var(--text3); font-weight:700;">QTY (PAKET)</span>
+                  <div class="spinner-wrap">
+                    <input type="number" id="apt-qty-nonktp" value="0" min="0" oninput="hitungTotalTrxInline()">
+                    <div class="spinner-btns">
+                      <button onclick="spinApt('apt-qty-nonktp',1)">▲</button>
+                      <button onclick="spinApt('apt-qty-nonktp',-1)">▼</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div>
+              <div class="total-lbl">Total Pemasukan Penjualan</div>
+              <div class="total-val">
+                <span>$</span>
+                <input type="number" id="apt-total-pemasukan" value="0" readonly>
+              </div>
+            </div>
+            <div style="font-size:11.5px;color:var(--text2);line-height:1.9;">
+              Total Item Dikeluarkan : <strong id="apt-total-item-sum">0</strong> Paket
+            </div>
+            <div style="flex:1;display:flex;justify-content:flex-end;gap:8px;">
+              <button class="btn btn-secondary" onclick="resetTransaksiApotekForm()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+                Reset
+              </button>
+              <button class="btn btn-primary" onclick="simpanTransaksiApotekInline()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Simpan Transaksi
+              </button>
+            </div>
+          </div>
+          <div class="form-note">* Harga paket dapat dikustomisasi secara fleksibel sesuai dengan kebijakan transaksi saat ini.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Riwayat Penjualan Paket Obat Pusing</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID Transaksi</th>
+                <th>Petugas Apoteker</th>
+                <th>Tanggal / Hari</th>
+                <th>Reguler</th>
+                <th>Spesial</th>
+                <th>Non-KTP</th>
+                <th>Total Pemasukan</th>
+              </tr>
+            </thead>
+            <tbody id="transaksi-apotek-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE 9: MUTASI STOK OBAT PUSING (/stock) ── -->
+    <div class="page" id="page-stock">
+      <div class="stat-grid">
+        <div class="stat-card c-blue">
+          <div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 7.27a1 1 0 0 0-.5-.86L12.5 2.5a1 1 0 0 0-1 0L4 6.41a1 1 0 0 0-.5.86v9.46a1 1 0 0 0 .5.86l7.5 3.91a1 1 0 0 0 1 0l7.5-3.91a1 1 0 0 0 .5-.86z"/></svg></div>
+          <div class="stat-label">Sisa Stok Obat Pusing</div>
+          <div class="stat-value" id="apo-stok-pusing">0 Unit</div>
+          <div class="stat-sub">Persediaan aktif di gudang</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="stat-label">Status Stok</div>
+          <div class="stat-value" id="apo-status-pusing">Aman</div>
+          <div class="stat-sub">Monitoring otomatis</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Katalog Stok Obat Pusing</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="openModalMutasiObat('kurang')">- Ambil Stok</button>
+            <button class="btn btn-primary btn-sm" onclick="openModalMutasiObat('tambah')">+ Tambah Stok</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID Item</th>
+                <th>Nama Barang</th>
+                <th>Total Ditambah</th>
+                <th>Total Diambil</th>
+                <th>Sisa Stok Saat Ini</th>
+                <th>Aksi Mutasi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">STK-OBAT-PUSING</td>
+                <td><strong>Obat Pusing</strong></td>
+                <td class="mono" id="val-ditambah">0</td>
+                <td class="mono" id="val-diambil">0</td>
+                <td class="mono" style="font-size:15px; font-weight:800; color:var(--red);" id="val-sisa">0 Unit</td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="openModalMutasiObat('tambah')">+ Tambah</button>
+                  <button class="btn btn-secondary btn-sm" onclick="openModalMutasiObat('kurang')">- Ambil</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Riwayat Mutasi Stok Obat Pusing</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Tanggal / Hari</th><th>Petugas</th><th>Obat Ditambah</th><th>Obat Diambil</th><th>Sisa Stok Berjalan</th><th>Catatan</th></tr>
+            </thead>
+            <tbody id="stok-riwayat-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE 10: RESTOCK BAHAN RACIK (/restock) ── -->
+    <div class="page" id="page-restock">
+      <div class="card">
+        <div class="card-header"><h3>Form Restock Pembelian Bahan Racik</h3></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="form-row">
+            <div class="form-group w2">
+              <label>Pilih Bahan Racik</label>
+              <select class="form-control" id="restok-bahan-select">
+                <option value="Kentang">🥔 Kentang</option>
+                <option value="Wortel">🥕 Wortel</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Jumlah Unit (Qty)</label>
+              <input type="number" class="form-control" id="restok-qty" value="10" min="1" oninput="hitungTotalRestok()">
+            </div>
+            <div class="form-group">
+              <label>Harga Satuan ($)</label>
+              <input type="number" class="form-control" id="restok-harga-satuan" value="15" min="0" oninput="hitungTotalRestok()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Total Biaya ($) [Otomatis]</label>
+              <input type="number" class="form-control" id="restok-total-biaya" value="150" readonly style="font-weight:800; color:var(--red);">
+            </div>
+            <div class="form-group w2">
+              <label>Pemasok / Keterangan</label>
+              <input type="text" class="form-control" id="restok-supplier" placeholder="Contoh: Pembelian Kentang/Wortel">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="btn btn-primary" onclick="simpanRestokBahan()">💾 Catat Pembelian Restock</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Riwayat Restock Bahan Racik</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID Restock</th><th>Tanggal</th><th>Bahan</th><th>Qty</th><th>Harga Satuan</th><th>Total Biaya</th><th>Keterangan</th></tr>
+            </thead>
+            <tbody id="restok-riwayat-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE 11: EXPORT APOTEK KHUSUS ── -->
+    <div class="page" id="page-export-apt">
+      <div class="card">
+        <div class="card-header"><h3>Export Laporan Penjualan Apoteker</h3></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+          <div class="range-filter-box" style="border:none; padding:0; background:transparent; box-shadow:none;">
+            <div class="form-group" style="flex:0 0 auto;">
+              <label>Minggu Awal</label>
+              <select class="form-control" id="export-apt-start-week" style="width:200px;" onchange="renderExportApotekPreview()"></select>
+            </div>
+            <div style="font-size:16px; font-weight:800; color:var(--text3); margin-top:16px;">s/d</div>
+            <div class="form-group" style="flex:0 0 auto;">
+              <label>Minggu Akhir</label>
+              <select class="form-control" id="export-apt-end-week" style="width:200px;" onchange="renderExportApotekPreview()"></select>
+            </div>
+            <div class="form-group" style="flex:1; min-width:160px;">
+              <label>Filter Apoteker (Opsional)</label>
+              <input type="text" class="form-control" id="export-apt-search-nama" placeholder="Kosongkan untuk semua..." oninput="renderExportApotekPreview()">
+            </div>
+          </div>
+          <div class="export-btns">
+            <button class="btn-export" onclick="exportApotekPDF()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export PDF Apotek
+            </button>
+            <button class="btn-export" onclick="exportApotekExcel()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              Export Excel Apotek (.xlsx)
+            </button>
+            <button class="btn-export" onclick="exportApotekWord()">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export Word (HTML)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Preview Data Rekapitulasi Penjualan Apoteker</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Apoteker</th>
+                <th>Total Transaksi</th>
+                <th>Paket Reguler</th>
+                <th>Paket Spesial</th>
+                <th>Paket Non-KTP</th>
+                <th>Total Obat Terjual</th>
+                <th>Total Pendapatan Apotek</th>
+              </tr>
+            </thead>
+            <tbody id="export-apt-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -801,6 +1139,35 @@ table tr:hover td { background: var(--row-hover); }
   </div>
 </div>
 
+<!-- MODAL MUTASI STOK OBAT -->
+<div class="modal-overlay" id="modal-mutasi-stok">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="mutasi-title">Mutasi Stok Obat Pusing</h3>
+      <button class="modal-close" onclick="closeModal('modal-mutasi-stok')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" id="mutasi-tipe" value="tambah">
+      <div class="form-group">
+        <label>Petugas / Apoteker</label>
+        <select class="form-control" id="mutasi-petugas"></select>
+      </div>
+      <div class="form-group">
+        <label>Jumlah Obat Pusing (Unit)</label>
+        <input type="number" class="form-control" id="mutasi-qty" value="10" min="1">
+      </div>
+      <div class="form-group">
+        <label>Catatan / Keterangan</label>
+        <input type="text" class="form-control" id="mutasi-catatan" placeholder="Misal: Penambahan stok harian">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-mutasi-stok')">Batal</button>
+      <button class="btn btn-primary" onclick="simpanMutasiObat()">Eksekusi Stok</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
@@ -810,8 +1177,13 @@ let state = {
   absensi: [],
   staf: [],
   jabatan: [],
+  apoteker: [],
+  stock: [],
+  restock: [],
   lastNama: '',
   lastTanggal: '',
+  lastAptNama: '',
+  lastAptTanggal: '',
   darkMode: false,
   searchKeyword: ''
 };
@@ -825,8 +1197,12 @@ async function fetchDataCloud() {
       state.absensi = dataCloud.absensi || [];
       state.staf = dataCloud.staf || [];
       state.jabatan = dataCloud.jabatan || [];
-      
+      state.apoteker = dataCloud.apoteker || [];
+      state.stock = dataCloud.stock || [];
+      state.restock = dataCloud.restock || [];
+
       initAllWeekRangeSelects();
+      populatePetugasSelects();
       toast("Sinkronisasi Cloud Sheets sukses!");
       refreshAllViews();
     }
@@ -900,7 +1276,7 @@ function formatJamMenit(waktuStr) {
   return str === "-" ? "00:00" : str;
 }
 
-function fmtMoney(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+function fmtMoney(n) { return '$' + Math.round(n || 0).toLocaleString('en-US'); }
 
 function calcDurasi(masuk, keluar) {
   if (!masuk || !keluar) return '';
@@ -951,6 +1327,10 @@ function allWeeksSorted() {
     const tgl = a.tanggal || a.Tanggal;
     if (tgl) wks[weekKey(tgl)] = true; 
   });
+  state.apoteker.forEach(a => {
+    const tgl = a.tanggal || a.Tanggal;
+    if (tgl) wks[weekKey(tgl)] = true;
+  });
   wks[currentWeekKey()] = true;
   return Object.keys(wks).sort(); 
 }
@@ -999,6 +1379,7 @@ function initAllWeekRangeSelects() {
   initRangeSelectPair('rekap-start-week', 'rekap-end-week');
   initRangeSelectPair('gaji-start-week', 'gaji-end-week');
   initRangeSelectPair('export-start-week', 'export-end-week');
+  initRangeSelectPair('export-apt-start-week', 'export-apt-end-week');
 }
 
 function getStaf(nama) { return state.staf.find(s => s.nama.toLowerCase().trim() === nama.toLowerCase().trim()); }
@@ -1062,6 +1443,10 @@ function goPage(name) {
   if (name === 'jabatan') renderJabatan();
   if (name === 'gaji') { initRangeSelectPair('gaji-start-week', 'gaji-end-week'); renderGaji(); }
   if (name === 'export') { initRangeSelectPair('export-start-week', 'export-end-week'); renderExportPreview(); }
+  if (name === 'apt') { initApotekForm(); renderTransaksiApotekView(); }
+  if (name === 'stock') { populatePetugasSelects(); renderStokObatView(); }
+  if (name === 'restock') renderRestokRiwayatView();
+  if (name === 'export-apt') { initRangeSelectPair('export-apt-start-week', 'export-apt-end-week'); renderExportApotekPreview(); }
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -1663,7 +2048,7 @@ function renderRekap() {
 }
 
 // ══════════════════════════════════════════════
-// PERHITUNGAN GAJI MULTI-WEEK ENGINE (TANPA KOLOM JAM DESIMAL)
+// PERHITUNGAN GAJI MULTI-WEEK ENGINE
 // ══════════════════════════════════════════════
 function renderGaji() {
   const sWk = document.getElementById('gaji-start-week')?.value;
@@ -1709,7 +2094,7 @@ function renderGaji() {
 }
 
 // ══════════════════════════════════════════════
-// EXPORT MULTI-WEEK ENGINE (TANPA KOLOM JAM DESIMAL)
+// EXPORT SYSTEM 1: EXPORT DUTY & PAYROLL
 // ══════════════════════════════════════════════
 function getExportRekapData() {
   const sWk = document.getElementById('export-start-week')?.value;
@@ -1825,25 +2210,493 @@ function exportExcel() {
   const ws = XLSX.utils.aoa_to_sheet(excelData);
 
   ws['!cols'] = [
-    { wch: 6 },  // No
-    { wch: 22 }, // Nama
-    { wch: 18 }, // Jabatan
-    { wch: 14 }, // Tarif
-    { wch: 12 }, // Total Duty
-    { wch: 16 }, // Total Durasi
-    { wch: 14 }, // Penanganan
-    { wch: 18 }, // Pemasukan RS
-    { wch: 20 }  // Grand Total Gaji
+    { wch: 6 },  
+    { wch: 22 }, 
+    { wch: 18 }, 
+    { wch: 14 }, 
+    { wch: 12 }, 
+    { wch: 16 }, 
+    { wch: 14 }, 
+    { wch: 18 }, 
+    { wch: 20 }  
   ];
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Laporan Payroll");
   
   XLSX.writeFile(wb, `HRMC_Payroll_${sWk}_sd_${eWk}.xlsx`);
-  toast('Export Excel (.xlsx) rapi berhasil diunduh!', 'success');
+  toast('Export Excel (.xlsx) berhasil diunduh!', 'success');
 }
 
 function exportWord() { exportPDF(); }
+
+// ══════════════════════════════════════════════
+// EXPORT SYSTEM 2: EXPORT APOTEK KHUSUS (PENJUALAN)
+// ══════════════════════════════════════════════
+function getExportApotekData() {
+  const sWk = document.getElementById('export-apt-start-week')?.value;
+  const eWk = document.getElementById('export-apt-end-week')?.value;
+  const searchNama = (document.getElementById('export-apt-search-nama')?.value||'').toLowerCase().trim();
+
+  let data = state.apoteker.filter(a => isWeekInRange(weekKey(a.tanggal || a.Tanggal), sWk, eWk));
+  if (searchNama) data = data.filter(a => (a.namaMedis || a.NamaMedis || '').toLowerCase().includes(searchNama));
+
+  const byApoteker = {};
+  data.forEach(t => {
+    const rawNama = t.namaMedis || t.NamaMedis || 'Unknown';
+    const key = rawNama.toLowerCase().trim();
+    if (!byApoteker[key]) {
+      byApoteker[key] = { nama: rawNama, trxCount: 0, reguler: 0, spesial: 0, nonktp: 0, totalPemasukan: 0 };
+    }
+    byApoteker[key].trxCount++;
+    byApoteker[key].reguler += parseInt(t.reguler || 0);
+    byApoteker[key].spesial += parseInt(t.spesial || 0);
+    byApoteker[key].nonktp += parseInt(t.nonktp || 0);
+
+    const calculatedIncome = t.pemasukan || ((t.reguler || 0) * 750 + (t.spesial || 0) * 1200 + (t.nonktp || 0) * 1500);
+    byApoteker[key].totalPemasukan += parseFloat(calculatedIncome);
+  });
+
+  return Object.values(byApoteker).map(r => ({
+    ...r,
+    totalObat: r.reguler + r.spesial + r.nonktp
+  }));
+}
+
+function renderExportApotekPreview() {
+  const rows = getExportApotekData();
+  const tbody = document.getElementById('export-apt-tbody'); if (!tbody) return;
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px;">Belum ada data penjualan apotek dalam periode ini.</td></tr>'; return; }
+  tbody.innerHTML = rows.map((r,i) => `<tr>
+    <td>${i+1}</td>
+    <td><strong>${r.nama}</strong></td>
+    <td style="text-align:center;">${r.trxCount} Trx</td>
+    <td class="mono">${r.reguler} Paket</td>
+    <td class="mono">${r.spesial} Paket</td>
+    <td class="mono">${r.nonktp} Paket</td>
+    <td class="mono"><strong>${r.totalObat} Paket</strong></td>
+    <td class="mono" style="color:#16a34a;"><strong>${fmtMoney(r.totalPemasukan)}</strong></td>
+  </tr>`).join('');
+}
+
+function exportApotekPDF() {
+  const rows = getExportApotekData();
+  if (!rows.length) { toast('Tidak ada data penjualan apotek untuk diekspor', 'error'); return; }
+
+  const sWk = document.getElementById('export-apt-start-week')?.value;
+  const eWk = document.getElementById('export-apt-end-week')?.value;
+
+  const trs = rows.map((r,i) => `<tr>
+    <td>${i+1}</td>
+    <td><strong>${r.nama}</strong></td>
+    <td>${r.trxCount} Trx</td>
+    <td>${r.reguler} Paket</td>
+    <td>${r.spesial} Paket</td>
+    <td>${r.nonktp} Paket</td>
+    <td><strong>${r.totalObat} Paket</strong></td>
+    <td><strong>$${r.totalPemasukan.toLocaleString('en-US')}</strong></td>
+  </tr>`).join('');
+
+  const grandTrx = rows.reduce((s,r) => s + r.trxCount, 0);
+  const grandReg = rows.reduce((s,r) => s + r.reguler, 0);
+  const grandSpe = rows.reduce((s,r) => s + r.spesial, 0);
+  const grandNon = rows.reduce((s,r) => s + r.nonktp, 0);
+  const grandObat = rows.reduce((s,r) => s + r.totalObat, 0);
+  const grandIncome = rows.reduce((s,r) => s + r.totalPemasukan, 0);
+
+  const totalRow = `<tr style="background:#eafce8; font-weight:800;">
+    <td colspan="2" style="text-align:right;">TOTAL PENJUALAN APOTEK</td>
+    <td>${grandTrx} Trx</td>
+    <td>${grandReg} Paket</td>
+    <td>${grandSpe} Paket</td>
+    <td>${grandNon} Paket</td>
+    <td>${grandObat} Paket</td>
+    <td style="color:#16a34a;">$${grandIncome.toLocaleString('en-US')}</td>
+  </tr>`;
+
+  const html = `<!DOCTYPE html><html><head><title>Laporan Penjualan Apoteker HRMC</title><style>body{font-family:sans-serif;padding:30px;color:#111;}h2{color:#16a34a;margin:0;}.meta{font-size:12px;color:#666;margin:6px 0 20px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#16a34a;color:#fff;padding:10px 8px;text-align:left;}td{padding:9px 8px;border-bottom:1px solid #eee;}tfoot td{border-top:2px solid #16a34a;border-bottom:none;padding:11px 8px;}</style></head><body><h2>LAPORAN KHUSUS PENJUALAN APOTEKER — HRMC</h2><div class="meta">Rentang Periode: ${weekLabel(sWk)} s/d ${weekLabel(eWk)} &nbsp;|&nbsp; Cetak: ${new Date().toLocaleDateString('id-ID')}</div><table><thead><tr><th>No</th><th>Nama Apoteker</th><th>Total Trx</th><th>Reguler</th><th>Spesial</th><th>Non-KTP</th><th>Total Item Terjual</th><th>Grand Total Pemasukan Apotek</th></tr></thead><tbody>${trs}</tbody><tfoot>${totalRow}</tfoot></table></body></html>`;
+  const w = window.open('','_blank'); w.document.write(html); w.document.close(); w.print();
+}
+
+function exportApotekExcel() {
+  const rows = getExportApotekData();
+  if (!rows.length) { toast('Tidak ada data penjualan apotek untuk diekspor', 'error'); return; }
+
+  const sWk = document.getElementById('export-apt-start-week')?.value;
+  const eWk = document.getElementById('export-apt-end-week')?.value;
+
+  const excelData = [
+    ["LAPORAN KHUSUS REKAPITULASI PENJUALAN APOTEKER — HRMC"],
+    [`Rentang Periode: ${weekLabel(sWk)} s/d ${weekLabel(eWk)}`],
+    [`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`],
+    []
+  ];
+
+  excelData.push([
+    "No",
+    "Nama Apoteker",
+    "Jumlah Transaksi",
+    "Paket Reguler",
+    "Paket Spesial",
+    "Paket Non-KTP",
+    "Total Paket Terjual",
+    "Total Pendapatan Apotek ($)"
+  ]);
+
+  rows.forEach((r, i) => {
+    excelData.push([
+      i + 1,
+      r.nama,
+      r.trxCount,
+      r.reguler,
+      r.spesial,
+      r.nonktp,
+      r.totalObat,
+      r.totalPemasukan
+    ]);
+  });
+
+  const grandTrx = rows.reduce((s,r) => s + r.trxCount, 0);
+  const grandReg = rows.reduce((s,r) => s + r.reguler, 0);
+  const grandSpe = rows.reduce((s,r) => s + r.spesial, 0);
+  const grandNon = rows.reduce((s,r) => s + r.nonktp, 0);
+  const grandObat = rows.reduce((s,r) => s + r.totalObat, 0);
+  const grandIncome = rows.reduce((s,r) => s + r.totalPemasukan, 0);
+
+  excelData.push([
+    "TOTAL", "", grandTrx, grandReg, grandSpe, grandNon, grandObat, grandIncome
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+  ws['!cols'] = [
+    { wch: 6 },  
+    { wch: 22 }, 
+    { wch: 18 }, 
+    { wch: 15 }, 
+    { wch: 15 }, 
+    { wch: 15 }, 
+    { wch: 20 }, 
+    { wch: 28 }  
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Laporan Penjualan Apotek");
+  
+  XLSX.writeFile(wb, `HRMC_Penjualan_Apotek_${sWk}_sd_${eWk}.xlsx`);
+  toast('Export Excel (.xlsx) Apotek berhasil diunduh!', 'success');
+}
+
+function exportApotekWord() { exportApotekPDF(); }
+
+// ══════════════════════════════════════════════
+// MODULE APOTEK & LOGISTIK
+// ══════════════════════════════════════════════
+
+function populatePetugasSelects() {
+  const mutasiSel = document.getElementById('mutasi-petugas');
+  const aptSel = document.getElementById('apt-petugas');
+  const optionsHtml = state.staf.length
+    ? state.staf.map(s => `<option value="${s.nama}">${s.nama} [${s.jabatanId}]</option>`).join('')
+    : '<option value="Apoteker HRMC">Apoteker HRMC</option>';
+
+  if (mutasiSel) mutasiSel.innerHTML = optionsHtml;
+  if (aptSel) {
+    aptSel.innerHTML = optionsHtml;
+    if (state.lastAptNama) aptSel.value = state.lastAptNama;
+  }
+}
+
+// -- 1. Mutasi Stok Obat Pusing (/stock) --
+function renderStokObatView() {
+  let totalDitambah = 0;
+  let totalDiambil = 0;
+
+  const sortedAsc = [...state.stock].sort((a,b) => {
+    const ta = parseToCleanDateString(a.tanggal || a.Tanggal || '') + (a.id || '');
+    const tb = parseToCleanDateString(b.tanggal || b.Tanggal || '') + (b.id || '');
+    return ta.localeCompare(tb);
+  });
+
+  let running = 0;
+  const withRunning = sortedAsc.map(s => {
+    const tambah = parseFloat(s.obatDitambah || 0);
+    const ambil = parseFloat(s.obatDiambil || 0);
+    running += tambah - ambil;
+    totalDitambah += tambah;
+    totalDiambil += ambil;
+    return { ...s, sisaBerjalan: running };
+  });
+
+  const sisaStok = totalDitambah - totalDiambil;
+
+  document.getElementById('apo-stok-pusing').textContent = sisaStok + ' Unit';
+  document.getElementById('val-ditambah').textContent = totalDitambah + ' Unit';
+  document.getElementById('val-diambil').textContent = totalDiambil + ' Unit';
+  document.getElementById('val-sisa').textContent = sisaStok + ' Unit';
+
+  const isLow = sisaStok <= 20;
+  document.getElementById('apo-status-pusing').textContent = isLow ? '⚠️ Menipis' : 'Aman';
+
+  const tbody = document.getElementById('stok-riwayat-tbody');
+  if (!state.stock.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3);">Belum ada riwayat mutasi stok.</td></tr>';
+    return;
+  }
+
+  const displayList = [...withRunning].reverse();
+
+  tbody.innerHTML = displayList.map(s => `<tr>
+    <td class="mono">${s.id || '-'}</td>
+    <td class="mono">${fmtDate(s.tanggal)} (${s.hari || '-'})</td>
+    <td><strong>${s.petugas || '-'}</strong></td>
+    <td class="mono" style="color:#16a34a;">+${s.obatDitambah || 0}</td>
+    <td class="mono" style="color:#ef4444;">-${s.obatDiambil || 0}</td>
+    <td class="mono"><strong>${s.sisaBerjalan} Unit</strong></td>
+    <td>${s.catatan || '-'}</td>
+  </tr>`).join('');
+}
+
+function openModalMutasiObat(tipe) {
+  populatePetugasSelects();
+  document.getElementById('mutasi-tipe').value = tipe;
+  document.getElementById('mutasi-title').textContent = tipe === 'tambah' ? 'Tambah Stok Obat Pusing' : 'Ambil Stok Obat Pusing';
+  document.getElementById('mutasi-qty').value = 10;
+  document.getElementById('mutasi-catatan').value = '';
+  openModal('modal-mutasi-stok');
+}
+
+async function simpanMutasiObat() {
+  const tipe = document.getElementById('mutasi-tipe').value;
+  const petugas = document.getElementById('mutasi-petugas').value;
+  const qty = parseInt(document.getElementById('mutasi-qty').value) || 0;
+  const catatan = document.getElementById('mutasi-catatan').value.trim();
+
+  if (qty <= 0) { toast('Jumlah unit harus lebih dari 0', 'error'); return; }
+  if (tipe === 'kurang') {
+    const stokSaatIni = state.stock.reduce((s,r) => s + parseFloat(r.obatDitambah||0) - parseFloat(r.obatDiambil||0), 0);
+    if (qty > stokSaatIni) { toast(`Stok tidak cukup. Sisa saat ini: ${stokSaatIni} Unit`, 'error'); return; }
+  }
+
+  closeModal('modal-mutasi-stok');
+  toast("Mengirim pembaruan stok ke Cloud...", "info");
+
+  const payload = {
+    action: "addMutasiStok",
+    id: "STK-" + Date.now(),
+    petugas: petugas,
+    tanggal: new Date().toISOString(),
+    hari: new Date().toLocaleDateString('id-ID', { weekday: 'long' }),
+    obatDitambah: tipe === 'tambah' ? qty : 0,
+    obatDiambil: tipe === 'kurang' ? qty : 0,
+    catatan: catatan
+  };
+
+  try {
+    await fetch(URL_API_SPREADSHEET, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    fetchDataCloud();
+  } catch (e) { toast("Gagal memperbarui stok", "error"); }
+}
+
+// -- 2. Restock Bahan Racik (/restock) --
+function hitungTotalRestok() {
+  const qty = parseFloat(document.getElementById('restok-qty').value) || 0;
+  const harga = parseFloat(document.getElementById('restok-harga-satuan').value) || 0;
+  document.getElementById('restok-total-biaya').value = qty * harga;
+}
+
+async function simpanRestokBahan() {
+  const bahan = document.getElementById('restok-bahan-select').value;
+  const qty = parseInt(document.getElementById('restok-qty').value) || 0;
+  const hargaSatuan = parseFloat(document.getElementById('restok-harga-satuan').value) || 0;
+  const totalBiaya = qty * hargaSatuan;
+  const supplier = document.getElementById('restok-supplier').value.trim();
+
+  if (qty <= 0) { toast('Jumlah unit harus diisi', 'error'); return; }
+
+  toast("Mengunggah restock bahan ke Cloud...", "info");
+  const payload = {
+    action: "addRestokBahan",
+    id: "RST-" + Date.now(),
+    tanggal: new Date().toISOString(),
+    namaItem: bahan,
+    qty: qty,
+    hargaSatuan: hargaSatuan,
+    totalBiaya: totalBiaya,
+    supplier: supplier
+  };
+
+  try {
+    await fetch(URL_API_SPREADSHEET, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    fetchDataCloud();
+  } catch (e) { toast("Gagal mencatat restock", "error"); }
+}
+
+function renderRestokRiwayatView() {
+  const tbody = document.getElementById('restok-riwayat-tbody');
+  if (!tbody) return;
+  if (!state.restock.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3);">Belum ada riwayat pembelian bahan.</td></tr>';
+    return;
+  }
+
+  const displayList = [...state.restock].reverse();
+
+  tbody.innerHTML = displayList.map(r => `<tr>
+    <td class="mono">${r.id || '-'}</td>
+    <td class="mono">${fmtDate(r.tanggal)}</td>
+    <td><strong>${(r.namaItem || '').includes('Wortel') ? '🥕' : '🥔'} ${r.namaItem || '-'}</strong></td>
+    <td class="mono">${r.qty || 0} Unit</td>
+    <td class="mono">${fmtMoney(r.hargaSatuan || 0)}</td>
+    <td class="mono"><strong>${fmtMoney(r.totalBiaya || 0)}</strong></td>
+    <td>${r.supplier || '-'}</td>
+  </tr>`).join('');
+}
+
+// -- 3. Penjualan Obat Pusing (/apt) --
+function initApotekForm() {
+  populatePetugasSelects();
+  const td = document.getElementById('apt-tanggal');
+  if (td) {
+    td.value = state.lastAptTanggal || todayISO();
+    td.addEventListener('change', onAptTanggal);
+    onAptTanggal();
+  }
+  hitungTotalTrxInline();
+}
+
+function onAptTanggal() {
+  const t = document.getElementById('apt-tanggal');
+  const h = document.getElementById('apt-hari');
+  if (h && t) h.value = hariFromISO(t.value);
+  state.lastAptTanggal = document.getElementById('apt-tanggal')?.value || '';
+}
+
+function navDateApt(delta) {
+  const el = document.getElementById('apt-tanggal'); if (!el) return;
+  const d = new Date(el.value || todayISO()); d.setDate(d.getDate() + delta);
+  el.value = d.toISOString().slice(0,10); onAptTanggal();
+}
+
+function navTodayApt() {
+  const el = document.getElementById('apt-tanggal'); if (el) { el.value = todayISO(); onAptTanggal(); }
+}
+
+function spinApt(id, delta) {
+  const el = document.getElementById(id); let v = parseInt(el.value)||0;
+  el.value = Math.max(0, v + delta);
+  hitungTotalTrxInline();
+}
+
+function hitungTotalTrxInline() {
+  const hReg = parseFloat(document.getElementById('apt-harga-reguler')?.value) || 0;
+  const qReg = parseInt(document.getElementById('apt-qty-reguler')?.value) || 0;
+
+  const hSpe = parseFloat(document.getElementById('apt-harga-spesial')?.value) || 0;
+  const qSpe = parseInt(document.getElementById('apt-qty-spesial')?.value) || 0;
+
+  const hNon = parseFloat(document.getElementById('apt-harga-nonktp')?.value) || 0;
+  const qNon = parseInt(document.getElementById('apt-qty-nonktp')?.value) || 0;
+
+  const total = (hReg * qReg) + (hSpe * qSpe) + (hNon * qNon);
+  const totalItem = qReg + qSpe + qNon;
+
+  const inputTotal = document.getElementById('apt-total-pemasukan');
+  if (inputTotal) inputTotal.value = total;
+
+  const sumItem = document.getElementById('apt-total-item-sum');
+  if (sumItem) sumItem.textContent = totalItem;
+}
+
+function resetTransaksiApotekForm() {
+  document.getElementById('apt-qty-reguler').value = 0;
+  document.getElementById('apt-qty-spesial').value = 0;
+  document.getElementById('apt-qty-nonktp').value = 0;
+  document.getElementById('apt-harga-reguler').value = 750;
+  document.getElementById('apt-harga-spesial').value = 1200;
+  document.getElementById('apt-harga-nonktp').value = 1500;
+
+  const td = document.getElementById('apt-tanggal');
+  if (td) { td.value = state.lastAptTanggal || todayISO(); onAptTanggal(); }
+  hitungTotalTrxInline();
+}
+
+async function simpanTransaksiApotekInline() {
+  const petugas = document.getElementById('apt-petugas').value;
+  const tanggal = document.getElementById('apt-tanggal').value;
+  if (!petugas || !tanggal) { toast('Lengkapi petugas dan tanggal', 'error'); return; }
+
+  const qReg = parseInt(document.getElementById('apt-qty-reguler').value) || 0;
+  const qSpe = parseInt(document.getElementById('apt-qty-spesial').value) || 0;
+  const qNon = parseInt(document.getElementById('apt-qty-nonktp').value) || 0;
+
+  const hReg = parseFloat(document.getElementById('apt-harga-reguler').value) || 0;
+  const hSpe = parseFloat(document.getElementById('apt-harga-spesial').value) || 0;
+  const hNon = parseFloat(document.getElementById('apt-harga-nonktp').value) || 0;
+
+  const totalPemasukan = (hReg * qReg) + (hSpe * qSpe) + (hNon * qNon);
+
+  if (qReg + qSpe + qNon <= 0) { toast('Isi kuantitas paket yang dijual', 'error'); return; }
+
+  toast("Menyimpan transaksi paket apotek...", "info");
+
+  const payload = {
+    action: "addTransaksiApotek",
+    id: "APT-" + Date.now(),
+    namaMedis: petugas,
+    tanggal: tanggal,
+    hari: hariFromISO(tanggal),
+    reguler: qReg,
+    spesial: qSpe,
+    nonktp: qNon,
+    pemasukan: totalPemasukan
+  };
+
+  try {
+    await fetch(URL_API_SPREADSHEET, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    state.lastAptNama = petugas;
+    state.lastAptTanggal = tanggal;
+    resetTransaksiApotekForm();
+    fetchDataCloud();
+  } catch (e) { toast("Gagal menyimpan transaksi", "error"); }
+}
+
+function renderTransaksiApotekView() {
+  const tbody = document.getElementById('transaksi-apotek-tbody');
+  if (!tbody) return;
+  if (!state.apoteker.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3);">Belum ada riwayat transaksi apotek.</td></tr>';
+    return;
+  }
+
+  const displayList = [...state.apoteker].reverse();
+
+  tbody.innerHTML = displayList.map(t => {
+    const totalPemasukan = t.pemasukan || ((t.reguler || 0) * 750 + (t.spesial || 0) * 1200 + (t.nonktp || 0) * 1500);
+
+    return `<tr>
+      <td class="mono">${t.id || '-'}</td>
+      <td><strong>${t.namaMedis || '-'}</strong></td>
+      <td class="mono">${fmtDate(t.tanggal)} (${t.hari || '-'})</td>
+      <td class="mono">${t.reguler || 0} Paket</td>
+      <td class="mono">${t.spesial || 0} Paket</td>
+      <td class="mono">${t.nonktp || 0} Paket</td>
+      <td class="mono"><strong>${fmtMoney(totalPemasukan)}</strong></td>
+    </tr>`;
+  }).join('');
+}
 
 // ══════════════════════════════════════════════
 // BACKGROUND AUTOMATION ENGINE
@@ -1857,6 +2710,9 @@ function startAutoSync() {
         state.absensi = dataCloud.absensi || [];
         state.staf = dataCloud.staf || [];
         state.jabatan = dataCloud.jabatan || [];
+        state.apoteker = dataCloud.apoteker || [];
+        state.stock = dataCloud.stock || [];
+        state.restock = dataCloud.restock || [];
         
         const currentTab = document.querySelector('.nav-item.active')?.getAttribute('onclick')?.match(/'([^']+)'/)[1] || 'dashboard';
         if (currentTab === 'dashboard') renderDashboard();
@@ -1865,6 +2721,10 @@ function startAutoSync() {
         if (currentTab === 'rekap') renderRekap();
         if (currentTab === 'gaji') renderGaji();
         if (currentTab === 'export') renderExportPreview();
+        if (currentTab === 'apt') renderTransaksiApotekView();
+        if (currentTab === 'stock') renderStokObatView();
+        if (currentTab === 'restock') renderRestokRiwayatView();
+        if (currentTab === 'export-apt') renderExportApotekPreview();
       }
     } catch (error) {
       console.error("[Auto-Sync Error]", error);
@@ -1880,7 +2740,7 @@ function initAbsensiForm() {
   updatePenangananSum();
 }
 function init() {
-  applyTheme(); initAbsensiForm(); fetchDataCloud(); startAutoSync();
+  applyTheme(); initAbsensiForm(); initApotekForm(); fetchDataCloud(); startAutoSync();
 }
 init();
 </script>
