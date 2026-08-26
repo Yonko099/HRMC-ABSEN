@@ -17,7 +17,7 @@
   --red-light: #e74c3c;
   --red-bg: rgba(192,57,43,0.1);
   --sidebar-bg: #140606;
-  --sidebar-width: 220px;
+  --sidebar-width: 230px;
   --card: #ffffff;
   --bg: #f2f3f7;
   --bg2: #e8eaf0;
@@ -309,7 +309,7 @@ table tr:hover td { background: var(--row-hover); }
     </div>
     <div class="nav-item" onclick="goPage('rekap')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="17" y="13" width="4" height="8"/></svg>
-      Rekap Mingguan
+      Rekap Periode Mingguan
     </div>
   </div>
   <div class="nav-section">
@@ -453,13 +453,13 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE BARU: INTEGRATED FINANCE & KAS HRMC ── -->
+    <!-- ── PAGE 2: INTEGRATED FINANCE & KAS HRMC ── -->
     <div class="page" id="page-finance">
       <div class="finance-box-grid">
         <div class="finance-card in">
           <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">TOTAL UANG MASUK</div>
           <div class="finance-val in-color" id="fin-total-masuk">$0</div>
-          <div class="finance-sub">Akumulasi Slip Gov & Setoran Duty (30%)</div>
+          <div class="finance-sub">Akumulasi Slip Gov & Setoran Duty (20%)</div>
         </div>
         <div class="finance-card out">
           <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">TOTAL UANG KELUAR</div>
@@ -499,7 +499,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 2: DATA ANGGOTA ── -->
+    <!-- ── PAGE 3: DATA ANGGOTA ── -->
     <div class="page" id="page-anggota">
       <div class="card">
         <div class="card-header">
@@ -526,7 +526,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 3: INPUT ABSENSI ── -->
+    <!-- ── PAGE 4: INPUT ABSENSI ── -->
     <div class="page" id="page-absensi">
       <div class="card">
         <div class="card-header">
@@ -626,25 +626,28 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 4: REKAP MINGGUAN MULTI-WEEK ── -->
+    <!-- ── PAGE 5: REKAP PERIODE MINGGUAN (MULTI-WEEK) ── -->
     <div class="page" id="page-rekap">
       <div class="range-filter-box">
         <div class="form-group" style="flex:0 0 auto;">
           <label>Minggu Awal</label>
-          <select class="form-control" id="rekap-start-week" onchange="renderRekap()" style="width:160px;"></select>
+          <select class="form-control" id="rekap-start-week" onchange="renderRekap()" style="width:170px;"></select>
         </div>
         <div style="font-size:16px; font-weight:800; color:var(--text3); margin-top:16px;">s/d</div>
         <div class="form-group" style="flex:0 0 auto;">
           <label>Minggu Akhir</label>
-          <select class="form-control" id="rekap-end-week" onchange="renderRekap()" style="width:160px;"></select>
+          <select class="form-control" id="rekap-end-week" onchange="renderRekap()" style="width:170px;"></select>
         </div>
         <div class="form-group" style="flex:0 0 auto;">
           <label>Potongan Setoran (%)</label>
           <input type="number" class="form-control" id="rekap-setoran-pct" value="20" min="0" max="100" style="width:90px;" oninput="renderRekap()">
         </div>
-        <div class="form-group" style="flex:1; min-width:150px;">
-          <label>Filter Nama Anggota</label>
-          <input type="text" class="form-control" id="rekap-search-nama" placeholder="Ketik nama staf..." oninput="renderRekap()">
+        <div class="form-group" style="flex:1; min-width:180px;">
+          <label>Pencarian Anggota</label>
+          <div class="input-group">
+            <select class="form-control" id="rekap-select-anggota" onchange="onRekapSelectAnggotaChange()"></select>
+            <button class="btn btn-secondary btn-sm" onclick="resetRekapAnggotaFilter()" title="Tampilkan Semua Anggota">Reset</button>
+          </div>
         </div>
       </div>
 
@@ -685,7 +688,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 5: STRUKTUR JABATAN ── -->
+    <!-- ── PAGE 6: STRUKTUR JABATAN ── -->
     <div class="page" id="page-jabatan">
       <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
         <div class="card" style="flex:1;min-width:300px;">
@@ -708,7 +711,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 6: PERHITUNGAN GAJI MULTI-WEEK ── -->
+    <!-- ── PAGE 7: PERHITUNGAN GAJI MULTI-WEEK ── -->
     <div class="page" id="page-gaji">
       <div class="card">
         <div class="card-header">
@@ -754,7 +757,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 7: EXPORT LAPORAN DUTY & PAYROLL ── -->
+    <!-- ── PAGE 8: EXPORT LAPORAN DUTY & PAYROLL ── -->
     <div class="page" id="page-export">
       <div class="card">
         <div class="card-header"><h3>Export Laporan Duty & Gaji Staf</h3></div>
@@ -801,7 +804,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 8: PENJUALAN OBAT PUSING (/apt) ── -->
+    <!-- ── PAGE 9: PENJUALAN OBAT PUSING (/apt) ── -->
     <div class="page" id="page-apt">
       <div class="card">
         <div class="card-header">
@@ -942,7 +945,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 9: MUTASI STOK OBAT PUSING (/stock) ── -->
+    <!-- ── PAGE 10: MUTASI STOK OBAT PUSING (/stock) ── -->
     <div class="page" id="page-stock">
       <div class="stat-grid">
         <div class="stat-card c-blue">
@@ -1009,7 +1012,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 10: RESTOCK BAHAN RACIK (/restock) ── -->
+    <!-- ── PAGE 11: RESTOCK BAHAN RACIK (/restock) ── -->
     <div class="page" id="page-restock">
       <div class="card">
         <div class="card-header"><h3>Form Restock Pembelian Bahan Racik</h3></div>
@@ -1060,7 +1063,7 @@ table tr:hover td { background: var(--row-hover); }
       </div>
     </div>
 
-    <!-- ── PAGE 11: EXPORT APOTEK KHUSUS ── -->
+    <!-- ── PAGE 12: EXPORT APOTEK KHUSUS ── -->
     <div class="page" id="page-export-apt">
       <div class="card">
         <div class="card-header"><h3>Export Laporan Penjualan Apoteker</h3></div>
@@ -1281,7 +1284,8 @@ let state = {
   lastAptNama: '',
   lastAptTanggal: '',
   darkMode: false,
-  searchKeyword: ''
+  searchKeyword: '',
+  rekapSelectedAnggota: ''
 };
 
 // ===================== ENGINE RETRIEVAL DATA AUTOMATION =====================
@@ -1299,6 +1303,7 @@ async function fetchDataCloud() {
 
       initAllWeekRangeSelects();
       populatePetugasSelects();
+      populateRekapAnggotaSelect();
       toast("Sinkronisasi Cloud Sheets sukses!");
       refreshAllViews();
     }
@@ -1530,7 +1535,7 @@ function goPage(name) {
   if (name === 'finance') renderFinanceView();
   if (name === 'anggota') renderAnggotaList(state.searchKeyword);
   if (name === 'absensi') { populateNamaSelect(); populateWeekFilter('ab-filter-week'); renderAbsensiTable(); }
-  if (name === 'rekap') { initRangeSelectPair('rekap-start-week', 'rekap-end-week'); renderRekap(); }
+  if (name === 'rekap') { initRangeSelectPair('rekap-start-week', 'rekap-end-week'); populateRekapAnggotaSelect(); renderRekap(); }
   if (name === 'jabatan') renderJabatan();
   if (name === 'gaji') { initRangeSelectPair('gaji-start-week', 'gaji-end-week'); renderGaji(); }
   if (name === 'export') { initRangeSelectPair('export-start-week', 'export-end-week'); renderExportPreview(); }
@@ -1661,7 +1666,7 @@ function simpanTransaksiFin() {
 }
 
 // ══════════════════════════════════════════════
-// CORE SAVE & STRUKTUR PIPELINES (EXISTING)
+// CORE SAVE & STRUKTUR PIPELINES
 // ══════════════════════════════════════════════
 function openAddJabatan() {
   document.getElementById('jabatan-modal-title').textContent = 'Tambah Jabatan';
@@ -2127,20 +2132,52 @@ function renderDashboard() {
 }
 
 // ══════════════════════════════════════════════
-// REKAP MINGGUAN MULTI-WEEK ENGINE
+// REKAP PERIODE MINGGUAN (MULTI-WEEK) & FILTER ANGGOTA
 // ══════════════════════════════════════════════
 let chartRekapIncome = null, chartRekapPenanganan = null;
+
+function populateRekapAnggotaSelect() {
+  const el = document.getElementById('rekap-select-anggota');
+  if (!el) return;
+  
+  const curVal = state.rekapSelectedAnggota || '';
+  let optionsHtml = '<option value="">-- Semua Anggota --</option>';
+  
+  const sortedStaf = [...state.staf].sort((a,b) => a.nama.localeCompare(b.nama));
+  optionsHtml += sortedStaf.map(s => `<option value="${s.nama}">${s.nama} [${s.jabatanId}]</option>`).join('');
+  
+  el.innerHTML = optionsHtml;
+  el.value = curVal;
+}
+
+function onRekapSelectAnggotaChange() {
+  const el = document.getElementById('rekap-select-anggota');
+  if (el) {
+    state.rekapSelectedAnggota = el.value;
+    renderRekap();
+  }
+}
+
+function resetRekapAnggotaFilter() {
+  state.rekapSelectedAnggota = '';
+  const el = document.getElementById('rekap-select-anggota');
+  if (el) el.value = '';
+  renderRekap();
+}
+
 function renderRekap() {
   const sWk = document.getElementById('rekap-start-week')?.value;
   const eWk = document.getElementById('rekap-end-week')?.value;
-  const searchNama = (document.getElementById('rekap-search-nama')?.value||'').toLowerCase().trim();
+  const selectedAnggota = state.rekapSelectedAnggota ? state.rekapSelectedAnggota.toLowerCase().trim() : '';
   const sortBy = document.getElementById('rekap-sort-by')?.value || 'jam';
   const setoranPct = parseFloat(document.getElementById('rekap-setoran-pct')?.value || 20) / 100;
 
+  // 14. Rekap Periode Mingguan (Multi-Minggu): Filter data dari minggu awal hingga minggu akhir
   let data = state.absensi.filter(a => isWeekInRange(weekKey(a.tanggal || a.Tanggal), sWk, eWk));
 
-  if (searchNama) {
-    data = data.filter(a => (a.stafId || a.StafId || '').toLowerCase().includes(searchNama));
+  // 15. Pencarian Anggota pada Rekap
+  if (selectedAnggota) {
+    data = data.filter(a => (a.stafId || a.StafId || '').toLowerCase().trim() === selectedAnggota);
   }
 
   const totalDuty = data.length;
@@ -2174,7 +2211,7 @@ function renderRekap() {
   const singleCardWrap = document.getElementById('rekap-single-member-wrapper');
   const entries = Object.entries(byStaf);
 
-  if (searchNama && entries.length > 0) {
+  if (selectedAnggota && entries.length > 0) {
     const target = entries[0][1];
     const rate = getStafGajiPokok(target.rawName);
     const jamDes = target.menit / 60;
@@ -2189,7 +2226,7 @@ function renderRekap() {
     singleCardWrap.style.display = 'block';
     singleCardWrap.innerHTML = `
       <div class="member-summary-card">
-        <div style="display:flex; justify-space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <div style="font-size:18px; font-weight:800; color:var(--text);">👤 Nama : <span style="color:var(--red);">${target.rawName}</span></div>
             <div style="font-size:11.5px; color:var(--text2); margin-top:2px;">Periode : <b>Minggu ${idxStart} — Minggu ${idxEnd}</b></div>
@@ -2926,7 +2963,7 @@ function startAutoSync() {
         if (currentTab === 'finance') renderFinanceView();
         if (currentTab === 'anggota') renderAnggotaList(state.searchKeyword);
         if (currentTab === 'absensi') renderAbsensiTable();
-        if (currentTab === 'rekap') renderRekap();
+        if (currentTab === 'rekap') { populateRekapAnggotaSelect(); renderRekap(); }
         if (currentTab === 'gaji') renderGaji();
         if (currentTab === 'export') renderExportPreview();
         if (currentTab === 'apt') renderTransaksiApotekView();
