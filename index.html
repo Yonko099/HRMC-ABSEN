@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HRMC Dashboard v4.0 - Integrated Apotek Edition</title>
+<title>HRMC Dashboard v5.0 - Integrated Finance & Apotek Edition</title>
 <!-- Pustaka Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <!-- Pustaka SheetJS (XLSX) untuk Export Excel -->
@@ -74,7 +74,7 @@ a { text-decoration: none; color: inherit; }
 .sidebar-bottom { margin-top: auto; padding: 14px 16px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 .version-badge { display: inline-block; background: rgba(192,57,43,0.2); color: #c0392b; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-bottom: 6px; letter-spacing: 0.5px; }
 
-/* ── USER PROFILE BIODATA (DICODING STANDARD) ── */
+/* ── USER PROFILE BIODATA ── */
 .dicoding-profile { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; margin-top: 10px; text-align: left; display: flex; align-items: center; gap: 8px; }
 .dicoding-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
 .dicoding-info { min-width: 0; }
@@ -96,16 +96,14 @@ a { text-decoration: none; color: inherit; }
 .page { display: none; }
 .page.active { display: flex; flex-direction: column; gap: 16px; }
 
-/* ── CARDS ── */
+/* ── CARDS & STATS ── */
 .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
 .card-header { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .card-header h3 { font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: 0.6px; text-transform: uppercase; }
 .card-body { padding: 16px; }
 
-/* ── FILTER BOX ── */
 .range-filter-box { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; box-shadow: var(--shadow); }
 
-/* ── STAT CARDS ── */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
 .stat-card.c-blue::before { background: #3b82f6; }
@@ -132,7 +130,19 @@ a { text-decoration: none; color: inherit; }
 .member-summary-item .m-lbl { font-size: 9px; color: var(--text3); font-weight: 700; text-transform: uppercase; }
 .member-summary-item .m-val { font-size: 15px; font-weight: 800; color: var(--text); margin-top: 2px; }
 
-/* ── FORMS ── */
+/* ── FINANCE DASHBOARD BOXES ── */
+.finance-box-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.finance-card { border-radius: 12px; padding: 18px; border: 1.5px solid var(--border); background: var(--card); }
+.finance-card.in { border-left: 5px solid #22c55e; }
+.finance-card.out { border-left: 5px solid #ef4444; }
+.finance-card.kas { border-left: 5px solid #3b82f6; background: linear-gradient(135deg, var(--card) 0%, var(--bg) 100%); }
+.finance-val { font-size: 26px; font-weight: 800; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+.finance-val.in-color { color: #16a34a; }
+.finance-val.out-color { color: #dc2626; }
+.finance-val.kas-color { color: #2563eb; }
+.finance-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ── FORMS & INPUTS ── */
 .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .form-row .form-group { flex: 1; min-width: 120px; }
 .form-group.w2 { flex: 2; }
@@ -292,6 +302,11 @@ table tr:hover td { background: var(--row-hover); }
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </div>
+    <!-- FITUR BARU: NAV KEUANGAN & KAS -->
+    <div class="nav-item" onclick="goPage('finance')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Keuangan & Kas HRMC
+    </div>
     <div class="nav-item" onclick="goPage('anggota')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Data Anggota
@@ -340,11 +355,10 @@ table tr:hover td { background: var(--row-hover); }
     </div>
   </div>
   <div class="sidebar-bottom">
-    <div class="version-badge">v4.0 Integrated</div>
+    <div class="version-badge">v5.0 Integrated</div>
     <button class="btn btn-primary btn-sm" onclick="fetchDataCloud()" style="width:100%; justify-content:center; margin-bottom:8px;">🔄 Sinkron Cloud</button>
     <div class="sidebar-quote" style="color:#666; font-size:10px;">"We Care, We Heal,<br>We're HRMC."</div>
     
-    <!-- BIODATA PROFILE UNTUK SUBMISSION DICODING -->
     <div class="dicoding-profile">
       <div class="dicoding-avatar">KC</div>
       <div class="dicoding-info">
@@ -356,7 +370,6 @@ table tr:hover td { background: var(--row-hover); }
 </aside>
 
 <div class="main">
-  <!-- SEMANTIC HTML5 HEADER -->
   <header class="topbar">
     <div class="topbar-title">
       <h1>HRMC DASHBOARD</h1>
@@ -378,7 +391,6 @@ table tr:hover td { background: var(--row-hover); }
     </div>
   </header>
 
-  <!-- SEMANTIC HTML5 MAIN CONTENT -->
   <main class="page-content">
 
     <!-- ── PAGE 1: DASHBOARD MULTI-WEEK ── -->
@@ -453,6 +465,52 @@ table tr:hover td { background: var(--row-hover); }
         <div class="card">
           <div class="card-header"><h3>Top 7 Aktivitas Anggota (Jam Kerja)</h3></div>
           <div class="card-body"><div class="chart-wrap"><canvas id="chart-aktivitas"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE BARU: INTEGRATED FINANCE & KAS HRMC ── -->
+    <div class="page" id="page-finance">
+      <div class="finance-box-grid">
+        <div class="finance-card in">
+          <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">TOTAL UANG MASUK</div>
+          <div class="finance-val in-color" id="fin-total-masuk">$0</div>
+          <div class="finance-sub">Akumulasi Slip Gov & Setoran Duty (30%)</div>
+        </div>
+        <div class="finance-card out">
+          <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">TOTAL UANG KELUAR</div>
+          <div class="finance-val out-color" id="fin-total-keluar">$0</div>
+          <div class="finance-sub">Pengeluaran Total Gaji Staf (Otomatis)</div>
+        </div>
+        <div class="finance-card kas">
+          <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">KAS HRMC (SALDO AKHIR)</div>
+          <div class="finance-val kas-color" id="fin-kas-hrmc">$0</div>
+          <div class="finance-sub">Calculated: Total Uang Masuk − Total Uang Keluar</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Rincian Catatan Keuangan Kas HRMC</h3>
+          <button class="btn btn-primary btn-sm" onclick="openModalTrans()">+ Catat Slip Gov / Manual</button>
+        </div>
+        <div class="card-body" style="padding: 12px 16px; background: var(--bg); font-size:12px; color:var(--text2);">
+          💡 <strong>Otomatisasi Sistem:</strong> Setoran Duty RS dan Total Gaji Staf di bawah ini dikalkulasi secara terpadu dari seluruh lembar data Absensi & Staf.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Kategori Transaksi</th>
+                <th>Tipe Data</th>
+                <th>Keterangan / Periode</th>
+                <th>Nominal ($)</th>
+                <th>Status Kas</th>
+              </tr>
+            </thead>
+            <tbody id="finance-tbody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -608,7 +666,6 @@ table tr:hover td { background: var(--row-hover); }
 
       <div class="rekap-grid" id="rekap-stats"></div>
 
-      <!-- Ringkasan Card jika mencari nama anggota spesifik -->
       <div id="rekap-single-member-wrapper" style="display:none;"></div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -1157,7 +1214,6 @@ table tr:hover td { background: var(--row-hover); }
   </div>
 </div>
 
-<!-- MODAL MUTASI STOK OBAT -->
 <div class="modal-overlay" id="modal-mutasi-stok">
   <div class="modal">
     <div class="modal-header">
@@ -1186,10 +1242,45 @@ table tr:hover td { background: var(--row-hover); }
   </div>
 </div>
 
+<!-- MODAL TRANSAKSI KEUANGAN KAS MANUAL -->
+<div class="modal-overlay" id="modal-trans">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Tambah Pemasukan / Pengeluaran Manual</h3>
+      <button class="modal-close" onclick="closeModal('modal-trans')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="form-group">
+        <label>Jenis Transaksi</label>
+        <select class="form-control" id="tr-tipe">
+          <option value="MASUK">Uang Masuk (+)</option>
+          <option value="KELUAR">Uang Keluar (-)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Kategori / Judul Transaksi</label>
+        <input type="text" class="form-control" id="tr-kategori" placeholder="Contoh: Slip Gaji dari Gov">
+      </div>
+      <div class="form-group">
+        <label>Keterangan Periode</label>
+        <input type="text" class="form-control" id="tr-periode" placeholder="Contoh: Gaji Periode 12 Juni - 08 Agustus 2026">
+      </div>
+      <div class="form-group">
+        <label>Nominal ($)</label>
+        <input type="number" class="form-control" id="tr-nominal" placeholder="0">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-trans')">Batal</button>
+      <button class="btn btn-primary" onclick="simpanTransaksiFin()">Simpan Ke Kas</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbyfWNZqfCAesm3dl55UZOBMIr25paeZpMqBry7RqefYEGOnm6MswbdaWQGmgeBa2YeD/exec";
+const URL_API_SPREADSHEET = "https://script.google.com/macros/s/AKfycbydu_kHn-9x9xoBqg83n4Q9zEtcR_YesQPcxc2tQq1mWx0IZnrQUl9yayl-Ko1-enVQ/exec";
 
 let state = {
   absensi: [],
@@ -1198,6 +1289,9 @@ let state = {
   apoteker: [],
   stock: [],
   restock: [],
+  manualFinances: [
+    { id: 1, jenis: 'MASUK', kategori: 'Slip Gaji dari Gov', periode: 'Gaji Periode 12 Juni - 08 Agustus 2026', nominal: 217063 }
+  ],
   lastNama: '',
   lastTanggal: '',
   lastAptNama: '',
@@ -1353,9 +1447,6 @@ function allWeeksSorted() {
   return Object.keys(wks).sort(); 
 }
 
-// ══════════════════════════════════════════════
-// RANGE HELPER ENGINE (MULTI-WEEK PARSER)
-// ══════════════════════════════════════════════
 function isWeekInRange(targetWeekKey, startWeekKey, endWeekKey) {
   if (!startWeekKey || !endWeekKey) return true;
   const all = allWeeksSorted();
@@ -1423,9 +1514,6 @@ function jabatanBadgeClass(namaStaf) {
   return jabatanColor(idx !== -1 ? idx : 0);
 }
 
-// ══════════════════════════════════════════════
-// CLOCK & THEME
-// ══════════════════════════════════════════════
 function updateClock() {
   const now = new Date();
   const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -1455,6 +1543,7 @@ function goPage(name) {
   });
 
   if (name === 'dashboard') { initRangeSelectPair('dash-start-week', 'dash-end-week'); renderDashboard(); }
+  if (name === 'finance') renderFinanceView();
   if (name === 'anggota') renderAnggotaList(state.searchKeyword);
   if (name === 'absensi') { populateNamaSelect(); populateWeekFilter('ab-filter-week'); renderAbsensiTable(); }
   if (name === 'rekap') { initRangeSelectPair('rekap-start-week', 'rekap-end-week'); renderRekap(); }
@@ -1482,7 +1571,113 @@ function populateWeekFilter(id) {
 }
 
 // ══════════════════════════════════════════════
-// CORE SAVE & STRUKTUR PIPELINES
+// LOGIKA FITUR BARU: KEUANGAN & KAS HRMC
+// ══════════════════════════════════════════════
+function renderFinanceView() {
+  let totalPemasukanKotorAbsensi = 0;
+  state.absensi.forEach(a => {
+    totalPemasukanKotorAbsensi += parseFloat(a.pemasukan || a.Pemasukan || 0);
+  });
+  const totalSetoranDutyOtomatis = Math.round(totalPemasukanKotorAbsensi * 0.20); 
+
+  let totalGajiStafOtomatis = 0;
+  state.absensi.forEach(a => {
+    const mins = calcMinutes(formatJamMenit(a.masuk || a.Masuk), formatJamMenit(a.keluar || a.Keluar));
+    const rate = getStafGajiPokok(a.stafId || a.StafId);
+    totalGajiStafOtomatis += (mins / 60) * rate;
+  });
+
+  let totalManualMasuk = 0;
+  let totalManualKeluar = 0;
+  state.manualFinances.forEach(f => {
+    if (f.jenis === 'MASUK') totalManualMasuk += parseFloat(f.nominal || 0);
+    if (f.jenis === 'KELUAR') totalManualKeluar += parseFloat(f.nominal || 0);
+  });
+
+  const grandTotalMasuk = totalSetoranDutyOtomatis + totalManualMasuk;
+  const grandTotalKeluar = totalGajiStafOtomatis + totalManualKeluar;
+  const saldoKasHRMC = grandTotalMasuk - grandTotalKeluar;
+
+  const elMasuk = document.getElementById('fin-total-masuk');
+  const elKeluar = document.getElementById('fin-total-keluar');
+  const elKas = document.getElementById('fin-kas-hrmc');
+
+  if (elMasuk) elMasuk.textContent = fmtMoney(grandTotalMasuk);
+  if (elKeluar) elKeluar.textContent = fmtMoney(grandTotalKeluar);
+  if (elKas) elKas.textContent = fmtMoney(saldoKasHRMC);
+
+  const fullRecords = [
+    ...state.manualFinances.map(m => ({ ...m, isAuto: false })),
+    {
+      id: 'AUTO-SETORAN',
+      jenis: 'MASUK',
+      kategori: 'Setoran Duty RS (Akumulasi)',
+      periode: 'Akumulasi Seluruh Absensi Staf',
+      nominal: totalSetoranDutyOtomatis,
+      isAuto: true
+    },
+    {
+      id: 'AUTO-GAJI',
+      jenis: 'KELUAR',
+      kategori: 'Total Gaji Staf (Akumulasi)',
+      periode: 'Dihitung berdasarkan Jam Kerja × Tarif Jabatan',
+      nominal: totalGajiStafOtomatis,
+      isAuto: true
+    }
+  ];
+
+  const tbody = document.getElementById('finance-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = fullRecords.map((f, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${f.kategori}</strong></td>
+      <td><span class="badge ${f.isAuto ? 'badge-blue' : 'badge-green'}">${f.isAuto ? 'Sistem Otomatis' : 'Input Manual'}</span></td>
+      <td><span style="font-size:11px; color:var(--text3);">${f.periode}</span></td>
+      <td class="mono" style="font-weight:800; color:${f.jenis === 'MASUK' ? '#16a34a' : '#dc2626'};">
+        ${f.jenis === 'MASUK' ? '+' : '-'}${fmtMoney(f.nominal)}
+      </td>
+      <td>
+        <span class="badge ${f.jenis === 'MASUK' ? 'badge-green' : 'badge-red'}">${f.jenis}</span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openModalTrans() {
+  document.getElementById('tr-kategori').value = '';
+  document.getElementById('tr-periode').value = '';
+  document.getElementById('tr-nominal').value = '';
+  openModal('modal-trans');
+}
+
+function simpanTransaksiFin() {
+  const tipe = document.getElementById('tr-tipe').value;
+  const kategori = document.getElementById('tr-kategori').value.trim();
+  const periode = document.getElementById('tr-periode').value.trim();
+  const nominal = parseFloat(document.getElementById('tr-nominal').value) || 0;
+
+  if (!kategori || nominal <= 0) {
+    toast('Lengkapi Kategori dan Nominal Transaksi!', 'error');
+    return;
+  }
+
+  state.manualFinances.push({
+    id: Date.now(),
+    jenis: tipe,
+    kategori: kategori,
+    periode: periode || 'Catatan Manual',
+    nominal: nominal
+  });
+
+  closeModal('modal-trans');
+  toast('Transaksi Kas Berhasil Ditambahkan!', 'success');
+  renderFinanceView();
+}
+
+// ══════════════════════════════════════════════
+// CORE SAVE & STRUKTUR PIPELINES (EXISTING)
 // ══════════════════════════════════════════════
 function openAddJabatan() {
   document.getElementById('jabatan-modal-title').textContent = 'Tambah Jabatan';
@@ -2499,7 +2694,6 @@ async function simpanMutasiObat() {
   closeModal('modal-mutasi-stok');
   toast("Mengirim pembaruan stok ke Cloud...", "info");
 
-  // FIXED: Gunakan format tanggal hari ini (YYYY-MM-DD)
   const tglFormatted = todayISO();
 
   const payload = {
@@ -2541,7 +2735,6 @@ async function simpanRestokBahan() {
 
   toast("Mengunggah restock bahan ke Cloud...", "info");
 
-  // FIXED: Gunakan format tanggal hari ini (YYYY-MM-DD) dan sertakan parameter yang dibutuhkan Apps Script
   const tglFormatted = todayISO();
 
   const payload = {
@@ -2746,6 +2939,7 @@ function startAutoSync() {
         
         const currentTab = document.querySelector('.nav-item.active')?.getAttribute('onclick')?.match(/'([^']+)'/)[1] || 'dashboard';
         if (currentTab === 'dashboard') renderDashboard();
+        if (currentTab === 'finance') renderFinanceView();
         if (currentTab === 'anggota') renderAnggotaList(state.searchKeyword);
         if (currentTab === 'absensi') renderAbsensiTable();
         if (currentTab === 'rekap') renderRekap();
